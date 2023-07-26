@@ -1,8 +1,15 @@
 {
   "name": "tchat",
   "version": "0.1.0",
-  "private": true,
+  "author": "Hayden Chiu",
+  "description": "TChat app for ChatGPT API",
+  "main": "public/main.ts",
+  "homepage": ".",
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.14.2",
+    "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -10,17 +17,25 @@
     "@types/node": "^16.18.39",
     "@types/react": "^18.2.16",
     "@types/react-dom": "^18.2.7",
+    "electron-squirrel-startup": "^1.0.0",
     "react": "^18.2.0",
+    "react-code-blocks": "^0.1.2",
     "react-dom": "^18.2.0",
+    "react-markdown": "^8.0.7",
+    "react-redux": "^8.1.1",
     "react-scripts": "5.0.1",
+    "redux": "^4.2.1",
     "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
+    "uuid": "^9.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron": "electron .",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "eslintConfig": {
     "extends": [
@@ -39,5 +54,15 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.2.1",
+    "@electron-forge/maker-deb": "^6.2.1",
+    "@electron-forge/maker-rpm": "^6.2.1",
+    "@electron-forge/maker-squirrel": "^6.2.1",
+    "@electron-forge/maker-zip": "^6.2.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^6.2.1",
+    "@types/uuid": "^9.0.2",
+    "electron": "^25.3.1"
   }
 }
