@@ -1,7 +1,7 @@
 export type ChatMessage = {
     time: Date;
     role: string;
-    message: string;
+    markdown: string;
     editedMessage: string;
 }
 

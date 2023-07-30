@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 function splitMdCodeBlock(mdString: string) {
     const result = [];
     let buffer = '';
@@ -13,7 +15,7 @@ function splitMdCodeBlock(mdString: string) {
                 // If it is the end of a block (no language modifier)
                 if (line === '```') {
                     codeBlockDepth -= 1;
-                    // If we're back to the top level, push the buffer to results
+                    // If we are back to the top level, push the buffer to results
                     if (codeBlockDepth === 0) {
                         result.push(buffer + line + '\n');
                         buffer = '';
@@ -43,7 +45,7 @@ function splitMdCodeBlock(mdString: string) {
             buffer += line + '\n';
         }
     });
-    // If there was any text or code left in the buffer, add it to the result
+    // If there was any text or code left in the buffer add it to the result
     if (buffer) result.push(buffer);
     return result;
 }
@@ -55,26 +57,32 @@ function processSegments(segments: Array<string>) {
             // Find the end of the first line to get the language name
             const endOfFirstLine = segment.indexOf('\n');
             const language = segment.substring(3, endOfFirstLine);
-    
-            // Find the start of the last line to get the code content
             const startOfLastLine = segment.lastIndexOf('```');
-            const code = segment.substring(endOfFirstLine + 1, startOfLastLine);
-    
-            return {
-                type: language,
-                content: code
-            };
+
+            // No closing due to streaming partical result
+            if (endOfFirstLine > startOfLastLine) 
+                return {
+                    type: language,
+                    content: segment.substring(endOfFirstLine + 1)
+                }
+            // Normal case
+            else 
+                return {
+                    type: language,
+                    content: segment.substring(endOfFirstLine + 1, startOfLastLine)
+                }
         } 
-        // If the segment is not a code block, it's normal text
+        // The segment is not a code block
         else {
             return {
                 type: 'text',
-                content: segment
+                content: segment.replace(/\n/g, '  \n') // Replace for following strict markdown spacing
             };
         }
     });
 }
 
-export const useMessageSegmentSelector = (text: string) => {
-    return processSegments(splitMdCodeBlock(text));
-}
+export const useMessageSegmentMemo = (markDown: string) => useMemo(() => {
+    const messageSegments = splitMdCodeBlock(markDown);
+    return processSegments(messageSegments);
+}, [markDown])

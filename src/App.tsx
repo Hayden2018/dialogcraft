@@ -12,7 +12,6 @@ function App() {
                 <ConversationList />
                 <ChatInterface />
             </div>
-
         </ThemeProvider>
     );
 }

@@ -24,6 +24,11 @@ function createWindow() {
     if (!app.isPackaged) {
         win.webContents.openDevTools({ mode: 'detach' });
     }
+
+    console.log("BBBB");
+    require('./service');
+
+    win.webContents.send('ping', 'whooooh!');
 }
 
 app.whenReady().then(createWindow);
@@ -34,8 +39,10 @@ app.on('window-all-closed', () => {
     }
 });
 
-app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow();
-    }
-});
+// app.on('activate', () => {
+//     console.log("BBBB");
+//     require('./service');
+//     if (BrowserWindow.getAllWindows().length === 0) {
+//         createWindow();
+//     }
+// });

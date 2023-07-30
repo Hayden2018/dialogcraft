@@ -2,7 +2,9 @@ import Button from '@mui/material/Button';
 import { useDispatch }  from 'react-redux';
 import { styled } from '@mui/system';
 import { TextField } from '@mui/material';
-import MarkDownMessage from 'components/MarkDownMessage/MarkDownMessage';
+import MessageBubble from 'components/MessageBuble/MessageBubble';
+import { useCurrentChatSelector, useMessageActions } from './ChatInterface.hook';
+import { ChatMessage } from 'redux/type';
 
 const ChatContainer = styled('div')(
     ({ theme }) => ({
@@ -17,11 +19,8 @@ const ChatContainer = styled('div')(
 
 const MessageArea = styled('div')(
     ({ theme }) => ({
-        height: '100vh',
-        width: '80%',
-        minWidth: 720,
-        verticalAlign: 'top',
-        position: 'relative',
+        height: 'calc(100vh - 130px)',
+        overflowY: 'scroll',
     })
 );
 
@@ -31,7 +30,6 @@ const MessageInput = styled(TextField)(
         position: 'absolute',
         right: 165,
         bottom: 15,
-        
     })
 );
 
@@ -58,24 +56,43 @@ const RegenerateButton = styled(Button)(
 
 function ChatInterface() {
 
-    const dispatch = useDispatch();
-    return (
+    const currentChat = useCurrentChatSelector();
+    const { onChange, sendMessage, regenerate, value } = useMessageActions(currentChat);
+
+    if (currentChat) return (
         <ChatContainer>
-            <MarkDownMessage />
+            <MessageArea>
+                {
+                    currentChat.messages.map((msg: ChatMessage, index: number) => 
+                        <MessageBubble 
+                            chatId={currentChat.id}
+                            msgContent={msg.markdown}
+                            msgIndex={index}
+                        />
+                    )
+                }
+            </MessageArea>
             <MessageInput
                 multiline
                 label='Message ChatGPT'
                 minRows={3}
                 maxRows={3}
+                value={value}
+                onChange={onChange}
             />
-            <SendButton variant='contained'>
+            <SendButton variant='contained' onClick={sendMessage}>
                 Send
             </SendButton>
             <RegenerateButton variant='contained'>
                 Regenerate
             </RegenerateButton>
         </ChatContainer>
-    );
+    )
+    else return (
+        <ChatContainer>
+
+        </ChatContainer>
+    )
 }
 
 export default ChatInterface;

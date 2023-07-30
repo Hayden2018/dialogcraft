@@ -20,7 +20,7 @@ const chatsSlice = createSlice({
             chats[chatId].messages.push({
                 time: new Date(),
                 role: 'user',
-                message: messageContent,
+                markdown: messageContent,
                 editedMessage: '',
             });
             return chats
@@ -29,4 +29,4 @@ const chatsSlice = createSlice({
 })
 
 export default chatsSlice.reducer;
-export const { createNewChat } = chatsSlice.actions;
+export const { createNewChat, addUserMessage } = chatsSlice.actions;
