@@ -1,15 +1,20 @@
+require('dotenv').config();
 const path = require('path');
 const url = require('url');
 
 const { app, BrowserWindow } = require('electron');
+const { startListenForMessage } = require('./service');
 
 function createWindow() {
     // Create the browser window.
     const win = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1280,
+        height: 800,
+        minWidth: 900,
+        minHeight: 600,
         webPreferences: {
-        nodeIntegration: true,
+            nodeIntegration: true,
+            contextIsolation: false,
         },
     });
 
@@ -25,10 +30,7 @@ function createWindow() {
         win.webContents.openDevTools({ mode: 'detach' });
     }
 
-    console.log("BBBB");
-    require('./service');
-
-    win.webContents.send('ping', 'whooooh!');
+    startListenForMessage(win);
 }
 
 app.whenReady().then(createWindow);

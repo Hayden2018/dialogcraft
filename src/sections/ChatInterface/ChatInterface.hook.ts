@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addUserMessage } from "redux/chatsSlice";
 import { AppState, Chat } from "redux/type";
+import { userMessageSent } from "saga/actions";
 
 export const useCurrentChatSelector = () => useSelector((state: AppState) => {
     const currentChatId = state.chatList.currentChatId;
@@ -27,7 +28,7 @@ export const useMessageActions = (currentChat: Chat | null) => {
 
     const sendMessage = useCallback(() => {
         if (!currentChat || !draft) return;
-        dispatch(addUserMessage({
+        dispatch(userMessageSent({
             chatId: currentChat.id,
             messageContent: draft,
         }));

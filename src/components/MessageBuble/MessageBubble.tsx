@@ -3,13 +3,48 @@ import CustomCodeBlock from 'components/CustomCodeBlock/CustomCodeBlock';
 import { useMessageSegmentMemo } from './MessageBubble.hook';
 import { styled } from '@mui/system';
 
-const MessageContainer = styled('div')(
+const RightAligner= styled('div')(
+    ({ theme }) => ({
+        display: 'flex',
+        justifyContent: 'right',
+        margin: '16px 0px',
+    })
+);
+
+const LeftAligner= styled('div')(
+    ({ theme }) => ({
+        display: 'flex',
+        justifyContent: 'left',
+        margin: '16px 0px',
+    })
+);
+
+const BotMessageContainer = styled('div')(
     ({ theme }) => ({
         width: 'fit-content',
+        maxWidth: 'calc(100% - 150px)',
         borderRadius: 12,
-        border: `1px solid ${theme.palette.primary.light}`,
+        background: theme.palette.grey[800],
         padding: '10px 12px',
-        margin: 15,
+        margin: '0px 18px',
+        '& > :first-child': {
+            marginTop: 0,
+        },  
+        '& > :last-child': {
+            marginBottom: 0,
+        }
+    })
+);
+
+const UserMessageContainer = styled('div')(
+    ({ theme }) => ({
+        textAlign: 'right',
+        width: 'fit-content',
+        maxWidth: 'calc(100% - 150px)',
+        borderRadius: 12,
+        padding: '10px 12px',
+        margin: '0px 16px',
+        background: theme.palette.primary.dark,
         '& > :first-child': {
             marginTop: 0,
         },  
@@ -20,23 +55,41 @@ const MessageContainer = styled('div')(
 );
 
 function MessageBubble(
-    { chatId, msgIndex, msgContent } : 
-    { chatId: string, msgIndex: number, msgContent: string }
+    { chatId, msgIndex, msgContent, role } : 
+    { chatId: string, msgIndex: number, msgContent: string, role: string }
 ) {
     const messageSegments = useMessageSegmentMemo(msgContent);
+    if (role === 'user') return (
+        <RightAligner>
+            <UserMessageContainer>
+                {
+                    messageSegments.map(({ type, content } : { type: string, content: string }) => {
+                        if (type === 'text') return (
+                            <ReactMarkdown children={content}/>
+                        ) 
+                        return (
+                            <CustomCodeBlock language={type} code={content} />
+                        )
+                    })
+                }
+            </UserMessageContainer>
+        </RightAligner>
+    );
     return (
-        <MessageContainer>
-            {
-                messageSegments.map(({ type, content } : { type: string, content: string }) => {
-                    if (type === 'text') return (
-                        <ReactMarkdown children={content}/>
-                    ) 
-                    return (
-                        <CustomCodeBlock language={type} code={content} />
-                    )
-                })
-            }
-        </MessageContainer>
+        <LeftAligner>
+            <BotMessageContainer>
+                {
+                    messageSegments.map(({ type, content } : { type: string, content: string }) => {
+                        if (type === 'text') return (
+                            <ReactMarkdown children={content}/>
+                        ) 
+                        return (
+                            <CustomCodeBlock language={type} code={content} />
+                        )
+                    })
+                }
+            </BotMessageContainer>
+        </LeftAligner>
     );
 }
 

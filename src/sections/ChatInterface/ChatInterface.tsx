@@ -10,8 +10,7 @@ const ChatContainer = styled('div')(
     ({ theme }) => ({
         display: 'inline-block',
         height: '100vh',
-        width: '80%',
-        minWidth: 720,
+        width: '78%',
         verticalAlign: 'top',
         position: 'relative',
     })
@@ -21,6 +20,19 @@ const MessageArea = styled('div')(
     ({ theme }) => ({
         height: 'calc(100vh - 130px)',
         overflowY: 'scroll',
+        '&::-webkit-scrollbar': {
+            width: '8px',
+        },
+        '&::-webkit-scrollbar-track': {
+            background: 'transparent',
+        },
+        '&::-webkit-scrollbar-thumb': {
+            background: theme.palette.grey[800],
+            borderRadius: 4,
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+            background: theme.palette.grey[700],
+        },
     })
 );
 
@@ -50,7 +62,6 @@ const RegenerateButton = styled(Button)(
         position: 'absolute',
         right: 10,
         bottom: 16,
-        
     })
 );
 
@@ -64,10 +75,11 @@ function ChatInterface() {
             <MessageArea>
                 {
                     currentChat.messages.map((msg: ChatMessage, index: number) => 
-                        <MessageBubble 
+                        <MessageBubble
                             chatId={currentChat.id}
-                            msgContent={msg.markdown}
+                            msgContent={msg.content}
                             msgIndex={index}
+                            role={msg.role}
                         />
                     )
                 }

@@ -1,14 +1,15 @@
 export type ChatMessage = {
     time: Date;
     role: string;
-    markdown: string;
-    editedMessage: string;
+    content: string;
+    editedContent: string;
 }
 
 export type Chat = {
     messages: Array<ChatMessage>;
     title: string;
-    id: string,
+    id: string;
+    streaming: boolean;
 }
 
 export type ChatList = {
@@ -16,7 +17,7 @@ export type ChatList = {
     currentChatId: string;
 }
 
-type ChatRecords = Record<string, Chat>;
+export type ChatRecords = Record<string, Chat>;
 
 export type AppState = {
     chatList: ChatList;

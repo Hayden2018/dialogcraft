@@ -11,6 +11,7 @@ const chatsSlice = createSlice({
             chats[chatId] = {
                 messages: [],
                 title: 'Unnamed Conversation',
+                streaming: false,
                 id: chatId,
             };
             return chats
@@ -20,13 +21,32 @@ const chatsSlice = createSlice({
             chats[chatId].messages.push({
                 time: new Date(),
                 role: 'user',
-                markdown: messageContent,
-                editedMessage: '',
+                content: messageContent,
+                editedContent: '',
             });
             return chats
+        },
+        addStreamedChunk(chats, { payload }) {
+            const { chatId, delta, stop } = payload;
+            const targetChat = chats[chatId];
+            if (targetChat.streaming) {
+                if (stop) targetChat.streaming = false;
+                else targetChat.messages.at(-1)!.content += delta;
+            } else {
+                targetChat.streaming = true;
+                targetChat.messages.push({
+                    time: new Date(),
+                    role: 'assistant',
+                    content: delta,
+                    editedContent: '',
+                });
+            }
+            chats[chatId] = targetChat;
+            return chats;
         },
     }
 })
 
+
 export default chatsSlice.reducer;
-export const { createNewChat, addUserMessage } = chatsSlice.actions;
+export const { createNewChat, addUserMessage, addStreamedChunk } = chatsSlice.actions;

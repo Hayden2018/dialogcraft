@@ -10,8 +10,17 @@ const ChatListContainer = styled('div')(
     ({ theme }) => ({
         display: 'inline-block',
         height: '100vh',
-        width: '20%',
-        minWidth: 180,
+        width: '22%',
+        borderRight: `1px solid ${theme.palette.grey[800]}`,
+        background: theme.palette.grey[900],
+    })
+);
+
+const NewChatButton = styled(Button)(
+    ({ theme }) => ({
+        display: 'block',
+        margin: '10px auto',
+        width: 170,
     })
 );
 
@@ -21,13 +30,13 @@ function ConversationList() {
     const conversations = useConversationSelector();
     return (
         <ChatListContainer>
-            <Button variant="contained" onClick={() => {
+            <NewChatButton variant="contained" onClick={() => {
                 const newChatId = uuidv4();
                 dispatch(createNewChat(newChatId));
                 dispatch(addChatToList(newChatId));
             }}>
                 New Chat
-            </Button>
+            </NewChatButton>
             {
                 conversations.map(({ title, chatId }) => <p key={chatId}>{title}</p>)
             }
