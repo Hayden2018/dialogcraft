@@ -44,9 +44,19 @@ const chatsSlice = createSlice({
             chats[chatId] = targetChat;
             return chats;
         },
+        editChatTitle(chats, { payload }) {
+            const { chatId, newTitle } = payload;
+            chats[chatId].title = newTitle;
+            return chats;
+        },
     }
 })
 
 
 export default chatsSlice.reducer;
-export const { createNewChat, addUserMessage, addStreamedChunk } = chatsSlice.actions;
+export const { 
+    createNewChat,
+    addUserMessage,
+    addStreamedChunk,
+    editChatTitle
+} = chatsSlice.actions;

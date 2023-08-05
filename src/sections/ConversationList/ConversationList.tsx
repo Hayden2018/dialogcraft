@@ -5,6 +5,7 @@ import { createNewChat } from 'redux/chatsSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { addChatToList } from 'redux/chatListSlice';
 import { styled } from '@mui/system';
+import ChatTitleBox from 'components/ChatTitleBox/ChatTitleBox';
 
 const ChatListContainer = styled('div')(
     ({ theme }) => ({
@@ -38,7 +39,7 @@ function ConversationList() {
                 New Chat
             </NewChatButton>
             {
-                conversations.map(({ title, chatId }) => <p key={chatId}>{title}</p>)
+                conversations.map((chatId) => <ChatTitleBox chatId={chatId} />)
             }
         </ChatListContainer>
     );

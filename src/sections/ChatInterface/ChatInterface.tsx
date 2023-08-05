@@ -2,7 +2,7 @@ import Button from '@mui/material/Button';
 import { useDispatch }  from 'react-redux';
 import { styled } from '@mui/system';
 import { TextField } from '@mui/material';
-import MessageBubble from 'components/MessageBuble/MessageBubble';
+import MessageBubble from 'components/MessageBubble/MessageBubble';
 import { useCurrentChatSelector, useMessageActions } from './ChatInterface.hook';
 import { ChatMessage } from 'redux/type';
 
