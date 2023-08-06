@@ -28,7 +28,7 @@ export function* handleUserMessage({ payload } :
         (state: AppState) => state.chats[payload.chatId].messages
     );
     ipcRenderer.send('MESSAGE', {
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-3.5-turbo-16k',
         apiKey: '',
         messages: messageHistory.map((msg) => ({
             role: msg.role,

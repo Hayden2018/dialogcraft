@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addUserMessage } from "redux/chatsSlice";
 import { AppState, Chat } from "redux/type";
 import { userMessageSent } from "saga/actions";
 
@@ -19,21 +18,19 @@ export const useMessageActions = (currentChat: Chat | null) => {
 
     useEffect(() => setDraft(''), [currentChat]);
 
-    const onChange = useCallback(
-        (event: React.ChangeEvent<HTMLInputElement>) => {
-            const inputElement = event.target as HTMLInputElement; 
-            setDraft(inputElement.value);
-        }
-    , []);
+    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const inputElement = event.target as HTMLInputElement; 
+        setDraft(inputElement.value);
+    }
 
-    const sendMessage = useCallback(() => {
+    const sendMessage = () => {
         if (!currentChat || !draft) return;
         dispatch(userMessageSent({
             chatId: currentChat.id,
             messageContent: draft,
         }));
         setDraft('');
-    }, [draft, currentChat, dispatch]);
+    }
 
     const regenerate = () => {};
 

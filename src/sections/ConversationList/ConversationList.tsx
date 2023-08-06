@@ -39,7 +39,7 @@ function ConversationList() {
                 New Chat
             </NewChatButton>
             {
-                conversations.map((chatId) => <ChatTitleBox chatId={chatId} />)
+                conversations.map((chatId) => <ChatTitleBox chatId={chatId} key={chatId} />)
             }
         </ChatListContainer>
     );

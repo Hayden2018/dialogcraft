@@ -151,7 +151,8 @@ function ChatTitleBox({ chatId } : { chatId: string }) {
         onEdit,
         startEdit,
         confirmEdit,
-        abortEdit, 
+        abortEdit,
+        deleteChat,
     } = useChatTitleWithEdit(chatId);
 
     useEffect(() => {
@@ -173,18 +174,18 @@ function ChatTitleBox({ chatId } : { chatId: string }) {
     // Keep everything in DOM only hide using display none
     // Required for hasParent function to work properly
     return (
-        <div key={chatId} ref={editBoxRef}>
+        <div ref={editBoxRef} onClick={boxClicked}>
 
-            <TitleEditContainer onClick={boxClicked} edit={isEditing}>
+            <TitleEditContainer edit={isEditing}>
                 <TitleInput value={title} onChange={onEdit} ref={inputRef} />
                 <TickButton onClick={confirmEdit} />
                 <CrossButton onClick={abortEdit} />
             </TitleEditContainer>
 
-            <TitleContainer onClick={boxClicked} key={chatId} edit={isEditing}>
+            <TitleContainer edit={isEditing}>
                 <Title>{title}</Title>
                 <EditButton onClick={startEdit} />
-                <DeleteButton />
+                <DeleteButton onClick={deleteChat} />
             </TitleContainer>
 
         </div>

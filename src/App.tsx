@@ -3,6 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { darkTheme } from 'theme';
 import ConversationList from 'sections/ConversationList/ConversationList';
 import ChatInterface from 'sections/ChatInterface/ChatInterface';
+import ModalHandler from 'sections/ModalHandler/ModalHandler';
 
 function App() {
     return (
@@ -12,6 +13,7 @@ function App() {
                 <ConversationList />
                 <ChatInterface />
             </div>
+            <ModalHandler />
         </ThemeProvider>
     );
 }

@@ -23,8 +23,20 @@ const chatListSlice = createSlice({
             chatList.chatOrder.unshift(chatId);
             return chatList;
         },
+        removeFromList(chatList, { payload: chatId }: PayloadAction<string>) {
+            chatList.chatOrder = chatList.chatOrder.filter((cid) => cid !== chatId);
+            if (chatId === chatList.currentChatId) {
+                chatList.currentChatId = chatList.chatOrder[0] || '';
+            }
+            return chatList;
+        },
     }
 })
 
 export default chatListSlice.reducer;
-export const { setCurrentChat, addChatToList, moveChatToTop } = chatListSlice.actions;
+export const {
+    setCurrentChat,
+    addChatToList,
+    moveChatToTop,
+    removeFromList,
+} = chatListSlice.actions;

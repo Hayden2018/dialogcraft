@@ -1,6 +1,7 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { editChatTitle } from 'redux/chatsSlice';
+import { openDeleteChatModal } from 'redux/modalSlice';
 import { AppState } from 'redux/type';
 
 const useChatTitleWithEdit = (chatId: string) => {
@@ -14,7 +15,7 @@ const useChatTitleWithEdit = (chatId: string) => {
     const startEdit = () => {
         setEditTitle(currentTitle);
         setIsEditing(true);
-    }
+    };
 
     const onEdit = (event: ChangeEvent<HTMLInputElement>) => {
         setEditTitle(event.target.value);
@@ -33,6 +34,10 @@ const useChatTitleWithEdit = (chatId: string) => {
         setIsEditing(false);
     };
 
+    const deleteChat = () => {
+        dispatch(openDeleteChatModal(chatId));
+    };
+
     const title = isEditing ? editTitle : currentTitle;
     
     return {
@@ -42,6 +47,7 @@ const useChatTitleWithEdit = (chatId: string) => {
         startEdit,
         confirmEdit,
         abortEdit,
+        deleteChat,
     };
 }
 

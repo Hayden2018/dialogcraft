@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ChatRecords, Chat } from 'redux/type';
+import { ChatRecords } from 'redux/type';
 
 const initialState: ChatRecords = { };
 
@@ -49,14 +49,18 @@ const chatsSlice = createSlice({
             chats[chatId].title = newTitle;
             return chats;
         },
+        deleteChat(chats, { payload: chatId }: PayloadAction<string>) {
+            delete chats[chatId]
+            return chats;
+        },
     }
 })
-
 
 export default chatsSlice.reducer;
 export const { 
     createNewChat,
     addUserMessage,
     addStreamedChunk,
-    editChatTitle
+    editChatTitle,
+    deleteChat,
 } = chatsSlice.actions;
