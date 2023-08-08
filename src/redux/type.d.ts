@@ -1,8 +1,10 @@
 export type ChatMessage = {
+    id: string;
     time: Date;
     role: string;
     content: string;
     editedContent: string;
+    author?: string;
 }
 
 export type Chat = {

@@ -20,15 +20,17 @@ const ChatListContainer = styled('div')(
 const NewChatButton = styled(Button)(
     ({ theme }) => ({
         display: 'block',
-        margin: '10px auto',
+        margin: '12px auto',
         width: 170,
+        height: 36,
+        padding: 0,
     })
 );
 
 function ConversationList() {
 
     const dispatch = useDispatch();
-    const conversations = useConversationSelector();
+    const { chatOrder, currentChatId } = useConversationSelector();
     return (
         <ChatListContainer>
             <NewChatButton variant="contained" onClick={() => {
@@ -39,7 +41,7 @@ function ConversationList() {
                 New Chat
             </NewChatButton>
             {
-                conversations.map((chatId) => <ChatTitleBox chatId={chatId} key={chatId} />)
+                chatOrder.map((chatId) => <ChatTitleBox chatId={chatId} isCurrent={chatId === currentChatId} key={chatId} />)
             }
         </ChatListContainer>
     );

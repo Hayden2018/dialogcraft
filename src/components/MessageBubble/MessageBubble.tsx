@@ -55,8 +55,8 @@ const UserMessageContainer = styled('div')(
 );
 
 function MessageBubble(
-    { chatId, msgIndex, msgContent, role } : 
-    { chatId: string, msgIndex: number, msgContent: string, role: string }
+    { chatId, msgId, msgContent, role, editMode } : 
+    { chatId: string, msgId: string, msgContent: string, role: string, editMode: boolean }
 ) {
     const messageSegments = useMessageSegmentMemo(msgContent);
     if (role === 'user') return (

@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 import { ChatRecords } from 'redux/type';
+import { v4 as uuidv4 } from 'uuid';
 
 const initialState: ChatRecords = { };
 
@@ -7,10 +8,10 @@ const chatsSlice = createSlice({
     name: 'chats',
     initialState,
     reducers: {
-        createNewChat(chats, { payload: chatId }: PayloadAction<string>) {
+        createNewChat(chats, { payload: chatId }) {
             chats[chatId] = {
                 messages: [],
-                title: 'Unnamed Conversation',
+                title: `New Conversation ${Object.keys(chats).length + 1}`,
                 streaming: false,
                 id: chatId,
             };
@@ -19,6 +20,7 @@ const chatsSlice = createSlice({
         addUserMessage(chats, { payload }) {
             const { chatId, messageContent } = payload;
             chats[chatId].messages.push({
+                id: uuidv4(),
                 time: new Date(),
                 role: 'user',
                 content: messageContent,
@@ -35,6 +37,7 @@ const chatsSlice = createSlice({
             } else {
                 targetChat.streaming = true;
                 targetChat.messages.push({
+                    id: uuidv4(),
                     time: new Date(),
                     role: 'assistant',
                     content: delta,
@@ -44,12 +47,22 @@ const chatsSlice = createSlice({
             chats[chatId] = targetChat;
             return chats;
         },
+        editMessage(chats, { payload }) {
+            const { chatId, msgId, newContent } = payload;
+            const targetChat = chats[chatId];
+            const targetMsgIndex = targetChat.messages.findIndex(({ id }) => id === msgId);
+            const targetMessage = targetChat.messages[targetMsgIndex];
+            targetMessage.editedContent = newContent.trim();
+            targetChat.messages[targetMsgIndex] = targetMessage;
+            chats[chatId] = targetChat;
+            return chats;
+        },
         editChatTitle(chats, { payload }) {
             const { chatId, newTitle } = payload;
             chats[chatId].title = newTitle;
             return chats;
         },
-        deleteChat(chats, { payload: chatId }: PayloadAction<string>) {
+        deleteChat(chats, { payload: chatId }) {
             delete chats[chatId]
             return chats;
         },

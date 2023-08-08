@@ -13,7 +13,8 @@ export const useCurrentChatSelector = () => useSelector((state: AppState) => {
 })
 
 export const useMessageActions = (currentChat: Chat | null) => {
-    const [draft, setDraft] = useState('');
+
+    const [draft, setDraft] = useState<string>('');
     const dispatch = useDispatch();
 
     useEffect(() => setDraft(''), [currentChat]);
@@ -39,5 +40,18 @@ export const useMessageActions = (currentChat: Chat | null) => {
         sendMessage,
         regenerate,
         value: draft,
+    };
+}
+
+export const useChatEditActions = (currentChat: Chat | null) => {
+
+    const [editing, setIsEditing] = useState<boolean>(false);
+    const toggleEdit = () => setIsEditing((prev) => !prev);
+
+    useEffect(() => setIsEditing(false), [currentChat?.id]);
+
+    return {
+        toggleEdit,
+        editing,
     };
 }

@@ -10,10 +10,11 @@ import { ReactComponent as CrossIcon } from './cross.svg';
 
 interface ContainerProps {
     edit: boolean;
+    isCurrent?: boolean;
 }
 
 const TitleContainer = styled('div')<ContainerProps>(
-    ({ theme, edit }) => ({
+    ({ theme, edit, isCurrent }) => ({
         display: edit ? 'none' : 'block',
         width: 'calc(100% - 20px)',
         margin: '8px auto',
@@ -21,6 +22,7 @@ const TitleContainer = styled('div')<ContainerProps>(
         overflow: 'auto',
         borderRadius: 8,
         height: 46,
+        background: isCurrent && theme.palette.grey[700],
         ':hover': {
             background: theme.palette.grey[800],
             'div': {
@@ -139,7 +141,7 @@ const hasParent = (child: Node | null, parent: Node | null): boolean => {
     return false;
 }
 
-function ChatTitleBox({ chatId } : { chatId: string }) {
+function ChatTitleBox({ chatId, isCurrent } : { chatId: string, isCurrent: boolean }) {
 
     const dispatch = useDispatch();
     const editBoxRef = useRef<HTMLInputElement | null>(null);
@@ -182,7 +184,7 @@ function ChatTitleBox({ chatId } : { chatId: string }) {
                 <CrossButton onClick={abortEdit} />
             </TitleEditContainer>
 
-            <TitleContainer edit={isEditing}>
+            <TitleContainer edit={isEditing} isCurrent={isCurrent}>
                 <Title>{title}</Title>
                 <EditButton onClick={startEdit} />
                 <DeleteButton onClick={deleteChat} />
