@@ -3,16 +3,16 @@ import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import { useDeleteChatActions } from "./DeleteChatModal.hook";
+import { useDeleteMessageActions } from "./DeleteMessageModal.hook";
 
-function DeleteChatModal({ chatId } : ModalPayload) {
+function DeleteMessageModal({ chatId, msgId } : ModalPayload) {
 
-    const { confirmDelete, cancelDelete } = useDeleteChatActions(chatId!);
+    const { confirmDelete, cancelDelete } = useDeleteMessageActions(chatId!, msgId!);
 
     return (
         <Dialog open>
             <DialogContent>
-                Are you sure you want to delete this chat with all its messages?
+                Are you sure you want to delete this message?
             </DialogContent>
             <DialogActions>
                 <Button onClick={cancelDelete}>
@@ -26,4 +26,4 @@ function DeleteChatModal({ chatId } : ModalPayload) {
     )
 }
 
-export default DeleteChatModal;
+export default DeleteMessageModal;

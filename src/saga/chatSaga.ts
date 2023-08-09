@@ -32,7 +32,7 @@ export function* handleUserMessage({ payload } :
         apiKey: '',
         messages: messageHistory.map((msg) => ({
             role: msg.role,
-            content: msg.content,
+            content: msg.editedContent || msg.content,
         })),
     });
     const responseStream = getResponseStream();

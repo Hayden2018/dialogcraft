@@ -4,7 +4,6 @@ import { TextField } from '@mui/material';
 import MessageBubble from 'components/MessageBubble/MessageBubble';
 import { useChatEditActions, useCurrentChatSelector, useMessageActions } from './ChatInterface.hook';
 import { ChatMessage } from 'redux/type';
-import { type } from 'os';
 
 const ChatContainer = styled('div')(
     ({ theme }) => ({
@@ -124,7 +123,7 @@ function ChatInterface() {
                             key={msg.id}
                             msgId={msg.id}
                             chatId={currentChat.id}
-                            msgContent={msg.content}
+                            msgContent={msg.editedContent || msg.content}
                             role={msg.role}
                             editMode={editing}
                         />
@@ -136,7 +135,7 @@ function ChatInterface() {
                 <DraftGrid>
                     <MessageInput
                         multiline
-                        label='Message ChatGPT'
+                        label='Your Message'
                         minRows={3}
                         maxRows={3}
                         value={value}

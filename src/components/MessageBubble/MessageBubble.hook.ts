@@ -1,14 +1,16 @@
 import { useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { openDeleteMessageModal, openEditMessageModal } from "redux/modalSlice";
+import { AppState } from "redux/type";
 
 function splitMdCodeBlock(mdString: string) {
-    const result = [];
+
     let buffer = '';
     let codeBlockDepth = 0;
-  
-    // Split the string into lines 
     const lines = mdString.split('\n');
-    lines.forEach((line: string)  => {
+    const result = [];
 
+    lines.forEach((line: string)  => {
         if (line.startsWith('```')) {
             // If we were already in a code block
             if (codeBlockDepth > 0) {
@@ -25,7 +27,7 @@ function splitMdCodeBlock(mdString: string) {
                 }
                 // If it is the start of a nested block
                 else {
-                    codeBlockDepth++;
+                    codeBlockDepth += 1;
                     buffer += line + '\n';
                 }
             }
@@ -49,6 +51,7 @@ function splitMdCodeBlock(mdString: string) {
     if (buffer) result.push(buffer);
     return result;
 }
+
 
 function processSegments(segments: Array<string>) {
     return segments.map(segment => {
@@ -82,7 +85,33 @@ function processSegments(segments: Array<string>) {
     });
 }
 
+
 export const useMessageSegmentMemo = (markDown: string) => useMemo(() => {
     const messageSegments = splitMdCodeBlock(markDown);
     return processSegments(messageSegments);
-}, [markDown])
+}, [markDown]);
+
+
+export const useMessageEditActions = (chatId: string, msgId: string) => {
+
+    const dispatch = useDispatch();
+
+    const messageEdited = useSelector((state: AppState) => {
+        const targetChat = state.chats[chatId]
+        const targetMessage = targetChat.messages.find((msg) => msg.id === msgId);
+        return !!targetMessage?.editedContent;
+    });
+
+    const deleteMessage = () => dispatch(openDeleteMessageModal({ chatId, msgId }));
+
+    const editMessage = () => dispatch(openEditMessageModal({ chatId, msgId }));
+    const regenerateMessage = () => {};
+    const restoreMessage = () => {};
+
+    return {
+        deleteMessage,
+        editMessage,
+        regenerateMessage,
+        restoreMessage: messageEdited ? restoreMessage : null,
+    };
+}

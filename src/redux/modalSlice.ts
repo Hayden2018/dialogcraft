@@ -20,6 +20,16 @@ const modalSlice = createSlice({
             modal.payload.chatId = chatId;
             return modal;
         },
+        openDeleteMessageModal(modal, { payload }) {
+            modal.currentOpen = ModalType.DELETE_MESSAGE;
+            modal.payload = payload;
+            return modal;
+        },
+        openEditMessageModal(modal, { payload }) {
+            modal.currentOpen = ModalType.EDIT_MESSAGE;
+            modal.payload = payload;
+            return modal;
+        },
     }
 })
 
@@ -27,4 +37,6 @@ export default modalSlice.reducer;
 export const { 
     closeModal,
     openDeleteChatModal,
+    openDeleteMessageModal,
+    openEditMessageModal,
 } = modalSlice.actions;

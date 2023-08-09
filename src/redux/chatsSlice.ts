@@ -57,6 +57,14 @@ const chatsSlice = createSlice({
             chats[chatId] = targetChat;
             return chats;
         },
+        deleteMessage(chats, { payload }) {
+            const { chatId, msgId } = payload;
+            const messages = chats[chatId].messages;
+            const indexToDelete = messages.findIndex(({ id }) => id === msgId);
+            messages.splice(indexToDelete, 1);
+            chats[chatId].messages = messages;
+            return chats;
+        },
         editChatTitle(chats, { payload }) {
             const { chatId, newTitle } = payload;
             chats[chatId].title = newTitle;
@@ -75,5 +83,7 @@ export const {
     addUserMessage,
     addStreamedChunk,
     editChatTitle,
+    editMessage,
     deleteChat,
+    deleteMessage,
 } = chatsSlice.actions;

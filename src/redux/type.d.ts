@@ -23,10 +23,16 @@ export type ChatRecords = Record<string, Chat>;
 
 export enum ModalType {
     DELETE_CHAT = 'DELETE_CHAT',
+    DELETE_MESSAGE = 'DELETE_MESSAGE',
+    EDIT_MESSAGE = 'EDIT_MESSAGE',
+    REGENERATE_MESSAGE = 'REGEN_MESSAGE',
+    CHAT_SETTING = 'CHAT_SETTING',
+    GLOBAL_SETTING = 'GLOBAL_SETTING',
 }
 
 export type ModalPayload = {
     chatId?: string;
+    msgId?: string;
 }
 
 export type ModalConfig = {
