@@ -74,26 +74,26 @@ const EditButton = styled(Button)(
 );
 
 function MessageBubble(
-    { chatId, msgId, msgContent, role, editMode } : 
-    { chatId: string, msgId: string, msgContent: string, role: string, editMode: boolean }
+    { chatId, msgId, msgContent, role, editMode, forwardRef } : 
+    { chatId: string, msgId: string, msgContent: string, role: string, editMode: boolean, forwardRef: React.RefObject<HTMLDivElement> | null }
 ) {
 
     // restoreMessage is null if message is unedited
     const { deleteMessage, regenerateMessage, editMessage, restoreMessage } = useMessageEditActions(chatId, msgId);
-    const messageSegments = useMessageSegmentMemo(msgContent);
+    const messageSegments = useMessageSegmentMemo(msgContent || '...');
 
     if (role === 'user') return (
-        <RightAligner>
+        <RightAligner ref={forwardRef}>
             <UserMessageContainer>
 
                 <MarginRemoveContainer>
                 {
-                    messageSegments.map(({ type, content } : { type: string, content: string }) => {
+                    messageSegments.map(({ type, content } : { type: string, content: string }, index) => {
                         if (type === 'text') return (
-                            <ReactMarkdown children={content}/>
+                            <ReactMarkdown children={content} key={index} />
                         ) 
                         return (
-                            <CustomCodeBlock language={type} code={content} />
+                            <CustomCodeBlock language={type} code={content} key={index} />
                         )
                     })
                 }
@@ -113,17 +113,17 @@ function MessageBubble(
         </RightAligner>
     );
     return (
-        <LeftAligner>
-            <BotMessageContainer>
+        <LeftAligner ref={forwardRef}>
+            <BotMessageContainer id={msgId}>
 
                 <MarginRemoveContainer>
                 {
-                    messageSegments.map(({ type, content } : { type: string, content: string }) => {
+                    messageSegments.map(({ type, content } : { type: string, content: string }, index) => {
                         if (type === 'text') return (
-                            <ReactMarkdown children={content}/>
+                            <ReactMarkdown children={content} key={index} />
                         ) 
                         return (
-                            <CustomCodeBlock language={type} code={content} />
+                            <CustomCodeBlock language={type} code={content} key={index} />
                         )
                     })
                 }

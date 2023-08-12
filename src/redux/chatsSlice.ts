@@ -10,10 +10,10 @@ const chatsSlice = createSlice({
     reducers: {
         createNewChat(chats, { payload: chatId }) {
             chats[chatId] = {
-                messages: [],
-                title: `New Conversation ${Object.keys(chats).length + 1}`,
-                streaming: false,
                 id: chatId,
+                messages: [],
+                streamingMsgId: null,
+                title: `New Conversation ${Object.keys(chats).length + 1}`,
             };
             return chats
         },
@@ -31,18 +31,39 @@ const chatsSlice = createSlice({
         addStreamedChunk(chats, { payload }) {
             const { chatId, delta, stop } = payload;
             const targetChat = chats[chatId];
-            if (targetChat.streaming) {
-                if (stop) targetChat.streaming = false;
+            if (targetChat.streamingMsgId) {
+                if (stop) targetChat.streamingMsgId = null;
                 else targetChat.messages.at(-1)!.content += delta;
             } else {
-                targetChat.streaming = true;
+                const messageId = uuidv4();
+                targetChat.streamingMsgId = messageId;
                 targetChat.messages.push({
-                    id: uuidv4(),
+                    id: messageId,
                     time: new Date(),
                     role: 'assistant',
                     content: delta,
                     editedContent: '',
                 });
+            }
+            chats[chatId] = targetChat;
+            return chats;
+        },
+        addRegenerationChunk(chats, { payload }) {
+            const { chatId, msgId, delta, stop } = payload;
+            const targetChat = chats[chatId];
+            const targetMsgIndex = targetChat.messages.findIndex(({ id }) => id === msgId);
+            if (targetChat.streamingMsgId) {
+                if (stop) targetChat.streamingMsgId = null;
+                else targetChat.messages[targetMsgIndex]!.content += delta;
+            } else {
+                targetChat.streamingMsgId = msgId;
+                targetChat.messages[targetMsgIndex] = {
+                    id: msgId,
+                    time: new Date(),
+                    role: 'assistant',
+                    content: delta,
+                    editedContent: '',
+                };
             }
             chats[chatId] = targetChat;
             return chats;
@@ -53,6 +74,16 @@ const chatsSlice = createSlice({
             const targetMsgIndex = targetChat.messages.findIndex(({ id }) => id === msgId);
             const targetMessage = targetChat.messages[targetMsgIndex];
             targetMessage.editedContent = newContent.trim();
+            targetChat.messages[targetMsgIndex] = targetMessage;
+            chats[chatId] = targetChat;
+            return chats;
+        },
+        restoreMessage(chats, { payload }) {
+            const { chatId, msgId } = payload;
+            const targetChat = chats[chatId];
+            const targetMsgIndex = targetChat.messages.findIndex(({ id }) => id === msgId);
+            const targetMessage = targetChat.messages[targetMsgIndex];
+            targetMessage.editedContent = '';
             targetChat.messages[targetMsgIndex] = targetMessage;
             chats[chatId] = targetChat;
             return chats;
@@ -82,8 +113,10 @@ export const {
     createNewChat,
     addUserMessage,
     addStreamedChunk,
+    addRegenerationChunk,
     editChatTitle,
     editMessage,
+    restoreMessage,
     deleteChat,
     deleteMessage,
 } = chatsSlice.actions;

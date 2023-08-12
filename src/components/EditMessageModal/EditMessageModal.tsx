@@ -26,7 +26,7 @@ function EditMessageModal({ chatId, msgId } : ModalPayload) {
                     multiline
                     label='Markdown'
                     minRows={3}
-                    maxRows={10}
+                    maxRows={15}
                     value={draft}
                     onChange={onEdit}
                 />

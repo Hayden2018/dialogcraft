@@ -21,7 +21,7 @@ const TitleContainer = styled('div')<ContainerProps>(
         padding: '8px 12px',
         overflow: 'auto',
         borderRadius: 8,
-        height: 46,
+        height: 47,
         background: isCurrent && theme.palette.grey[700],
         ':hover': {
             background: theme.palette.grey[800],
@@ -42,6 +42,7 @@ const TitleEditContainer = styled('div')<ContainerProps>(
         margin: '8px auto',
         padding: '8px 12px',
         borderRadius: 8,
+        height: 47,
         background: theme.palette.grey[800],
     })
 );

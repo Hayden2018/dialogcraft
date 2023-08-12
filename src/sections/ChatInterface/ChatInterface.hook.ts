@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState, Chat } from "redux/type";
-import { userMessageSent } from "saga/actions";
+import { triggerRegenerate, userMessageSent } from "saga/actions";
 
 export const useCurrentChatSelector = () => useSelector((state: AppState) => {
     const currentChatId = state.chatList.currentChatId;
@@ -33,7 +33,12 @@ export const useMessageActions = (currentChat: Chat | null) => {
         setDraft('');
     }
 
-    const regenerate = () => {};
+    const regenerate = () => dispatch(
+        triggerRegenerate({
+            chatId: currentChat?.id,
+            msgId: currentChat?.messages.at(-1)?.id,
+        })
+    );
 
     return {
         onChange,

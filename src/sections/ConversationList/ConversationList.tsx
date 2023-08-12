@@ -11,7 +11,7 @@ const ChatListContainer = styled('div')(
     ({ theme }) => ({
         display: 'inline-block',
         height: '100vh',
-        width: '22%',
+        width: 345,
         borderRight: `1px solid ${theme.palette.grey[800]}`,
         background: theme.palette.grey[900],
     })

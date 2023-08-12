@@ -1,7 +1,8 @@
 import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { openDeleteMessageModal, openEditMessageModal } from "redux/modalSlice";
+import { openDeleteMessageModal, openEditMessageModal, openRegenerateMessageModal, openRestoreMessageModal } from "redux/modalSlice";
 import { AppState } from "redux/type";
+import { triggerRegenerate } from "saga/actions";
 
 function splitMdCodeBlock(mdString: string) {
 
@@ -12,7 +13,7 @@ function splitMdCodeBlock(mdString: string) {
 
     lines.forEach((line: string)  => {
         if (line.startsWith('```')) {
-            // If we were already in a code block
+            // If already in a code block
             if (codeBlockDepth > 0) {
                 // If it is the end of a block (no language modifier)
                 if (line === '```') {
@@ -31,7 +32,7 @@ function splitMdCodeBlock(mdString: string) {
                     buffer += line + '\n';
                 }
             }
-            // If not in a code block, this line starts a new one
+            // If not in a code block this line starts a new one
             else {
                 // If there was any text before this, add it to the result
                 if (buffer) {
@@ -54,10 +55,10 @@ function splitMdCodeBlock(mdString: string) {
 
 
 function processSegments(segments: Array<string>) {
-    return segments.map(segment => {
+
+    return segments.map(segment => { 
         // If the segment starts with a code block
         if (segment.startsWith('```')) {
-            // Find the end of the first line to get the language name
             const endOfFirstLine = segment.indexOf('\n');
             const language = segment.substring(3, endOfFirstLine);
             const startOfLastLine = segment.lastIndexOf('```');
@@ -103,10 +104,9 @@ export const useMessageEditActions = (chatId: string, msgId: string) => {
     });
 
     const deleteMessage = () => dispatch(openDeleteMessageModal({ chatId, msgId }));
-
     const editMessage = () => dispatch(openEditMessageModal({ chatId, msgId }));
-    const regenerateMessage = () => {};
-    const restoreMessage = () => {};
+    const restoreMessage = () => dispatch(openRestoreMessageModal({ chatId, msgId }));
+    const regenerateMessage = () => dispatch(openRegenerateMessageModal({ chatId, msgId }));
 
     return {
         deleteMessage,

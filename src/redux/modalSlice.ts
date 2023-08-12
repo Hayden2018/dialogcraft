@@ -30,6 +30,16 @@ const modalSlice = createSlice({
             modal.payload = payload;
             return modal;
         },
+        openRestoreMessageModal(modal, { payload }) {
+            modal.currentOpen = ModalType.RESTORE_MESSAGE;
+            modal.payload = payload;
+            return modal;
+        },
+        openRegenerateMessageModal(modal, { payload }) {
+            modal.currentOpen = ModalType.REGENERATE_MESSAGE;
+            modal.payload = payload;
+            return modal;
+        },
     }
 })
 
@@ -39,4 +49,6 @@ export const {
     openDeleteChatModal,
     openDeleteMessageModal,
     openEditMessageModal,
+    openRestoreMessageModal,
+    openRegenerateMessageModal,
 } = modalSlice.actions;

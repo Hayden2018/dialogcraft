@@ -8,10 +8,10 @@ export type ChatMessage = {
 }
 
 export type Chat = {
-    messages: Array<ChatMessage>;
-    title: string;
     id: string;
-    streaming: boolean;
+    title: string;
+    messages: Array<ChatMessage>;
+    streamingMsgId: string | null;
 }
 
 export type ChatList = {
@@ -25,6 +25,7 @@ export enum ModalType {
     DELETE_CHAT = 'DELETE_CHAT',
     DELETE_MESSAGE = 'DELETE_MESSAGE',
     EDIT_MESSAGE = 'EDIT_MESSAGE',
+    RESTORE_MESSAGE = 'RESTORE_MESSAGE',
     REGENERATE_MESSAGE = 'REGEN_MESSAGE',
     CHAT_SETTING = 'CHAT_SETTING',
     GLOBAL_SETTING = 'GLOBAL_SETTING',

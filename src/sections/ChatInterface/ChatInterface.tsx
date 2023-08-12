@@ -1,15 +1,17 @@
 import Button from '@mui/material/Button';
 import { styled } from '@mui/system';
-import { TextField } from '@mui/material';
+import { LinearProgress, TextField } from '@mui/material';
 import MessageBubble from 'components/MessageBubble/MessageBubble';
 import { useChatEditActions, useCurrentChatSelector, useMessageActions } from './ChatInterface.hook';
 import { ChatMessage } from 'redux/type';
+import { useEffect, useRef } from 'react';
+import { ReactComponent as noChatIcon } from './noChat.svg';
 
 const ChatContainer = styled('div')(
     ({ theme }) => ({
         display: 'inline-block',
         height: '100vh',
-        width: '78%',
+        width: 'calc(100% - 346px)',
         verticalAlign: 'top',
         position: 'relative',
     })
@@ -47,21 +49,8 @@ interface AreaProps {
 
 const MessageArea = styled('div')<AreaProps>(
     ({ theme, isEditing }) => ({
-        height: isEditing ? 'calc(100vh - 190px)' : 'calc(100vh - 60px)',
+        height: isEditing ? 'calc(100vh - 65px)' : 'calc(100vh - 190px)',
         overflowY: 'scroll',
-        '&::-webkit-scrollbar': {
-            width: '8px',
-        },
-        '&::-webkit-scrollbar-track': {
-            background: 'transparent',
-        },
-        '&::-webkit-scrollbar-thumb': {
-            background: theme.palette.grey[800],
-            borderRadius: 4,
-        },
-        '&::-webkit-scrollbar-thumb:hover': {
-            background: theme.palette.grey[700],
-        },
     })
 );
 
@@ -102,21 +91,76 @@ const RegenerateButton = styled(Button)(
     })
 );
 
+const ProgressContainer = styled('div')(
+    ({ theme }) => ({
+        height: 125,
+        padding: '10px 50px',
+        textAlign: 'center',
+        '& p': {
+            fontSize: 20,
+        },
+        "& > :nth-child(2)": {
+            width: '80%',
+            maxWidth: 1600,
+            margin: 'auto',
+        },
+    })
+);
+
+const NoChatIcon = styled(noChatIcon)(
+    ({ theme }) => ({
+        display: 'block',
+        verticalAlign: 'top',
+        width: 260,
+        height: 260,
+        margin: 'calc(50vh - 180px) auto 40px',
+    })
+)
+
+const NoChatInfo = styled('p')(
+    ({ theme }) => ({
+        textAlign: 'center',
+        color: theme.palette.grey[500],
+        fontSize: 20,
+        margin: 15,
+    })
+)
+
 function ChatInterface() {
 
     const currentChat = useCurrentChatSelector();
     const { onChange, sendMessage, regenerate, value } = useMessageActions(currentChat);
     const { editing, toggleEdit } = useChatEditActions(currentChat);
 
+    const streamingMsgId = currentChat?.streamingMsgId;
+    const isStreaming = !!streamingMsgId;
+    const isRegenerating = isStreaming && streamingMsgId !== currentChat?.messages.at(-1)?.id;
+
+    const scrollRef = useRef<HTMLDivElement | null>(null);
+    useEffect(() => {
+        if (!scrollRef.current) {
+            return
+        } else if (isRegenerating) {
+            scrollRef.current.scrollIntoView({ block: 'end' });
+        } else {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    }, [currentChat?.messages]);
+
     if (currentChat) return (
         <ChatContainer>
             <HeaderBanner>
                 <ChatTitle>{currentChat.title}</ChatTitle>
-                <EditModeButton variant='contained' onClick={toggleEdit}>
-                   { editing ? 'Stop Editing' : 'Edit Messages' }
-                </EditModeButton>
+                { isStreaming || 
+                    <EditModeButton variant='contained' onClick={toggleEdit}>
+                        { editing ? 'Stop Editing' : 'Edit Messages' }
+                    </EditModeButton> 
+                }
             </HeaderBanner>
-            <MessageArea isEditing>
+            <MessageArea 
+                isEditing={editing && !isStreaming}
+                ref={isRegenerating ? null : scrollRef}
+            >
                 {
                     currentChat.messages.map((msg: ChatMessage) => 
                         <MessageBubble
@@ -126,12 +170,16 @@ function ChatInterface() {
                             msgContent={msg.editedContent || msg.content}
                             role={msg.role}
                             editMode={editing}
+                            forwardRef={
+                                (msg.id === streamingMsgId && isRegenerating) ?
+                                scrollRef : null
+                            }
                         />
                     )
                 }
             </MessageArea>
             {
-                !editing &&
+                (editing || isStreaming) ||
                 <DraftGrid>
                     <MessageInput
                         multiline
@@ -144,16 +192,25 @@ function ChatInterface() {
                     <SendButton variant='contained' onClick={sendMessage}>
                         Send
                     </SendButton>
-                    <RegenerateButton variant='contained'>
+                    <RegenerateButton variant='contained' onClick={regenerate}>
                         Regenerate
                     </RegenerateButton>
                 </DraftGrid>
+            }
+            {
+                isStreaming &&
+                <ProgressContainer>
+                    <p>Generating response...</p>
+                    <LinearProgress />
+                </ProgressContainer>
             }
         </ChatContainer>
     )
     else return (
         <ChatContainer>
-
+            <NoChatIcon />
+            <NoChatInfo>You do not have any conversation yet...</NoChatInfo>
+            <NoChatInfo>Click on "New Chat" on the top left to create a new one</NoChatInfo>
         </ChatContainer>
     )
 }
