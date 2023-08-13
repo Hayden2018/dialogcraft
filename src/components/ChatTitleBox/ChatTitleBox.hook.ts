@@ -1,8 +1,8 @@
 import { ChangeEvent, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { editChatTitle } from 'redux/chatsSlice';
-import { openDeleteChatModal } from 'redux/modalSlice';
-import { AppState } from 'redux/type';
+import { openModal } from 'redux/modalSlice';
+import { AppState, ModalType } from 'redux/type.d';
 
 const useChatTitleWithEdit = (chatId: string) => {
 
@@ -34,9 +34,12 @@ const useChatTitleWithEdit = (chatId: string) => {
         setIsEditing(false);
     };
 
-    const deleteChat = () => {
-        dispatch(openDeleteChatModal(chatId));
-    };
+    const deleteChat = () => dispatch(
+        openModal({
+            type: ModalType.DELETE_CHAT,
+            chatId,
+        })
+    );
 
     const title = isEditing ? editTitle : currentTitle;
     

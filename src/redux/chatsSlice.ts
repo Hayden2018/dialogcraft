@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { ChatRecords } from 'redux/type';
+import { Chat } from 'redux/type';
 import { v4 as uuidv4 } from 'uuid';
 
-const initialState: ChatRecords = { };
+const initialState: Record<string, Chat> = { };
 
 const chatsSlice = createSlice({
     name: 'chats',

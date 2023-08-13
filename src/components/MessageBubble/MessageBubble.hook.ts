@@ -1,8 +1,7 @@
 import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { openDeleteMessageModal, openEditMessageModal, openRegenerateMessageModal, openRestoreMessageModal } from "redux/modalSlice";
-import { AppState } from "redux/type";
-import { triggerRegenerate } from "saga/actions";
+import { openModal } from "redux/modalSlice";
+import { AppState, ModalType } from "redux/type.d";
 
 function splitMdCodeBlock(mdString: string) {
 
@@ -103,10 +102,37 @@ export const useMessageEditActions = (chatId: string, msgId: string) => {
         return !!targetMessage?.editedContent;
     });
 
-    const deleteMessage = () => dispatch(openDeleteMessageModal({ chatId, msgId }));
-    const editMessage = () => dispatch(openEditMessageModal({ chatId, msgId }));
-    const restoreMessage = () => dispatch(openRestoreMessageModal({ chatId, msgId }));
-    const regenerateMessage = () => dispatch(openRegenerateMessageModal({ chatId, msgId }));
+    const deleteMessage = () => dispatch(
+        openModal({
+            type: ModalType.DELETE_MESSAGE,
+            chatId,
+            msgId,
+        })
+    );
+
+    const editMessage = () => dispatch(
+        openModal({
+            type: ModalType.EDIT_MESSAGE,
+            chatId,
+            msgId,
+        })
+    );
+
+    const restoreMessage = () => dispatch(
+        openModal({
+            type: ModalType.RESTORE_MESSAGE,
+            chatId,
+            msgId,
+        })
+    );
+
+    const regenerateMessage = () => dispatch(
+        openModal({
+            type: ModalType.REGENERATE_MESSAGE,
+            chatId,
+            msgId,
+        })
+    );
 
     return {
         deleteMessage,

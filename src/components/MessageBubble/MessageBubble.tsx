@@ -4,7 +4,7 @@ import { useMessageEditActions, useMessageSegmentMemo } from './MessageBubble.ho
 import { styled } from '@mui/system';
 import { Button } from '@mui/material';
 
-const RightAligner= styled('div')(
+const RightAligner = styled('div')(
     ({ theme }) => ({
         display: 'flex',
         justifyContent: 'right',
@@ -12,7 +12,7 @@ const RightAligner= styled('div')(
     })
 );
 
-const LeftAligner= styled('div')(
+const LeftAligner = styled('div')(
     ({ theme }) => ({
         display: 'flex',
         justifyContent: 'left',

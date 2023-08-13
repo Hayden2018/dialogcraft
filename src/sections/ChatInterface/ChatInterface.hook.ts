@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, KeyboardEvent, ChangeEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState, Chat } from "redux/type";
 import { triggerRegenerate, userMessageSent } from "saga/actions";
@@ -19,17 +19,18 @@ export const useMessageActions = (currentChat: Chat | null) => {
 
     useEffect(() => setDraft(''), [currentChat]);
 
-    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         const inputElement = event.target as HTMLInputElement; 
         setDraft(inputElement.value);
     }
 
     const sendMessage = () => {
-        if (!currentChat || !draft) return;
-        dispatch(userMessageSent({
-            chatId: currentChat.id,
-            messageContent: draft,
-        }));
+        if (currentChat && draft.trim()) {
+            dispatch(userMessageSent({
+                chatId: currentChat.id,
+                messageContent: draft,
+            }));
+        }
         setDraft('');
     }
 
@@ -40,10 +41,16 @@ export const useMessageActions = (currentChat: Chat | null) => {
         })
     );
 
+    const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+        if (event.key === 'Enter' && event.shiftKey) 
+            sendMessage();
+    }
+
     return {
         onChange,
         sendMessage,
         regenerate,
+        onKeyDown,
         value: draft,
     };
 }

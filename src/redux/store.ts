@@ -4,11 +4,13 @@ import rootSaga from 'saga/rootSaga';
 import chatListReducer from './chatListSlice';
 import chatsReducer from './chatsSlice';
 import modalReducer from './modalSlice';
+import settingReducer from './settingSlice';
 
 const rootReducer = combineReducers({
     chatList: chatListReducer,
     chats: chatsReducer,
     modal: modalReducer,
+    setting: settingReducer,
 });
 
 const sagaMiddleware = createSagaMiddleware();

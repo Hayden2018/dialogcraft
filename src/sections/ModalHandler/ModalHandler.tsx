@@ -5,6 +5,8 @@ import ConfirmationModal from "components/ConfirmationModal/ConfirmationModal";
 import { deleteChat, deleteMessage, restoreMessage } from "redux/chatsSlice";
 import { triggerRegenerate } from "saga/actions";
 import { removeFromList } from "redux/chatListSlice";
+import SettingModal from "components/SettingModal/SettingModal";
+import { deleteSetting } from "redux/settingSlice";
 
 
 function ModalHandler() {
@@ -19,8 +21,10 @@ function ModalHandler() {
                 <ConfirmationModal
                     message='Are you sure to delete this chat? All messages will be deleted.'
                     action={() => {
-                        dispatch(removeFromList(payload.chatId!));
-                        dispatch(deleteChat(payload.chatId));
+                        const { chatId } = payload;
+                        dispatch(removeFromList(chatId!));
+                        dispatch(deleteChat(chatId));
+                        dispatch(deleteSetting({ settingId: chatId }));
                     }}
                     actionName='Delete'
                     color='error'
@@ -55,6 +59,8 @@ function ModalHandler() {
             )
         case ModalType.EDIT_MESSAGE:
             return <EditMessageModal {...payload} />;
+        case ModalType.SETTING:
+            return <SettingModal  {...payload} />;
         default:
             return null;
     }

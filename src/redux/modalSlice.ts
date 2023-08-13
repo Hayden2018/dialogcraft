@@ -15,29 +15,10 @@ const modalSlice = createSlice({
             modal.payload = { };
             return modal;
         },
-        openDeleteChatModal(modal, { payload: chatId }) {
-            modal.currentOpen = ModalType.DELETE_CHAT;
-            modal.payload.chatId = chatId;
-            return modal;
-        },
-        openDeleteMessageModal(modal, { payload }) {
-            modal.currentOpen = ModalType.DELETE_MESSAGE;
-            modal.payload = payload;
-            return modal;
-        },
-        openEditMessageModal(modal, { payload }) {
-            modal.currentOpen = ModalType.EDIT_MESSAGE;
-            modal.payload = payload;
-            return modal;
-        },
-        openRestoreMessageModal(modal, { payload }) {
-            modal.currentOpen = ModalType.RESTORE_MESSAGE;
-            modal.payload = payload;
-            return modal;
-        },
-        openRegenerateMessageModal(modal, { payload }) {
-            modal.currentOpen = ModalType.REGENERATE_MESSAGE;
-            modal.payload = payload;
+        openModal(modal, { payload }) {
+            const { type, ...rest } = payload;
+            modal.currentOpen = type;
+            modal.payload = rest;
             return modal;
         },
     }
@@ -46,9 +27,5 @@ const modalSlice = createSlice({
 export default modalSlice.reducer;
 export const { 
     closeModal,
-    openDeleteChatModal,
-    openDeleteMessageModal,
-    openEditMessageModal,
-    openRestoreMessageModal,
-    openRegenerateMessageModal,
+    openModal,
 } = modalSlice.actions;

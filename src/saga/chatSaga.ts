@@ -71,49 +71,106 @@ export function* handleRegenerate({ payload } :
     }
 ) {
     const { chatId, msgId } = payload;
-    const messageHistory: Array<ChatMessage> = yield select(
+
+    const messageRole: string = yield select(
         (state: AppState) => {
             const messages = state.chats[chatId].messages;
-            const indexToRegenerate = messages.findIndex(({ id }) => id === msgId);
-            return messages.slice(0, indexToRegenerate);
+            const targetMessage = messages.find(({ id }) => id === msgId);
+            return targetMessage!.role;
         }
     );
-    ipcRenderer.send('MESSAGE', {
-        model: 'gpt-3.5-turbo-16k',
-        apiKey: '',
-        messages: messageHistory.map((msg) => ({
-            role: msg.role,
-            content: msg.editedContent || msg.content,
-        })),
-    });
 
-    // Set chat to streaming mode
-    yield put(addRegenerationChunk({
-        stop: false,
-        delta: '',
-        chatId,
-        msgId,
-    }));
+    let messageHistory: Array<ChatMessage>;
 
-    const responseStream = getResponseStream();
-    while (true) {
-        const msgChunk: {
-            finish_reason: string | null;
-            delta: {
-                role: string;
-                content: string;
+    // The message to regenerate is sent by the user
+    // Only possible if user press regenerate after deleting last message by assistant
+    if (messageRole !== 'assistant') {
+        messageHistory = yield select((state: AppState) => state.chats[chatId].messages);
+
+        ipcRenderer.send('MESSAGE', {
+            model: 'gpt-3.5-turbo-16k',
+            apiKey: '',
+            messages: messageHistory.map((msg) => ({
+                role: msg.role,
+                content: msg.editedContent || msg.content,
+            })),
+        });
+
+        // Set chat to streaming mode
+        yield put(addStreamedChunk({
+            chatId: payload.chatId,
+            stop: false,
+            delta: '',
+        }));
+
+        const responseStream = getResponseStream();
+        while (true) {
+            const msgChunk: {
+                finish_reason: string | null;
+                delta: {
+                    role: string,
+                    content: string,
+                }
+            } = yield take(responseStream);
+
+            yield put(addStreamedChunk({
+                chatId: payload.chatId,
+                stop: !!msgChunk.finish_reason,
+                delta: msgChunk.delta.content,
+            }));
+
+            if (!!msgChunk.finish_reason) {
+                break;
             }
-        } = yield take(responseStream);
+        }
+    }
+    // Normal case
+    else {
+        messageHistory = yield select(
+            (state: AppState) => {
+                const messages = state.chats[chatId].messages;
+                const indexToRegenerate = messages.findIndex(({ id }) => id === msgId);
+                return messages.slice(0, indexToRegenerate);
+            }
+        );
 
+        ipcRenderer.send('MESSAGE', {
+            model: 'gpt-3.5-turbo-16k',
+            apiKey: '',
+            messages: messageHistory.map((msg) => ({
+                role: msg.role,
+                content: msg.editedContent || msg.content,
+            })),
+        });
+
+        // Set chat to streaming mode
         yield put(addRegenerationChunk({
-            stop: !!msgChunk.finish_reason,
-            delta: msgChunk.delta.content,
+            stop: false,
+            delta: '',
             chatId,
             msgId,
         }));
 
-        if (!!msgChunk.finish_reason) {
-            break;
+        const responseStream = getResponseStream();
+        while (true) {
+            const msgChunk: {
+                finish_reason: string | null;
+                delta: {
+                    role: string,
+                    content: string,
+                }
+            } = yield take(responseStream);
+
+            yield put(addRegenerationChunk({
+                stop: !!msgChunk.finish_reason,
+                delta: msgChunk.delta.content,
+                chatId,
+                msgId,
+            }));
+
+            if (!!msgChunk.finish_reason) {
+                break;
+            }
         }
     }
 }

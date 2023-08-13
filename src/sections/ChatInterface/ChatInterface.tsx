@@ -3,9 +3,11 @@ import { styled } from '@mui/system';
 import { LinearProgress, TextField } from '@mui/material';
 import MessageBubble from 'components/MessageBubble/MessageBubble';
 import { useChatEditActions, useCurrentChatSelector, useMessageActions } from './ChatInterface.hook';
-import { ChatMessage } from 'redux/type';
+import { ChatMessage, ModalType } from 'redux/type.d';
 import { useEffect, useRef } from 'react';
 import { ReactComponent as noChatIcon } from './noChat.svg';
+import { useDispatch } from 'react-redux';
+import { openModal } from 'redux/modalSlice';
 
 const ChatContainer = styled('div')(
     ({ theme }) => ({
@@ -19,27 +21,33 @@ const ChatContainer = styled('div')(
 
 const HeaderBanner = styled('div')(
     ({ theme }) => ({
-        padding: '12px 16px 12px 25px',
+        padding: '12px 16px 4px 25px',
         background: theme.palette.grey[900],
-        borderBottom: `1px solid ${theme.palette.grey[800]}`
+        borderBottom: `1px solid ${theme.palette.grey[800]}`,
+        height: 'fit-content',
     })
 );
 
 const ChatTitle = styled('div')(
     ({ theme }) => ({
-        fontSize: 22,
+        fontSize: 20,
         display: 'inline-block',
-        width: 'calc(100% - 180px)',
-        lineHeight: '36px',
+        width: 'calc(100% - 360px)',
+        lineHeight: '32px',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        marginRight: 18,
     })
 );
 
-const EditModeButton = styled(Button)(
+const HeaderButton = styled(Button)(
     ({ theme }) => ({
         verticalAlign: 'top',
         padding: 0,
-        width: 180,
-        height: 36,
+        marginLeft: 8,
+        width: 160,
+        height: 32,
     })
 );
 
@@ -49,7 +57,7 @@ interface AreaProps {
 
 const MessageArea = styled('div')<AreaProps>(
     ({ theme, isEditing }) => ({
-        height: isEditing ? 'calc(100vh - 65px)' : 'calc(100vh - 190px)',
+        height: isEditing ? 'calc(100vh - 60px)' : 'calc(100vh - 185px)',
         overflowY: 'scroll',
     })
 );
@@ -113,7 +121,7 @@ const NoChatIcon = styled(noChatIcon)(
         verticalAlign: 'top',
         width: 260,
         height: 260,
-        margin: 'calc(50vh - 180px) auto 40px',
+        margin: 'calc(50vh - 190px) auto 40px',
     })
 )
 
@@ -128,8 +136,10 @@ const NoChatInfo = styled('p')(
 
 function ChatInterface() {
 
+    const dispatch = useDispatch();
+
     const currentChat = useCurrentChatSelector();
-    const { onChange, sendMessage, regenerate, value } = useMessageActions(currentChat);
+    const { onChange, sendMessage, regenerate, onKeyDown, value } = useMessageActions(currentChat);
     const { editing, toggleEdit } = useChatEditActions(currentChat);
 
     const streamingMsgId = currentChat?.streamingMsgId;
@@ -152,9 +162,21 @@ function ChatInterface() {
             <HeaderBanner>
                 <ChatTitle>{currentChat.title}</ChatTitle>
                 { isStreaming || 
-                    <EditModeButton variant='contained' onClick={toggleEdit}>
+                    <HeaderButton variant='contained' onClick={toggleEdit}>
                         { editing ? 'Stop Editing' : 'Edit Messages' }
-                    </EditModeButton> 
+                    </HeaderButton> 
+                }
+                { isStreaming || 
+                    <HeaderButton variant='contained' onClick={
+                        () => dispatch(
+                            openModal({
+                                type: ModalType.SETTING,
+                                settingId: currentChat.id,
+                            })
+                        )
+                    }>
+                        Chat Setting
+                    </HeaderButton> 
                 }
             </HeaderBanner>
             <MessageArea 
@@ -188,6 +210,7 @@ function ChatInterface() {
                         maxRows={3}
                         value={value}
                         onChange={onChange}
+                        onKeyDown={onKeyDown}
                     />
                     <SendButton variant='contained' onClick={sendMessage}>
                         Send
@@ -209,7 +232,7 @@ function ChatInterface() {
     else return (
         <ChatContainer>
             <NoChatIcon />
-            <NoChatInfo>You do not have any conversation yet...</NoChatInfo>
+            <NoChatInfo>You do not have any conversations yet...</NoChatInfo>
             <NoChatInfo>Click on "New Chat" on the top left to create a new one</NoChatInfo>
         </ChatContainer>
     )

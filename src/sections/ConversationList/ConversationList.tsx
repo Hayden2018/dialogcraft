@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { addChatToList } from 'redux/chatListSlice';
 import { styled } from '@mui/system';
 import ChatTitleBox from 'components/ChatTitleBox/ChatTitleBox';
+import { addSetting } from 'redux/settingSlice';
 
 const ChatListContainer = styled('div')(
     ({ theme }) => ({
@@ -37,6 +38,7 @@ function ConversationList() {
                 const newChatId = uuidv4();
                 dispatch(createNewChat(newChatId));
                 dispatch(addChatToList(newChatId));
+                dispatch(addSetting({ settingId : newChatId }));
             }}>
                 New Chat
             </NewChatButton>
