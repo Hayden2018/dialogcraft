@@ -45,7 +45,7 @@ const HeaderButton = styled(Button)(
     ({ theme }) => ({
         verticalAlign: 'top',
         padding: 0,
-        marginLeft: 8,
+        marginLeft: 9,
         width: 160,
         height: 32,
     })
@@ -162,15 +162,10 @@ function ChatInterface() {
             <HeaderBanner>
                 <ChatTitle>{currentChat.title}</ChatTitle>
                 { isStreaming || 
-                    <HeaderButton variant='contained' onClick={toggleEdit}>
-                        { editing ? 'Stop Editing' : 'Edit Messages' }
-                    </HeaderButton> 
-                }
-                { isStreaming || 
                     <HeaderButton variant='contained' onClick={
                         () => dispatch(
                             openModal({
-                                type: ModalType.SETTING,
+                                type: ModalType.CHAT_SETTING,
                                 settingId: currentChat.id,
                             })
                         )
@@ -178,6 +173,16 @@ function ChatInterface() {
                         Chat Setting
                     </HeaderButton> 
                 }
+                { isStreaming || 
+                    <HeaderButton 
+                        variant='contained'
+                        color={editing ? 'success' : 'warning'} 
+                        onClick={toggleEdit}
+                    >
+                        { editing ? 'Stop Editing' : 'Edit Messages' }
+                    </HeaderButton> 
+                }
+
             </HeaderBanner>
             <MessageArea 
                 isEditing={editing && !isStreaming}
@@ -215,7 +220,7 @@ function ChatInterface() {
                     <SendButton variant='contained' onClick={sendMessage}>
                         Send
                     </SendButton>
-                    <RegenerateButton variant='contained' onClick={regenerate}>
+                    <RegenerateButton variant='contained' color='warning' onClick={regenerate}>
                         Regenerate
                     </RegenerateButton>
                 </DraftGrid>

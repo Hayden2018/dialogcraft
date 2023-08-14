@@ -40,6 +40,8 @@ async function sendResponseStream(window, {
     apiKey,
     model,
     messages,
+    temperature,
+    topP,
 }) {
     const configuration = new Configuration({ apiKey: process.env.OPENAI_KEY });
     const openai = new OpenAIApi(configuration);
@@ -48,6 +50,8 @@ async function sendResponseStream(window, {
         model,
         messages,
         stream: true,
+        temperature,
+        top_p: topP,
     }, { responseType: 'stream' });
 
     const stream = completion.data;

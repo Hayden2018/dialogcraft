@@ -1,7 +1,7 @@
 import { eventChannel } from 'redux-saga';
 import { put, take, select } from 'redux-saga/effects';
 import { addRegenerationChunk, addStreamedChunk, addUserMessage } from 'redux/chatsSlice';
-import { AppState, ChatMessage } from 'redux/type';
+import { AppState, ChatMessage, SettingConfig } from 'redux/type';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -23,21 +23,40 @@ export function* handleUserMessage({ payload } :
     }
 ) {
     yield put(addUserMessage(payload));
-    const messageHistory: Array<ChatMessage> = yield select(
-        (state: AppState) => state.chats[payload.chatId].messages
+
+    const { chatId } = payload;
+
+    const { temperature, topP, systemPrompt, currentModel }: SettingConfig = yield select(
+        (state: AppState) => state.setting[chatId]
     );
+
+    const messageHistory: Array<ChatMessage> = yield select(
+        (state: AppState) => state.chats[chatId].messages
+    );
+
+    let messagesPayload = messageHistory.map((msg) => ({
+        role: msg.role,
+        content: msg.editedContent || msg.content,
+    }))
+
+    if (systemPrompt) {
+        messagesPayload.unshift({
+            role: 'system',
+            content: systemPrompt,
+        });
+    }
+
     ipcRenderer.send('MESSAGE', {
         model: 'gpt-3.5-turbo-16k',
         apiKey: '',
-        messages: messageHistory.map((msg) => ({
-            role: msg.role,
-            content: msg.editedContent || msg.content,
-        })),
+        topP,
+        temperature,
+        messages: messagesPayload,
     });
 
     // Set chat to streaming mode
     yield put(addStreamedChunk({
-        chatId: payload.chatId,
+        chatId,
         stop: false,
         delta: '',
     }));
@@ -53,9 +72,9 @@ export function* handleUserMessage({ payload } :
         } = yield take(responseStream);
 
         yield put(addStreamedChunk({
-            chatId: payload.chatId,
             stop: !!msgChunk.finish_reason,
             delta: msgChunk.delta.content,
+            chatId,
         }));
 
         if (!!msgChunk.finish_reason) {
@@ -72,6 +91,10 @@ export function* handleRegenerate({ payload } :
 ) {
     const { chatId, msgId } = payload;
 
+    const { temperature, topP, systemPrompt, currentModel }: SettingConfig = yield select(
+        (state: AppState) => state.setting[chatId]
+    );
+
     const messageRole: string = yield select(
         (state: AppState) => {
             const messages = state.chats[chatId].messages;
@@ -80,20 +103,32 @@ export function* handleRegenerate({ payload } :
         }
     );
 
-    let messageHistory: Array<ChatMessage>;
-
     // The message to regenerate is sent by the user
-    // Only possible if user press regenerate after deleting last message by assistant
+    // Happens only when user press regenerate after deleting last message by assistant
     if (messageRole !== 'assistant') {
-        messageHistory = yield select((state: AppState) => state.chats[chatId].messages);
+
+        const messageHistory: Array<ChatMessage> = yield select(
+            (state: AppState) => state.chats[chatId].messages
+        );
+
+        let messagesPayload = messageHistory.map((msg) => ({
+            role: msg.role,
+            content: msg.editedContent || msg.content,
+        }))
+    
+        if (systemPrompt) {
+            messagesPayload.unshift({
+                role: 'system',
+                content: systemPrompt,
+            });
+        }
 
         ipcRenderer.send('MESSAGE', {
             model: 'gpt-3.5-turbo-16k',
             apiKey: '',
-            messages: messageHistory.map((msg) => ({
-                role: msg.role,
-                content: msg.editedContent || msg.content,
-            })),
+            topP,
+            temperature,
+            messages: messagesPayload,
         });
 
         // Set chat to streaming mode
@@ -123,10 +158,8 @@ export function* handleRegenerate({ payload } :
                 break;
             }
         }
-    }
-    // Normal case
-    else {
-        messageHistory = yield select(
+    } else {
+        const messageHistory: Array<ChatMessage> = yield select(
             (state: AppState) => {
                 const messages = state.chats[chatId].messages;
                 const indexToRegenerate = messages.findIndex(({ id }) => id === msgId);
@@ -134,13 +167,24 @@ export function* handleRegenerate({ payload } :
             }
         );
 
+        let messagesPayload = messageHistory.map((msg) => ({
+            role: msg.role,
+            content: msg.editedContent || msg.content,
+        }))
+    
+        if (systemPrompt) {
+            messagesPayload.unshift({
+                role: 'system',
+                content: systemPrompt,
+            });
+        }
+
         ipcRenderer.send('MESSAGE', {
             model: 'gpt-3.5-turbo-16k',
             apiKey: '',
-            messages: messageHistory.map((msg) => ({
-                role: msg.role,
-                content: msg.editedContent || msg.content,
-            })),
+            topP,
+            temperature,
+            messages: messagesPayload,
         });
 
         // Set chat to streaming mode

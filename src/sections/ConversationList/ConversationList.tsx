@@ -7,8 +7,10 @@ import { addChatToList } from 'redux/chatListSlice';
 import { styled } from '@mui/system';
 import ChatTitleBox from 'components/ChatTitleBox/ChatTitleBox';
 import { addSetting } from 'redux/settingSlice';
+import { openModal } from 'redux/modalSlice';
+import { ModalType } from 'redux/type.d';
 
-const ChatListContainer = styled('div')(
+const Container = styled('div')(
     ({ theme }) => ({
         display: 'inline-block',
         height: '100vh',
@@ -18,12 +20,25 @@ const ChatListContainer = styled('div')(
     })
 );
 
-const NewChatButton = styled(Button)(
+const ChatListContainer = styled('div')(
+    ({ theme }) => ({
+        height: 'calc(100vh - 100px)',
+        overflowY: 'auto',
+    })
+);
+
+const ButtonContainer = styled('div')(
+    ({ theme }) => ({
+        margin: '12px 0px 8px'
+    })
+);
+
+const ListButton = styled(Button)(
     ({ theme }) => ({
         display: 'block',
-        margin: '12px auto',
-        width: 170,
-        height: 36,
+        margin: '8px auto',
+        width: 180,
+        height: 32,
         padding: 0,
     })
 );
@@ -33,19 +48,31 @@ function ConversationList() {
     const dispatch = useDispatch();
     const { chatOrder, currentChatId } = useConversationSelector();
     return (
-        <ChatListContainer>
-            <NewChatButton variant="contained" onClick={() => {
-                const newChatId = uuidv4();
-                dispatch(createNewChat(newChatId));
-                dispatch(addChatToList(newChatId));
-                dispatch(addSetting({ settingId : newChatId }));
-            }}>
-                New Chat
-            </NewChatButton>
-            {
-                chatOrder.map((chatId) => <ChatTitleBox chatId={chatId} isCurrent={chatId === currentChatId} key={chatId} />)
-            }
-        </ChatListContainer>
+        <Container>
+            <ButtonContainer>
+                <ListButton
+                    variant='contained'
+                    onClick={() => dispatch(openModal({ type: ModalType.GLOBAL_SETTING }))}
+                >
+                    Setting
+                </ListButton>
+                <ListButton variant='contained' color='success' onClick={() => {
+                    const newChatId = uuidv4();
+                    dispatch(createNewChat(newChatId));
+                    dispatch(addChatToList(newChatId));
+                    dispatch(addSetting({ settingId : newChatId }));
+                }}>
+                    New Chat
+                </ListButton>
+            </ButtonContainer>
+
+
+            <ChatListContainer>
+                {
+                    chatOrder.map((chatId) => <ChatTitleBox chatId={chatId} isCurrent={chatId === currentChatId} key={chatId} />)
+                }
+            </ChatListContainer>
+        </Container>
     );
 }
 

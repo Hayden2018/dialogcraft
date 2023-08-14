@@ -19,7 +19,7 @@ function EditMessageModal({ chatId, msgId } : ModalPayload) {
     const { draft, confirmEdit, cancelEdit, onEdit } = useEditMessageActions(chatId!, msgId!);
 
     return (
-        <Dialog open fullWidth maxWidth='lg'>
+        <Dialog open fullWidth maxWidth='md'>
             <DialogTitle>Edit Message</DialogTitle>
             <div>
                 <EditBox

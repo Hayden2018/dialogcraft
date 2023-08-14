@@ -1,12 +1,14 @@
-import EditMessageModal from "components/EditMessageModal/EditMessageModal";
+
 import { useDispatch, useSelector } from "react-redux";
 import { AppState, ModalType } from "redux/type.d";
-import ConfirmationModal from "components/ConfirmationModal/ConfirmationModal";
 import { deleteChat, deleteMessage, restoreMessage } from "redux/chatsSlice";
 import { triggerRegenerate } from "saga/actions";
 import { removeFromList } from "redux/chatListSlice";
-import SettingModal from "components/SettingModal/SettingModal";
 import { deleteSetting } from "redux/settingSlice";
+import GlobalSettingModal from "components/GlobalSettingModal/GlobalSettingModal";
+import ChatSettingModal from "components/ChatSettingModal/ChatSettingModal";
+import ConfirmationModal from "components/ConfirmationModal/ConfirmationModal";
+import EditMessageModal from "components/EditMessageModal/EditMessageModal";
 
 
 function ModalHandler() {
@@ -59,8 +61,10 @@ function ModalHandler() {
             )
         case ModalType.EDIT_MESSAGE:
             return <EditMessageModal {...payload} />;
-        case ModalType.SETTING:
-            return <SettingModal  {...payload} />;
+        case ModalType.CHAT_SETTING:
+            return <ChatSettingModal  {...payload} />;
+        case ModalType.GLOBAL_SETTING:
+            return <GlobalSettingModal />;
         default:
             return null;
     }

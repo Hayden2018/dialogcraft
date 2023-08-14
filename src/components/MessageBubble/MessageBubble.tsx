@@ -3,6 +3,7 @@ import CustomCodeBlock from 'components/CustomCodeBlock/CustomCodeBlock';
 import { useMessageEditActions, useMessageSegmentMemo } from './MessageBubble.hook';
 import { styled } from '@mui/system';
 import { Button } from '@mui/material';
+import { RefObject } from 'react';
 
 const RightAligner = styled('div')(
     ({ theme }) => ({
@@ -39,7 +40,8 @@ const UserMessageContainer = styled('div')(
         borderRadius: 12,
         padding: '10px 12px',
         margin: '0px 16px',
-        background: theme.palette.primary.dark,
+        color: theme.palette.grey[800],
+        background: theme.palette.primary.light,
     })
 );
 
@@ -75,7 +77,7 @@ const EditButton = styled(Button)(
 
 function MessageBubble(
     { chatId, msgId, msgContent, role, editMode, forwardRef } : 
-    { chatId: string, msgId: string, msgContent: string, role: string, editMode: boolean, forwardRef: React.RefObject<HTMLDivElement> | null }
+    { chatId: string, msgId: string, msgContent: string, role: string, editMode: boolean, forwardRef: RefObject<HTMLDivElement> | null }
 ) {
 
     // restoreMessage is null if message is unedited
@@ -101,11 +103,11 @@ function MessageBubble(
 
                 { editMode &&
                     <EditButtonContainer>
-                        <EditButton variant='contained' onClick={editMessage}>Edit</EditButton>
+                        <EditButton color='success' variant='contained' onClick={editMessage}>Edit</EditButton>
                         { restoreMessage &&
-                            <EditButton variant='contained' onClick={restoreMessage}>Restore</EditButton>
+                            <EditButton color='info' variant='contained' onClick={restoreMessage}>Restore</EditButton>
                         }
-                        <EditButton variant='contained' onClick={deleteMessage}>Delete</EditButton>
+                        <EditButton color='error' variant='contained' onClick={deleteMessage}>Delete</EditButton>
                     </EditButtonContainer>
                 }
 
@@ -131,12 +133,15 @@ function MessageBubble(
 
                 { editMode &&
                     <EditButtonContainer>
-                        <EditButton variant='contained' onClick={editMessage}>Edit</EditButton>
-                        <EditButton variant='contained' onClick={regenerateMessage}>Regenerate</EditButton>
+                        <EditButton variant='contained' color='success' onClick={editMessage}>Edit</EditButton>
                         { restoreMessage &&
-                            <EditButton variant='contained' onClick={restoreMessage}>Restore</EditButton>
+                            <EditButton variant='contained' color='info' onClick={restoreMessage}>Restore</EditButton>
                         }
-                        <EditButton variant='contained' onClick={deleteMessage}>Delete</EditButton>
+                        <EditButton variant='contained' color='warning' onClick={regenerateMessage}>
+                            Regenerate
+                        </EditButton>
+
+                        <EditButton variant='contained' color='error' onClick={deleteMessage}>Delete</EditButton>
                     </EditButtonContainer>
                 }
                 

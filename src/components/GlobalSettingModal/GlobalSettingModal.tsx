@@ -23,7 +23,7 @@ const FormHeader = styled('div')(
         zIndex: 100,
         textAlign: 'center',
         fontSize: 30,
-        lineHeight: '60px',
+        lineHeight: '58px',
         borderBottom: `1px solid ${theme.palette.grey[500]}`,
         marginBottom: 22,
         position: 'sticky',
@@ -70,14 +70,14 @@ const FormButton = styled(Button)(
     })
 );
 
-function SettingModal({ settingId }: ModalPayload) {
+function GlobalSettingModal() {
 
     const dispatch = useDispatch();
 
-    const currentSettings = useSelector((state: AppState) => state.setting[settingId!]);
+    const globalSettings = useSelector((state: AppState) => state.setting.global);
 
     const { register, handleSubmit, watch, setValue } = useForm<SettingConfig>({
-        defaultValues: currentSettings,
+        defaultValues: globalSettings,
     });
 
     const enterSend = watch('enterSend');
@@ -87,8 +87,8 @@ function SettingModal({ settingId }: ModalPayload) {
 
     const onSubmit = (data: SettingConfig) => {
         dispatch(updateSetting({
+            settingId: 'global',
             setting: data,
-            settingId,
         }));
         dispatch(closeModal());
     }
@@ -98,7 +98,13 @@ function SettingModal({ settingId }: ModalPayload) {
             
             <Form onSubmit={handleSubmit(onSubmit)}>
 
-                <FormHeader>Chat Settings</FormHeader>
+                <FormHeader>Settings</FormHeader>
+
+                <FormRow tall>
+                    <Alert severity='info'>
+                        Settings here includes API credentials and default values for new conversations.
+                    </Alert>
+                </FormRow>
 
                 <FormRow>
                     <TextField
@@ -126,9 +132,9 @@ function SettingModal({ settingId }: ModalPayload) {
                 <FormRow>
                     <Alert severity='info'>
                         <InfoList>
-                            <li>Temperature - higher values will make the output more random, while lower values will make it more deterministic.</li> 
+                            <li>Temperature - higher values will make the output more random, while lower values more deterministic.</li> 
                             <li>Top P - the model only considers tokens within top P probability mass.</li>
-                            <li>It is suggested to only change either one of them while leave the other one at default.</li>
+                            <li>It is suggested to change either one of them while leave the other one at default.</li>
                         </InfoList>
                     </Alert>
                 </FormRow>
@@ -212,7 +218,7 @@ function SettingModal({ settingId }: ModalPayload) {
                 </FormRow>
 
                 <ButtonRow>
-                    <FormButton color='error' variant='contained' onClick={() => dispatch(closeModal())}>
+                    <FormButton color='warning' variant='contained' onClick={() => dispatch(closeModal())}>
                         Discard
                     </FormButton>
                     <FormButton type='submit' variant='contained'>
@@ -225,4 +231,4 @@ function SettingModal({ settingId }: ModalPayload) {
     )
 }
 
-export default SettingModal;
+export default GlobalSettingModal;
