@@ -2,10 +2,10 @@ import Dialog from '@mui/material/Dialog';
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal } from "redux/modalSlice";
 import { useForm } from 'react-hook-form';
-import { TextField, FormControlLabel, Slider, Button, Select, Switch, MenuItem, Alert } from '@mui/material';
+import { TextField, Slider, Button, Select, MenuItem, Alert } from '@mui/material';
 import { styled } from '@mui/system';
 import { AppState, ModalPayload, SettingConfig } from 'redux/type';
-import { updateSetting } from 'redux/settingSlice';
+import { updateChatSetting } from 'redux/settingSlice';
 
 const Form = styled('form')(
     ({ theme }) => ({
@@ -21,7 +21,7 @@ const FormHeader = styled('div')(
         backgroundColor: '#383838',
         zIndex: 100,
         textAlign: 'center',
-        fontSize: 24,
+        fontSize: 23,
         lineHeight: '50px',
         borderBottom: `1px solid ${theme.palette.grey[500]}`,
         marginBottom: 20,
@@ -54,7 +54,7 @@ const SliderTop = styled('div')(
 
 const ButtonRow = styled('div')(
     ({ theme }) => ({
-        margin: '18px 0px 25px',
+        margin: '16px 0px 25px',
         display: 'flex',
         justifyContent: 'center',
         gap: 20,
@@ -74,6 +74,7 @@ function ChatSettingModal({ settingId }: ModalPayload) {
     const dispatch = useDispatch();
 
     const currentSettings = useSelector((state: AppState) => state.setting[settingId!]);
+    const chatTitle = useSelector((state: AppState) => state.chats[settingId!].title);
 
     const { register, handleSubmit, watch, setValue } = useForm<SettingConfig>({
         defaultValues: currentSettings,
@@ -84,7 +85,7 @@ function ChatSettingModal({ settingId }: ModalPayload) {
     const topP = watch('topP');
 
     const onSubmit = (data: SettingConfig) => {
-        dispatch(updateSetting({
+        dispatch(updateChatSetting({
             setting: data,
             settingId,
         }));
@@ -96,17 +97,20 @@ function ChatSettingModal({ settingId }: ModalPayload) {
             
             <Form onSubmit={handleSubmit(onSubmit)}>
 
-                <FormHeader>Chat Settings</FormHeader>
+                <FormHeader>Chat Settings - {chatTitle}</FormHeader>
 
-                <FormRow tall>
+                <FormRow>
                     <p style={{ margin: '0px 0px 5px 5px' }}>GPT Model</p>
-                    <Select fullWidth>
-                        <MenuItem value='gpt-3.5-turbo'>gpt-3.5-turbo</MenuItem>
-                        <MenuItem value='gpt-3.5-turbo-16k'>gpt-3.5-turbo-16k</MenuItem>
+                    <Select fullWidth defaultValue={currentSettings.currentModel}>
+                        {
+                            currentSettings.availableModels.map(
+                                (modelId) => <MenuItem value={modelId}>{modelId}</MenuItem>
+                            )
+                        }
                     </Select>
                 </FormRow>
 
-                <FormRow>
+                <FormRow tall>
                     <Alert severity='info'>
                         <InfoList>
                             <li>Temperature - higher values will make the output more random, and lower values more deterministic.</li> 
@@ -116,7 +120,7 @@ function ChatSettingModal({ settingId }: ModalPayload) {
                     </Alert>
                 </FormRow>
 
-                <FormRow narrow tall>
+                <FormRow narrow>
                     <SliderTop>
                         <span>Temperature</span>
                         <span>{temperature}</span>
@@ -130,7 +134,7 @@ function ChatSettingModal({ settingId }: ModalPayload) {
                     />
                 </FormRow>
 
-                <FormRow narrow tall>
+                <FormRow narrow>
                     <SliderTop>
                         <span>Top P</span>
                         <span>{topP}</span>

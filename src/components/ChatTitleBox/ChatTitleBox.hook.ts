@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useState, KeyboardEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { editChatTitle } from 'redux/chatsSlice';
 import { openModal } from 'redux/modalSlice';
@@ -41,6 +41,12 @@ const useChatTitleWithEdit = (chatId: string) => {
         })
     );
 
+    const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+        if (event.key === 'Enter') {
+            confirmEdit();
+        }
+    }
+
     const title = isEditing ? editTitle : currentTitle;
     
     return {
@@ -49,6 +55,7 @@ const useChatTitleWithEdit = (chatId: string) => {
         onEdit,
         startEdit,
         confirmEdit,
+        onKeyDown,
         abortEdit,
         deleteChat,
     };

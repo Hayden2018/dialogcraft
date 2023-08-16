@@ -1,20 +1,28 @@
-import { ChatMessage, ModalPayload } from "redux/type"
+import { ModalPayload, SettingConfig } from "redux/type"
 
 export const actionType = {
     ON_MESSAGE: 'ON_MESSAGE',
     REGENERATE: 'REGENERATE',
+    GLOBAL_SETTING: 'GLOBAL_SETTING',
 }
 
-export function userMessageSent(messageData: { chatId: string, messageContent: string }) {
+export function userMessageSent(data: { chatId: string, messageContent: string }) {
     return {
         type: actionType.ON_MESSAGE,
-        payload: messageData,
+        payload: data,
     }
 }
 
-export function triggerRegenerate(messageData: ModalPayload) {
+export function triggerRegenerate(data: ModalPayload) {
     return {
         type: actionType.REGENERATE,
-        payload: messageData,
+        payload: data,
+    }
+}
+
+export function updateGlobalSetting(data: SettingConfig) {
+    return {
+        type: actionType.GLOBAL_SETTING,
+        payload: data,
     }
 }

@@ -1,22 +1,29 @@
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { darkTheme } from 'theme';
+
 import ConversationList from 'sections/ConversationList/ConversationList';
 import ChatInterface from 'sections/ChatInterface/ChatInterface';
 import ModalHandler from 'sections/ModalHandler/ModalHandler';
+import { useSelector } from "react-redux";
+import { AppState } from 'redux/type.d';
 import 'App.css';
+import GreetingPage from 'sections/GreetingPage/GreetingPage';
 
 function App() {
-    return (
-        <ThemeProvider theme={darkTheme}>
-            <CssBaseline />
+
+    const { baseURL, apiKey } = useSelector((state: AppState) => state.setting.global);
+
+    if (baseURL && apiKey) return (
+        <>
             <div>
                 <ConversationList />
                 <ChatInterface />
             </div>
-            <ModalHandler />
-        </ThemeProvider>
+            <ModalHandler /> 
+        </>
     );
+
+    return (
+        <GreetingPage />
+    )
 }
 
 export default App;

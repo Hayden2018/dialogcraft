@@ -14,8 +14,10 @@ export const useCurrentChatSelector = () => useSelector((state: AppState) => {
 
 export const useMessageActions = (currentChat: Chat | null) => {
 
-    const [draft, setDraft] = useState<string>('');
+    const enterSend = useSelector((state: AppState) => state.setting.global.enterSend);
     const dispatch = useDispatch();
+    
+    const [draft, setDraft] = useState<string>('');
 
     useEffect(() => setDraft(''), [currentChat]);
 
@@ -42,8 +44,13 @@ export const useMessageActions = (currentChat: Chat | null) => {
     );
 
     const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-        if (event.key === 'Enter' && event.shiftKey) 
-            sendMessage();
+        if (event.key === 'Enter') {
+            if (event.shiftKey && !enterSend) {
+                sendMessage();
+            } else if (enterSend) {
+                sendMessage();
+            }
+        }
     }
 
     return {

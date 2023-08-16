@@ -154,6 +154,7 @@ function ChatTitleBox({ chatId, isCurrent } : { chatId: string, isCurrent: boole
         onEdit,
         startEdit,
         confirmEdit,
+        onKeyDown,
         abortEdit,
         deleteChat,
     } = useChatTitleWithEdit(chatId);
@@ -174,13 +175,13 @@ function ChatTitleBox({ chatId, isCurrent } : { chatId: string, isCurrent: boole
 
     const boxClicked = () => dispatch(setCurrentChat(chatId));
 
-    // Keep everything in DOM only hide using display none
+    // Keep everything in DOM and hide using display none
     // Required for hasParent function to work properly
     return (
         <div ref={editBoxRef} onClick={boxClicked}>
 
             <TitleEditContainer edit={isEditing}>
-                <TitleInput value={title} onChange={onEdit} ref={inputRef} />
+                <TitleInput value={title} onChange={onEdit} onKeyDown={onKeyDown} ref={inputRef} />
                 <TickButton onClick={confirmEdit} />
                 <CrossButton onClick={abortEdit} />
             </TitleEditContainer>

@@ -54,8 +54,8 @@ export type SettingConfig = {
     systemPrompt: string;
     maxContext: number;
     isGobal: boolean;
+    availableModels: Array<string>;
     status?: 'noKey' | 'ok' | 'verifying' | 'error';
-    availableModels?: Array<string>;
     enterSend?: boolean;
     apiKey?: string;
     baseURL?: string;

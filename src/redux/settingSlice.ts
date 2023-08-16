@@ -8,7 +8,7 @@ const initialState: Record<string, SettingConfig> = {
         temperature: 1,
         topP: 1,
         systemPrompt: '',
-        maxContext: 30,
+        maxContext: 50,
         status: 'noKey',
         isGobal: true,
         enterSend: false,
@@ -21,9 +21,12 @@ const settingSlice = createSlice({
     name: 'settings',
     initialState,
     reducers: {
-        updateSetting(settings, { payload }) {
+        updateChatSetting(settings, { payload }) {
             const { settingId, setting } = payload;
-            settings[settingId] = setting;
+            settings[settingId] = {
+                ...settings[settingId],
+                ...setting,
+            };
             return settings;
         },
         addSetting(settings, { payload }) {
@@ -31,6 +34,7 @@ const settingSlice = createSlice({
             const settingDraft = settings.global;
             settings[settingId] = {
                 currentModel: settingDraft.currentModel,
+                availableModels: settingDraft.availableModels,
                 systemPrompt: settingDraft.systemPrompt,
                 maxContext: settingDraft.maxContext,
                 temperature: settingDraft.temperature,
@@ -44,12 +48,23 @@ const settingSlice = createSlice({
             delete settings[settingId];
             return settings;
         },
+        updateModelList(settings, { payload }) { 
+            for (const key in settings) {
+                const currentModel = settings[key].currentModel;
+                settings[key].availableModels = payload;
+                if (!payload.includes(currentModel)) {
+                    settings[key].currentModel = payload[0];
+                }
+            }
+            return settings;
+        },
     }
 })
 
 export default settingSlice.reducer;
 export const { 
-    updateSetting,
+    updateChatSetting,
     addSetting,
     deleteSetting,
+    updateModelList,
 } = settingSlice.actions;

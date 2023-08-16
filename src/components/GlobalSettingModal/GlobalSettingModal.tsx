@@ -2,10 +2,10 @@ import Dialog from '@mui/material/Dialog';
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal } from "redux/modalSlice";
 import { useForm } from 'react-hook-form';
-import { TextField, FormControlLabel, Slider, Button, Select, Switch, MenuItem, Alert } from '@mui/material';
+import { TextField, FormControlLabel, Slider, Button, Select, Switch, MenuItem, Alert, LinearProgress } from '@mui/material';
 import { styled } from '@mui/system';
-import { AppState, ModalPayload, SettingConfig } from 'redux/type';
-import { updateSetting } from 'redux/settingSlice';
+import { AppState, SettingConfig } from 'redux/type.d';
+import { updateGlobalSetting } from 'saga/actions';
 
 const Form = styled('form')(
     ({ theme }) => ({
@@ -70,6 +70,22 @@ const FormButton = styled(Button)(
     })
 );
 
+const ProgressContainer = styled('div')(
+    ({ theme }) => ({
+        marginTop: 'calc(50vh - 120px)',
+        textAlign: 'center',
+        '& p': {
+            fontSize: 22,
+            margin: 36,
+        },
+        "& > :nth-child(2)": {
+            width: '75%',
+            maxWidth: 1600,
+            margin: 'auto',
+        },
+    })
+);
+
 function GlobalSettingModal() {
 
     const dispatch = useDispatch();
@@ -86,12 +102,17 @@ function GlobalSettingModal() {
     const topP = watch('topP');
 
     const onSubmit = (data: SettingConfig) => {
-        dispatch(updateSetting({
-            settingId: 'global',
-            setting: data,
-        }));
-        dispatch(closeModal());
+        dispatch(updateGlobalSetting(data));
     }
+
+    if (globalSettings.status === 'verifying') return (
+        <Dialog open fullScreen>
+            <ProgressContainer>
+                <p>Verifying your API credentials...</p>
+                <LinearProgress />
+            </ProgressContainer>
+        </Dialog>
+    )
 
     return (
         <Dialog open fullScreen>
@@ -123,9 +144,12 @@ function GlobalSettingModal() {
                 </FormRow>
                 <FormRow tall>
                     <p style={{ margin: '0px 0px 5px 5px' }}>GPT Model</p>
-                    <Select fullWidth>
-                        <MenuItem value='gpt-3.5-turbo'>gpt-3.5-turbo</MenuItem>
-                        <MenuItem value='gpt-3.5-turbo-16k'>gpt-3.5-turbo-16k</MenuItem>
+                    <Select fullWidth defaultValue={globalSettings.currentModel}>
+                        {
+                            globalSettings.availableModels.map(
+                                (modelId) => <MenuItem value={modelId}>{modelId}</MenuItem>
+                            )
+                        }
                     </Select>
                 </FormRow>
 
