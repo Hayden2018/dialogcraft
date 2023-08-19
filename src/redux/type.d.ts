@@ -11,6 +11,7 @@ export type Chat = {
     id: string;
     title: string;
     messages: Array<ChatMessage>;
+    rollbackMessage: ChatMessage | null;
     streamingMsgId: string | null;
 }
 
@@ -27,6 +28,7 @@ export enum ModalType {
     REGENERATE_MESSAGE = 'REGEN_MESSAGE',
     CHAT_SETTING = 'CHAT_SETTING',
     GLOBAL_SETTING = 'GLOBAL_SETTING',
+    CHAT_ERROR = 'CHAT_ERROR',
 }
 
 export type ModalPayload = {

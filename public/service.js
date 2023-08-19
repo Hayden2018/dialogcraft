@@ -38,35 +38,40 @@ function parseNoisyJSON(noisyString) {
 
 async function sendResponseStream(window, {
     apiKey,
+    baseURL,
     model,
     messages,
     temperature,
     topP,
 }) {
-    const configuration = new Configuration({ apiKey: process.env.OPENAI_KEY });
-    const openai = new OpenAIApi(configuration);
-
-    const completion = await openai.createChatCompletion({
-        model,
-        messages,
-        stream: true,
-        temperature,
-        top_p: topP,
-    }, { responseType: 'stream' });
-
-    const stream = completion.data;
-
-    stream.on('data', (chunk) => {
-        const dataString = chunk.toString().trim();
-        const jsonChunks = parseNoisyJSON(dataString);
-        jsonChunks.forEach((data) =>  {
-            window.webContents.send('STREAM', data.choices[0]);
+    try {
+        const configuration = new Configuration({ apiKey, basePath: `${baseURL}/v1/` });
+        const openai = new OpenAIApi(configuration);
+    
+        const completion = await openai.createChatCompletion({
+            model,
+            messages,
+            stream: true,
+            temperature,
+            top_p: topP,
+        }, { responseType: 'stream' });
+    
+        const stream = completion.data;
+    
+        stream.on('data', (chunk) => {
+            const dataString = chunk.toString().trim();
+            const jsonChunks = parseNoisyJSON(dataString);
+            jsonChunks.forEach((data) =>  {
+                window.webContents.send('STREAM', data.choices[0]);
+            });
         });
-    });
 
-    stream.on('error', (err) => {
-        console.log(err);
-    });
+    } catch (error) {
+        window.webContents.send('STREAM', { 
+            finish_reason: 'error',
+            delta: { },
+        });
+    }
 }
 
 function startListenForMessage(window) {

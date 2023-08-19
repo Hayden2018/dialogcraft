@@ -1,7 +1,8 @@
 import { eventChannel } from 'redux-saga';
 import { put, take, select, call } from 'redux-saga/effects';
 import { addRegenerationChunk, addStreamedChunk, addUserMessage } from 'redux/chatsSlice';
-import { AppState, ChatMessage, SettingConfig } from 'redux/type';
+import { openModal } from 'redux/modalSlice';
+import { AppState, ChatMessage, ModalType, SettingConfig } from 'redux/type.d';
 const { ipcRenderer } = window.require('electron');
 
 
@@ -23,9 +24,13 @@ function* requestResponse(messageHistory: Array<ChatMessage>, chatId: string) {
         topP,
         systemPrompt,
         currentModel,
-        maxContext 
+        maxContext,
     }: SettingConfig = yield select(
         (state: AppState) => state.setting[chatId]
+    );
+
+    const { baseURL, apiKey }: SettingConfig = yield select(
+        (state: AppState) => state.setting.global
     );
 
     let messagesPayload = messageHistory.map((msg) => ({
@@ -45,10 +50,11 @@ function* requestResponse(messageHistory: Array<ChatMessage>, chatId: string) {
     }
 
     ipcRenderer.send('MESSAGE', {
-        model: 'gpt-3.5-turbo-16k',
-        apiKey: '',
+        baseURL,
+        apiKey,
         topP,
         temperature,
+        model: currentModel,
         messages: messagesPayload,
     });
 }
@@ -82,14 +88,26 @@ export function* handleUserMessage({ payload } :
         const msgChunk: {
             finish_reason: string | null;
             delta: {
-                role: string;
-                content: string;
+                role?: string;
+                content?: string;
             }
         } = yield take(responseStream);
+
+        if (msgChunk.finish_reason === 'error') {
+            yield put(openModal({ type: ModalType.CHAT_ERROR }));
+            yield put(addStreamedChunk({
+                stop: true,
+                error: true,
+                delta: '',
+                chatId,
+            }));
+            break;
+        }
 
         yield put(addStreamedChunk({
             stop: !!msgChunk.finish_reason,
             delta: msgChunk.delta.content,
+            error: false,
             chatId,
         }));
 
@@ -107,7 +125,7 @@ export function* handleRegenerate({ payload } :
     }
 ) {
     const { chatId, msgId } = payload;
-
+    
     const messageRole: string = yield select(
         (state: AppState) => {
             const messages = state.chats[chatId].messages;
@@ -142,6 +160,17 @@ export function* handleRegenerate({ payload } :
                     content: string,
                 }
             } = yield take(responseStream);
+
+            if (msgChunk.finish_reason === 'error') {
+                yield put(openModal({ type: ModalType.CHAT_ERROR }));
+                yield put(addStreamedChunk({
+                    stop: true,
+                    error: true,
+                    delta: '',
+                    chatId,
+                }));
+                break;
+            }
 
             yield put(addStreamedChunk({
                 chatId: payload.chatId,
@@ -181,6 +210,18 @@ export function* handleRegenerate({ payload } :
                     content: string,
                 }
             } = yield take(responseStream);
+
+            if (msgChunk.finish_reason === 'error') {
+                yield put(openModal({ type: ModalType.CHAT_ERROR }));
+                yield put(addRegenerationChunk({
+                    stop: true,
+                    error: true,
+                    delta: '',
+                    chatId,
+                    msgId,
+                }));
+                break;
+            }
 
             yield put(addRegenerationChunk({
                 stop: !!msgChunk.finish_reason,

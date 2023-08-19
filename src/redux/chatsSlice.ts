@@ -12,8 +12,9 @@ const chatsSlice = createSlice({
             chats[chatId] = {
                 id: chatId,
                 messages: [],
-                streamingMsgId: null,
                 title: `New Conversation ${Object.keys(chats).length + 1}`,
+                streamingMsgId: null,
+                rollbackMessage: null,
             };
             return chats
         },
@@ -29,11 +30,15 @@ const chatsSlice = createSlice({
             return chats
         },
         addStreamedChunk(chats, { payload }) {
-            const { chatId, delta, stop } = payload;
+            const { chatId, delta, stop, error } = payload;
             const targetChat = chats[chatId];
             if (targetChat.streamingMsgId) {
-                if (stop) targetChat.streamingMsgId = null;
-                else targetChat.messages.at(-1)!.content += delta;
+                if (stop) {
+                    targetChat.streamingMsgId = null;
+                    error && targetChat.messages.pop();
+                } else {
+                    targetChat.messages.at(-1)!.content += delta;
+                }
             } else {
                 const messageId = uuidv4();
                 targetChat.streamingMsgId = messageId;
@@ -49,14 +54,22 @@ const chatsSlice = createSlice({
             return chats;
         },
         addRegenerationChunk(chats, { payload }) {
-            const { chatId, msgId, delta, stop } = payload;
+            const { chatId, msgId, delta, stop, error } = payload;
             const targetChat = chats[chatId];
-            const targetMsgIndex = targetChat.messages.findIndex(({ id }) => id === msgId);
+            const targetMsgIndex = targetChat.messages.findIndex((msg) => msg.id === msgId);
             if (targetChat.streamingMsgId) {
-                if (stop) targetChat.streamingMsgId = null;
-                else targetChat.messages[targetMsgIndex]!.content += delta;
+                if (stop) {
+                    targetChat.streamingMsgId = null;
+                    if (error) {
+                        targetChat.messages[targetMsgIndex] = targetChat.rollbackMessage!;
+                        targetChat.rollbackMessage = null;
+                    }
+                } else {
+                    targetChat.messages[targetMsgIndex]!.content += delta;
+                }
             } else {
                 targetChat.streamingMsgId = msgId;
+                targetChat.rollbackMessage = targetChat.messages[targetMsgIndex];
                 targetChat.messages[targetMsgIndex] = {
                     id: msgId,
                     time: new Date(),

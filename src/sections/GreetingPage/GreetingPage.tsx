@@ -4,6 +4,7 @@ import { TextField, Button, Alert, LinearProgress } from '@mui/material';
 import { styled } from '@mui/system';
 import { AppState, SettingConfig } from 'redux/type.d';
 import { updateGlobalSetting } from "saga/actions";
+import { ReactComponent as AppIcon } from './icon.svg';
 
 const { shell } = window.require('electron');
 
@@ -14,7 +15,20 @@ const GreetingContainer = styled('div')(
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        gap: 15,
+        gap: 14,
+    })
+);
+
+const AppTitle= styled('h1')(
+    ({ theme }) => ({
+        textAlign: 'center',
+        color: theme.palette.grey[200],
+        '& > svg': {
+            height: 45,
+            width: 45,
+            marginRight: 12,
+            verticalAlign: 'top',
+        }
     })
 );
 
@@ -106,14 +120,18 @@ function GreetingPage() {
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <GreetingContainer>
+                <AppTitle>
+                    <AppIcon />
+                    DialogCraft
+                </AppTitle>
                 <CredentialInput
-                    label='API URL'
+                    label='API Base URL'
                     {...register('baseURL', { required: 'API URL is required' })}
                     error={!!errors.baseURL}
                     helperText={errors.baseURL?.message}
                 />
                 <CredentialInput
-                    label='API Key'
+                    label='API Key (Bearer token)'
                     type='password'
                     {...register('apiKey', { required: 'API Key is required' })}
                     error={!!errors.apiKey}
@@ -122,16 +140,23 @@ function GreetingPage() {
                 {
                     status === 'error' &&
                     <ErrorAlert severity='error'>
-                        Verification failed, please check your API credentails and internet connection.
+                        Verification failed. Please check your API credentails and internet connection.
                     </ErrorAlert>
                 }
-                <SubmitButton variant='contained' type='submit'>Confirm</SubmitButton>
+                <SubmitButton variant='contained' type='submit'>
+                    Connect
+                </SubmitButton>
+
+                <InfoText>
+                    If you do not have an OpenAI API Key. You can refer to <a onClick={() => shell.openExternal(openAIDocUrl)}>this</a> video on how to get one. 
+                </InfoText>
                 <InfoText>
                     The API URL should be from OpenAI or strictly follow the standard specified in OpenAI <a onClick={() => shell.openExternal(openAIDocUrl)}>documentation</a>.
                 </InfoText>
                 <InfoText>
-                    Your API Key will be stored locally on this machine. This app does not communicate with external components except the URL specified above.
+                    Your API Key will be securely stored on this device. This application does not interact with any outside systems except the URL you provided above.
                 </InfoText>
+
             </GreetingContainer>
         </form>
     )

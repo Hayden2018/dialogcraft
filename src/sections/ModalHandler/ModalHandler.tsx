@@ -9,6 +9,7 @@ import GlobalSettingModal from "components/GlobalSettingModal/GlobalSettingModal
 import ChatSettingModal from "components/ChatSettingModal/ChatSettingModal";
 import ConfirmationModal from "components/ConfirmationModal/ConfirmationModal";
 import EditMessageModal from "components/EditMessageModal/EditMessageModal";
+import InfoModal from "components/InfoModal/InfoModal";
 
 
 function ModalHandler() {
@@ -57,6 +58,14 @@ function ModalHandler() {
                     action={() => dispatch(triggerRegenerate(payload))}
                     actionName='Regenerate'
                     color='warning'
+                />
+            )
+        case ModalType.CHAT_ERROR:
+            return (
+                <InfoModal 
+                    message='An error occurs while generating response. Please make sure your API credentails are correct and device connected to the internet.'
+                    actionName='OK'
+                    color='error'
                 />
             )
         case ModalType.EDIT_MESSAGE:

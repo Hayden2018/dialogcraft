@@ -5,8 +5,6 @@ import { SettingConfig } from "redux/type";
 
 async function fetchModelList(url: string, apiKey: string) {
 
-    url = url.replace(/\/$/, ''); // Remove trailing slash if any
-
     try {
         const response = await fetch(`${url}/v1/models`, {
             method: 'GET',

@@ -6,6 +6,9 @@ import chatsReducer from './chatsSlice';
 import modalReducer from './modalSlice';
 import settingReducer from './settingSlice';
 
+import { persistStore, persistReducer } from 'redux-persist';
+import localForage from 'localforage';
+
 const rootReducer = combineReducers({
     chatList: chatListReducer,
     chats: chatsReducer,
@@ -13,13 +16,24 @@ const rootReducer = combineReducers({
     setting: settingReducer,
 });
 
+const persistConfig = {
+    key: 'root',
+    storage: localForage,
+    throttle: 3000,
+    serialize: false,
+    deserialize: false,
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
 const sagaMiddleware = createSagaMiddleware();
 
 const store = configureStore({
-    reducer: rootReducer,
+    reducer: persistedReducer,
     middleware: [sagaMiddleware],
 });
 
 sagaMiddleware.run(rootSaga);
 
+export const persistor = persistStore(store);
 export default store;

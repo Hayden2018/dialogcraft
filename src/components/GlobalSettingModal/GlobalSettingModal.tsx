@@ -6,6 +6,7 @@ import { TextField, FormControlLabel, Slider, Button, Select, Switch, MenuItem, 
 import { styled } from '@mui/system';
 import { AppState, SettingConfig } from 'redux/type.d';
 import { updateGlobalSetting } from 'saga/actions';
+import { updateChatSetting } from 'redux/settingSlice';
 
 const Form = styled('form')(
     ({ theme }) => ({
@@ -92,7 +93,7 @@ function GlobalSettingModal() {
 
     const globalSettings = useSelector((state: AppState) => state.setting.global);
 
-    const { register, handleSubmit, watch, setValue } = useForm<SettingConfig>({
+    const { register, handleSubmit, watch, setValue, formState: { dirtyFields } } = useForm<SettingConfig>({
         defaultValues: globalSettings,
     });
 
@@ -102,7 +103,26 @@ function GlobalSettingModal() {
     const topP = watch('topP');
 
     const onSubmit = (data: SettingConfig) => {
-        dispatch(updateGlobalSetting(data));
+        if (!dirtyFields.baseURL && !dirtyFields.apiKey) {
+            // Verfication not required
+            dispatch(updateChatSetting({
+                settingId: 'global',
+                setting: data,
+            }));
+            dispatch(closeModal());
+        } else {
+            // With credentials verification
+            dispatch(updateGlobalSetting(data));
+        }
+    }
+
+    const onDiscard = () => {
+        // Revert to original status
+        dispatch(updateChatSetting({
+            settingId: 'global',
+            setting: { status: 'ok' },
+        }));
+        dispatch(closeModal());
     }
 
     if (globalSettings.status === 'verifying') return (
@@ -121,30 +141,43 @@ function GlobalSettingModal() {
 
                 <FormHeader>Settings</FormHeader>
 
-                <FormRow tall>
+                <FormRow tall={globalSettings.status !== 'error'}>
                     <Alert severity='info'>
                         Settings here includes API credentials and default values for new conversations.
                     </Alert>
                 </FormRow>
 
+                {
+                    globalSettings.status === 'error' &&
+                    <FormRow>
+                        <Alert severity='error'>
+                            Verification failed. Please make sure your API credentails are correct and device connected to the internet.
+                        </Alert>
+                    </FormRow>
+                }
+
                 <FormRow>
                     <TextField
                         fullWidth
-                        label='API URL'
+                        label='API Base URL'
                         {...register('baseURL')}
                     />
                 </FormRow>
                 <FormRow>
                     <TextField
                         fullWidth
-                        label='API Key'
+                        label='API Key (Bearer token)'
                         type='password'
                         {...register('apiKey')}
                     />
                 </FormRow>
                 <FormRow tall>
                     <p style={{ margin: '0px 0px 5px 5px' }}>GPT Model</p>
-                    <Select fullWidth defaultValue={globalSettings.currentModel}>
+                    <Select 
+                        fullWidth
+                        defaultValue={globalSettings.currentModel}
+                        onChange={(event) => setValue('currentModel', event.target.value)}
+                    >
                         {
                             globalSettings.availableModels.map(
                                 (modelId) => <MenuItem value={modelId}>{modelId}</MenuItem>
@@ -242,7 +275,7 @@ function GlobalSettingModal() {
                 </FormRow>
 
                 <ButtonRow>
-                    <FormButton color='warning' variant='contained' onClick={() => dispatch(closeModal())}>
+                    <FormButton color='warning' variant='contained' onClick={onDiscard}>
                         Discard
                     </FormButton>
                     <FormButton type='submit' variant='contained'>

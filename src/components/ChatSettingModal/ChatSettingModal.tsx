@@ -101,7 +101,11 @@ function ChatSettingModal({ settingId }: ModalPayload) {
 
                 <FormRow>
                     <p style={{ margin: '0px 0px 5px 5px' }}>GPT Model</p>
-                    <Select fullWidth defaultValue={currentSettings.currentModel}>
+                    <Select 
+                        fullWidth 
+                        defaultValue={currentSettings.currentModel}
+                        onChange={(event) => setValue('currentModel', event.target.value)}
+                    >
                         {
                             currentSettings.availableModels.map(
                                 (modelId) => <MenuItem value={modelId}>{modelId}</MenuItem>

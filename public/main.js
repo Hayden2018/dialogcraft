@@ -6,17 +6,6 @@ const { app, BrowserWindow } = require('electron');
 const { startListenForMessage } = require('./service');
 
 function createWindow() {
-    // Create the browser window.
-    const win = new BrowserWindow({
-        width: 1280,
-        height: 800,
-        minWidth: 960,
-        minHeight: 640,
-        webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false,
-        },
-    });
 
     const appURL = app.isPackaged ? url.format({
         pathname: path.join(__dirname, '../build/index.html'),
@@ -24,11 +13,19 @@ function createWindow() {
         slashes: true,
     }) : 'http://localhost:3000';
 
-    win.loadURL(appURL);
+    const win = new BrowserWindow({
+        width: 1280,
+        height: 800,
+        minWidth: 960,
+        minHeight: 640,
+        icon: 'icon32.png',
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+        },
+    });
 
-    if (!app.isPackaged) {
-        win.webContents.openDevTools({ mode: 'detach' });
-    }
+    win.loadURL(appURL);
 
     startListenForMessage(win);
 }

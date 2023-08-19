@@ -220,7 +220,7 @@ function ChatInterface() {
                     <SendButton variant='contained' onClick={sendMessage}>
                         Send
                     </SendButton>
-                    <RegenerateButton variant='contained' color='warning' onClick={regenerate}>
+                    <RegenerateButton variant='contained' color='success' onClick={regenerate}>
                         Regenerate
                     </RegenerateButton>
                 </DraftGrid>

@@ -1,4 +1,3 @@
-
 import ConversationList from 'sections/ConversationList/ConversationList';
 import ChatInterface from 'sections/ChatInterface/ChatInterface';
 import ModalHandler from 'sections/ModalHandler/ModalHandler';
@@ -19,7 +18,7 @@ function App() {
             </div>
             <ModalHandler /> 
         </>
-    );
+    )
 
     return (
         <GreetingPage />
