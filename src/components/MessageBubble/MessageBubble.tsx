@@ -103,10 +103,10 @@ function MessageBubble(
 
                 { editMode &&
                     <EditButtonContainer>
-                        <EditButton color='success' variant='contained' onClick={editMessage}>Edit</EditButton>
                         { restoreMessage &&
                             <EditButton color='info' variant='contained' onClick={restoreMessage}>Restore</EditButton>
                         }
+                        <EditButton color='warning' variant='contained' onClick={editMessage}>Edit</EditButton>
                         <EditButton color='error' variant='contained' onClick={deleteMessage}>Delete</EditButton>
                     </EditButtonContainer>
                 }
@@ -133,14 +133,13 @@ function MessageBubble(
 
                 { editMode &&
                     <EditButtonContainer>
-                        <EditButton variant='contained' color='success' onClick={editMessage}>Edit</EditButton>
+                        <EditButton variant='contained' color='success' onClick={regenerateMessage}>
+                            Regenerate
+                        </EditButton>
                         { restoreMessage &&
                             <EditButton variant='contained' color='info' onClick={restoreMessage}>Restore</EditButton>
                         }
-                        <EditButton variant='contained' color='warning' onClick={regenerateMessage}>
-                            Regenerate
-                        </EditButton>
-
+                        <EditButton variant='contained' color='warning' onClick={editMessage}>Edit</EditButton>
                         <EditButton variant='contained' color='error' onClick={deleteMessage}>Delete</EditButton>
                     </EditButtonContainer>
                 }

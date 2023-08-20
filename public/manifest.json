@@ -3,14 +3,9 @@
   "name": "DailogCraft",
   "icons": [
     {
-      "src": "icon32.png",
-      "type": "image/png",
-      "sizes": "32x32"
-    },
-    {
-      "src": "logo256.png",
-      "type": "image/png",
-      "sizes": "256x256"
+      "src": "icon.ico",
+      "type": "image/x-icon",
+      "sizes": "48x48"
     }
   ],
   "start_url": ".",

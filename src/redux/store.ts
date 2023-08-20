@@ -22,13 +22,14 @@ const persistConfig = {
     throttle: 3000,
     serialize: false,
     deserialize: false,
+    blacklist: ['modal'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const sagaMiddleware = createSagaMiddleware();
 
-const store = configureStore({
+export const store = configureStore({
     reducer: persistedReducer,
     middleware: [sagaMiddleware],
 });
@@ -36,4 +37,3 @@ const store = configureStore({
 sagaMiddleware.run(rootSaga);
 
 export const persistor = persistStore(store);
-export default store;

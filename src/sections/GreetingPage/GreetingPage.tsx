@@ -4,7 +4,7 @@ import { TextField, Button, Alert, LinearProgress } from '@mui/material';
 import { styled } from '@mui/system';
 import { AppState, SettingConfig } from 'redux/type.d';
 import { updateGlobalSetting } from "saga/actions";
-import { ReactComponent as AppIcon } from './icon.svg';
+import { ReactComponent as AppIcon } from './logo.svg';
 
 const { shell } = window.require('electron');
 

@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { ModalConfig, ModalType } from 'redux/type.d';
+import { ModalConfig } from 'redux/type.d';
 
 const initialState: ModalConfig = {
     currentOpen: null,

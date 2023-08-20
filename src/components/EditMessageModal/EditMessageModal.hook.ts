@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal } from "redux/modalSlice";
-import { deleteMessage, editMessage } from "redux/chatsSlice";
+import { editMessage } from "redux/chatsSlice";
 import { AppState } from "redux/type";
 import { useState } from "react";
 

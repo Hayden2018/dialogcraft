@@ -2,8 +2,9 @@ require('dotenv').config();
 const path = require('path');
 const url = require('url');
 
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, Menu } = require('electron');
 const { startListenForMessage } = require('./service');
+const { template } = require('./menu')
 
 function createWindow() {
 
@@ -18,28 +19,28 @@ function createWindow() {
         height: 800,
         minWidth: 960,
         minHeight: 640,
-        icon: 'icon32.png',
+        icon: 'public/icon.ico',
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
         },
     });
 
+    console.log(path.join(__dirname, 'public/icon.ico'))
+
     win.loadURL(appURL);
 
     startListenForMessage(win);
 }
 
-app.whenReady().then(createWindow);
+app.on('ready', () => {
+    const menu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu);
+    createWindow();
+});
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit();
-    }
-});
-
-app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow();
     }
 });

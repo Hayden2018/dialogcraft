@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>About</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #FFF;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        h1 {
+            font-size: 36px;
+        }
+        p {
+            margin: 10px,
+        }
+        .app-icon {
+            width: 46px;
+            height: 46px;
+            margin-right: 6px;
+            vertical-align: bottom;
+        }
+        .license {
+            color: #90caf9;
+            cursor: pointer;
+        }
+        .license:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        const { shell } = window.require('electron');
+        const openLicense = () => shell.openExternal('https://github.com/Hayden2018/poe-com-resizer/blob/master/LICENSE');
+    </script>
+</head>
+<body>
+    <h1>
+        <img class="app-icon" src="./logo.svg" alt="DialogCraft Icon">
+        DialogCraft
+    </h1>
+    <p>Version: 0.8.0</p>
+    <p>Craft your conversations with GPT</p>
+    <p class="license" onclick="openLicense()">
+        LICENSE
+    </p>
+</body>
+</html>
