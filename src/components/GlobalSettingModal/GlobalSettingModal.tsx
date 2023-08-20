@@ -6,7 +6,9 @@ import { TextField, FormControlLabel, Slider, Button, Select, Switch, MenuItem, 
 import { styled } from '@mui/system';
 import { AppState, SettingConfig } from 'redux/type.d';
 import { updateGlobalSetting } from 'saga/actions';
-import { updateChatSetting } from 'redux/settingSlice';
+import { removeAPICredentials, updateChatSetting } from 'redux/settingSlice';
+import ResetAppWarning from 'components/ResetAppWarning/ResetAppWarning';
+import { store } from 'redux/store';
 
 const Form = styled('form')(
     ({ theme }) => ({
@@ -54,7 +56,7 @@ const SliderTop = styled('div')(
     })
 );
 
-const ButtonRow = styled('div')(
+const SubmitRow = styled('div')(
     ({ theme }) => ({
         margin: '20px 0px 30px',
         display: 'flex',
@@ -63,13 +65,29 @@ const ButtonRow = styled('div')(
     })
 );
 
-const FormButton = styled(Button)(
+const SubmitButton = styled(Button)(
     ({ theme }) => ({
         width: 120,
         height: 40,
         padding: 0,
     })
 );
+
+const ActionRow = styled('div')(
+    ({ theme }) => ({
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 15,
+        margin: '20px 22px',
+    })
+);
+
+const ActionButton = styled(Button)(
+    ({ theme }) => ({
+        flexGrow: 1,
+    })
+);
+
 
 const ProgressContainer = styled('div')(
     ({ theme }) => ({
@@ -91,7 +109,8 @@ function GlobalSettingModal() {
 
     const dispatch = useDispatch();
 
-    const globalSettings = useSelector((state: AppState) => state.setting.global);
+    const globalSettings: SettingConfig = useSelector((state: AppState) => state.setting.global);
+    const { status } = globalSettings;
 
     const { register, handleSubmit, watch, setValue, formState: { dirtyFields } } = useForm<SettingConfig>({
         defaultValues: globalSettings,
@@ -103,6 +122,9 @@ function GlobalSettingModal() {
     const topP = watch('topP');
 
     const onSubmit = (data: SettingConfig) => {
+
+        data.systemPrompt = data.systemPrompt.trim();
+
         if (!dirtyFields.baseURL && !dirtyFields.apiKey) {
             // Verfication not required
             dispatch(updateChatSetting({
@@ -125,165 +147,201 @@ function GlobalSettingModal() {
         dispatch(closeModal());
     }
 
-    if (globalSettings.status === 'verifying') return (
-        <Dialog open fullScreen>
-            <ProgressContainer>
-                <p>Verifying your API credentials...</p>
-                <LinearProgress />
-            </ProgressContainer>
-        </Dialog>
-    )
+    const exportChat = async () => {
+        const { dialog } = window.require('@electron/remote');
+        const fs = window.require('fs');
+
+        const file = await dialog.showSaveDialog({
+            title: 'Save',
+            defaultPath: 'chats.json',
+            buttonLabel: 'Save',
+            filters: [{ name: 'json', extensions: ['json'] }],
+        });
+
+        const { chatList, chats } = store.getState();
+
+        if (!file.canceled) {
+            const dataString = JSON.stringify({ chatList, chats }, null, 2);
+            fs.writeFile(file.filePath.toString(), dataString, () => {});
+        }
+    }
 
     return (
         <Dialog open fullScreen>
             
-            <Form onSubmit={handleSubmit(onSubmit)}>
+            { 
+                (status === 'ok' || status === 'error') && 
+                <Form onSubmit={handleSubmit(onSubmit)}>
+                    <FormHeader>Settings</FormHeader>
 
-                <FormHeader>Settings</FormHeader>
-
-                <FormRow tall={globalSettings.status !== 'error'}>
-                    <Alert severity='info'>
-                        Settings here includes API credentials and default values for new conversations.
-                    </Alert>
-                </FormRow>
-
-                {
-                    globalSettings.status === 'error' &&
-                    <FormRow>
-                        <Alert severity='error'>
-                            Verification failed. Please make sure your API credentails are correct and device connected to the internet.
+                    <FormRow tall={status as any !== 'error'}>
+                        <Alert severity='info'>
+                            Settings here includes API credentials and default values for new conversations.
                         </Alert>
                     </FormRow>
-                }
 
-                <FormRow>
-                    <TextField
-                        fullWidth
-                        label='API Base URL'
-                        {...register('baseURL')}
-                    />
-                </FormRow>
-                <FormRow>
-                    <TextField
-                        fullWidth
-                        label='API Key (Bearer token)'
-                        type='password'
-                        {...register('apiKey')}
-                    />
-                </FormRow>
-                <FormRow tall>
-                    <p style={{ margin: '0px 0px 5px 5px' }}>GPT Model</p>
-                    <Select 
-                        fullWidth
-                        defaultValue={globalSettings.currentModel}
-                        onChange={(event) => setValue('currentModel', event.target.value)}
-                    >
-                        {
-                            globalSettings.availableModels.map(
-                                (modelId) => <MenuItem value={modelId}>{modelId}</MenuItem>
-                            )
-                        }
-                    </Select>
-                </FormRow>
+                    {
+                        status === 'error' &&
+                        <FormRow>
+                            <Alert severity='error'>
+                                Verification failed. Please make sure your API credentails are correct and device connected to the internet.
+                            </Alert>
+                        </FormRow>
+                    }
 
-                <FormRow>
-                    <Alert severity='info'>
-                        <InfoList>
-                            <li>Temperature - higher values will make the output more random, while lower values more deterministic.</li> 
-                            <li>Top P - the model only considers tokens within top P probability mass.</li>
-                            <li>It is suggested to change either one of them while leave the other one at default.</li>
-                        </InfoList>
-                    </Alert>
-                </FormRow>
+                    <FormRow>
+                        <TextField
+                            fullWidth
+                            label='API Base URL'
+                            {...register('baseURL')}
+                        />
+                    </FormRow>
+                    <FormRow>
+                        <TextField
+                            fullWidth
+                            label='API Key (Bearer token)'
+                            type='password'
+                            {...register('apiKey')}
+                        />
+                    </FormRow>
 
-                <FormRow narrow tall>
-                    <SliderTop>
-                        <span>Temperature</span>
-                        <span>{temperature}</span>
-                    </SliderTop>
-                    <Slider
-                        min={0}
-                        max={100}
-                        value={temperature * 50}
-                        onChange={(event, newValue) => setValue('temperature', newValue as number / 50)}
-                        aria-labelledby='temperature-slider'
-                    />
-                </FormRow>
+                    <ActionRow>
+                        <ActionButton color='error' variant='contained' onClick={() => dispatch(
+                            updateChatSetting({ settingId: 'global', setting: { status: 'reset' } })
+                        )}> 
+                            Reset App
+                        </ActionButton>
+                        <ActionButton color='warning' variant='contained' onClick={() => dispatch(removeAPICredentials())}>
+                            Disconnect
+                        </ActionButton>
+                        <ActionButton color='success' variant='contained' onClick={exportChat}>
+                            Export Chats
+                        </ActionButton>
+                    </ActionRow>
 
-                <FormRow narrow tall>
-                    <SliderTop>
-                        <span>Top P</span>
-                        <span>{topP}</span>
-                    </SliderTop>
-                    <Slider
-                        min={1}
-                        max={100}
-                        value={topP * 100}
-                        onChange={(event, newValue) => setValue('topP', newValue as number / 100)}
-                        aria-labelledby='topP-slider'
-                    />
-                </FormRow>
+                    <FormRow>
+                        <Alert severity='info'>
+                            <InfoList>
+                                <li>Temperature - higher values will make the output more random, while lower values more deterministic.</li> 
+                                <li>Top P - the model only considers tokens within top P probability mass.</li>
+                            </InfoList>
+                        </Alert>
+                    </FormRow>
 
-                <FormRow tall>
-                    <Alert severity='info'>
-                        <InfoList>
-                            <li>System Prompt - guidance for the model on the conversation context before any user messages</li>
-                            <li>
-                                Maximum context messages - maximum number of previous messages visible by the model.
-                                Lowering this number help reduce API cost but the model may forget earlier conversations.
-                            </li> 
-                        </InfoList>
-                    </Alert>
-                </FormRow>
+                    <FormRow tall>
+                        <p style={{ margin: '0px 0px 5px 5px' }}>Default GPT Model</p>
+                        <Select 
+                            fullWidth
+                            defaultValue={globalSettings.currentModel}
+                            onChange={(event) => setValue('currentModel', event.target.value)}
+                        >
+                            {
+                                globalSettings.availableModels.map(
+                                    (modelId, index) => <MenuItem value={modelId} key={index}>{modelId}</MenuItem>
+                                )
+                            }
+                        </Select>
+                    </FormRow>
+
+                    <FormRow narrow tall>
+                        <SliderTop>
+                            <span>Temperature</span>
+                            <span>{temperature}</span>
+                        </SliderTop>
+                        <Slider
+                            min={0}
+                            max={100}
+                            value={temperature * 50}
+                            onChange={(event, newValue) => setValue('temperature', newValue as number / 50)}
+                            aria-labelledby='temperature-slider'
+                        />
+                    </FormRow>
+
+                    <FormRow narrow tall>
+                        <SliderTop>
+                            <span>Top P</span>
+                            <span>{topP}</span>
+                        </SliderTop>
+                        <Slider
+                            min={1}
+                            max={100}
+                            value={topP * 100}
+                            onChange={(event, newValue) => setValue('topP', newValue as number / 100)}
+                            aria-labelledby='topP-slider'
+                        />
+                    </FormRow>
+
+                    <FormRow tall>
+                        <Alert severity='info'>
+                            <InfoList>
+                                <li>System Prompt - guidance for the model on the conversation context before any user messages</li>
+                                <li>
+                                    Maximum context messages - maximum number of previous messages visible by the model.
+                                    Lowering this number help reduce API cost but the model may forget earlier conversations.
+                                </li> 
+                            </InfoList>
+                        </Alert>
+                    </FormRow>
+                    
+                    <FormRow>
+                        <TextField
+                            label='System Prompt'
+                            fullWidth
+                            multiline
+                            rows={4}
+                            {...register('systemPrompt')}
+                        />
+                    </FormRow>
+
+                    <FormRow narrow tall>
+                        <SliderTop>
+                            <span>Maximum context messages</span>
+                            <span>{maxContext}</span>
+                        </SliderTop>
+                        <Slider
+                            min={1}
+                            max={100}
+                            value={maxContext}
+                            onChange={(event, newValue) => setValue('maxContext', newValue as number)}
+                            aria-labelledby='topP-slider'
+                        />
+                    </FormRow>
+
+                    <FormRow>
+                        <Alert severity='info'>
+                            <li>Press <b>{ enterSend ?  'Enter' : 'Shift + Enter' }</b> to send your message.</li>
+                            <li>Press <b>{ enterSend ?  'Shift + Enter' : 'Enter' }</b> to add a new line in your message.</li>
+                        </Alert>
+                    </FormRow>
+
+                    <FormRow narrow>
+                        <FormControlLabel
+                            control={<Switch {...register('enterSend')} checked={enterSend}/>}
+                            label='Press Enter to send message'
+                        />
+                    </FormRow>
+
+                    <SubmitRow>
+                        <SubmitButton color='warning' variant='contained' onClick={onDiscard}>
+                            Discard
+                        </SubmitButton>
+                        <SubmitButton type='submit' variant='contained'>
+                            Save
+                        </SubmitButton>
+                    </SubmitRow>
                 
-                <FormRow>
-                    <TextField
-                        label='System Prompt'
-                        fullWidth
-                        multiline
-                        rows={4}
-                        {...register('systemPrompt')}
-                    />
-                </FormRow>
-
-                <FormRow narrow tall>
-                    <SliderTop>
-                        <span>Maximum context messages</span>
-                        <span>{maxContext}</span>
-                    </SliderTop>
-                    <Slider
-                        min={1}
-                        max={100}
-                        value={maxContext}
-                        onChange={(event, newValue) => setValue('maxContext', newValue as number)}
-                        aria-labelledby='topP-slider'
-                    />
-                </FormRow>
-
-                <FormRow>
-                    <Alert severity='info'>
-                        <li>Press <b>{ enterSend ?  'Enter' : 'Shift + Enter' }</b> to send your message.</li>
-                        <li>Press <b>{ enterSend ?  'Shift + Enter' : 'Enter' }</b> to add a new line in your message.</li>
-                    </Alert>
-                </FormRow>
-
-                <FormRow narrow>
-                    <FormControlLabel
-                        control={<Switch {...register('enterSend')} checked={enterSend}/>}
-                        label='Press Enter to send message'
-                    />
-                </FormRow>
-
-                <ButtonRow>
-                    <FormButton color='warning' variant='contained' onClick={onDiscard}>
-                        Discard
-                    </FormButton>
-                    <FormButton type='submit' variant='contained'>
-                        Save
-                    </FormButton>
-                </ButtonRow>
-                
-            </Form>
+                </Form> 
+            }
+            {
+                status === 'reset' && <ResetAppWarning />
+            }
+            {
+                status === 'verifying' && 
+                <ProgressContainer>
+                    <p>Verifying your API credentials...</p>
+                    <LinearProgress />
+                </ProgressContainer>
+            }
         </Dialog>
     )
 }

@@ -18,6 +18,7 @@ export type Chat = {
 export type ChatList = {
     chatOrder: Array<string>;
     currentChatId: string;
+    incrementer: number;
 }
 
 export enum ModalType {
@@ -57,7 +58,7 @@ export type SettingConfig = {
     maxContext: number;
     isGobal: boolean;
     availableModels: Array<string>;
-    status?: 'noKey' | 'ok' | 'verifying' | 'error';
+    status?: 'ok' | 'noKey' | 'reset' | 'verifying' | 'error';
     enterSend?: boolean;
     apiKey?: string;
     baseURL?: string;

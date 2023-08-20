@@ -66,6 +66,5 @@ export function* handleGlobalSettingUpdate({ payload }:
     }));
 
     yield put(updateModelList(data));
-
     yield put(closeModal());
 }

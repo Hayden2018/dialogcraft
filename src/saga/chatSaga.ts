@@ -1,15 +1,17 @@
+import { request } from 'http';
 import { eventChannel } from 'redux-saga';
 import { put, take, select, call } from 'redux-saga/effects';
 import { addRegenerationChunk, addStreamedChunk, addUserMessage } from 'redux/chatsSlice';
 import { openModal } from 'redux/modalSlice';
 import { AppState, ChatMessage, ModalType, SettingConfig } from 'redux/type.d';
+import { v4 as uuidv4 } from 'uuid';
 const { ipcRenderer } = window.require('electron');
 
 
-function getResponseStream() {
+function getResponseStream(requestId: string) {
     return eventChannel(
         (emit) => {
-            ipcRenderer.on('STREAM', (event: unknown, data: any) => {
+            ipcRenderer.on(requestId, (event: unknown, data: any) => {
                 emit(data);
             });
             return () => {};
@@ -49,6 +51,8 @@ function* requestResponse(messageHistory: Array<ChatMessage>, chatId: string) {
         messagesPayload = messagesPayload.slice(-maxContext);
     }
 
+    const requestId = uuidv4();
+
     ipcRenderer.send('MESSAGE', {
         baseURL,
         apiKey,
@@ -56,7 +60,10 @@ function* requestResponse(messageHistory: Array<ChatMessage>, chatId: string) {
         temperature,
         model: currentModel,
         messages: messagesPayload,
+        requestId,
     });
+
+    return requestId;
 }
 
 
@@ -74,7 +81,7 @@ export function* handleUserMessage({ payload } :
         (state: AppState) => state.chats[chatId].messages
     );
 
-    yield call(requestResponse, messageHistory, chatId);
+    const requestId: string = yield call(requestResponse, messageHistory, chatId);
 
     // Enable streaming mode
     yield put(addStreamedChunk({
@@ -83,7 +90,7 @@ export function* handleUserMessage({ payload } :
         delta: '',
     }));
 
-    const responseStream = getResponseStream();
+    const responseStream = getResponseStream(requestId);
     while (true) {
         const msgChunk: {
             finish_reason: string | null;
@@ -142,7 +149,7 @@ export function* handleRegenerate({ payload } :
             (state: AppState) => state.chats[chatId].messages
         );
 
-        yield call(requestResponse, messageHistory, chatId);
+        const requestId: string = yield call(requestResponse, messageHistory, chatId);
 
         // Set chat to streaming mode
         yield put(addStreamedChunk({
@@ -151,7 +158,7 @@ export function* handleRegenerate({ payload } :
             delta: '',
         }));
 
-        const responseStream = getResponseStream();
+        const responseStream = getResponseStream(requestId);
         while (true) {
             const msgChunk: {
                 finish_reason: string | null;
@@ -191,7 +198,7 @@ export function* handleRegenerate({ payload } :
             }
         );
 
-        yield call(requestResponse, messageHistory, chatId);
+        const requestId: string = yield call(requestResponse, messageHistory, chatId);
 
         // Set chat to streaming mode
         yield put(addRegenerationChunk({
@@ -201,7 +208,7 @@ export function* handleRegenerate({ payload } :
             msgId,
         }));
 
-        const responseStream = getResponseStream();
+        const responseStream = getResponseStream(requestId);
         while (true) {
             const msgChunk: {
                 finish_reason: string | null;

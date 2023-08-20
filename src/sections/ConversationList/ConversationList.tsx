@@ -46,7 +46,7 @@ const ListButton = styled(Button)(
 function ConversationList() {
 
     const dispatch = useDispatch();
-    const { chatOrder, currentChatId } = useConversationSelector();
+    const { chatOrder, currentChatId, incrementer } = useConversationSelector();
     return (
         <Container>
             <ButtonContainer>
@@ -58,7 +58,10 @@ function ConversationList() {
                 </ListButton>
                 <ListButton variant='contained' color='success' onClick={() => {
                     const newChatId = uuidv4();
-                    dispatch(createNewChat(newChatId));
+                    dispatch(createNewChat({
+                        title: `New Conversation ${incrementer}`,
+                        chatId: newChatId,
+                    }));
                     dispatch(addChatToList(newChatId));
                     dispatch(addSetting({ settingId : newChatId }));
                 }}>

@@ -1,10 +1,12 @@
-require('dotenv').config();
 const path = require('path');
 const url = require('url');
-
 const { app, BrowserWindow, Menu } = require('electron');
+const { initialize, enable } = require('@electron/remote/main');
+
 const { startListenForMessage } = require('./service');
-const { template } = require('./menu')
+const { template } = require('./menu');
+
+initialize();
 
 function createWindow() {
 
@@ -23,12 +25,14 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
+            enableRemoteModule: true,
         },
     });
 
-    console.log(path.join(__dirname, 'public/icon.ico'))
-
     win.loadURL(appURL);
+
+    // For @electron/remote module
+    enable(win.webContents);
 
     startListenForMessage(win);
 }

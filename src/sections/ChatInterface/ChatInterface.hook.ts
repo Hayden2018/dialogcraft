@@ -43,12 +43,13 @@ export const useMessageActions = (currentChat: Chat | null) => {
         })
     );
 
-    const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+        
         if (event.key === 'Enter') {
-            if (event.shiftKey && !enterSend) {
-                sendMessage();
-            } else if (enterSend) {
-                sendMessage();
+            if (event.shiftKey) {
+                !enterSend && sendMessage();
+            } else {
+                enterSend && sendMessage();
             }
         }
     }

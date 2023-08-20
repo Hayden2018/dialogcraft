@@ -85,6 +85,9 @@ function ChatSettingModal({ settingId }: ModalPayload) {
     const topP = watch('topP');
 
     const onSubmit = (data: SettingConfig) => {
+
+        data.systemPrompt = data.systemPrompt.trim();
+
         dispatch(updateChatSetting({
             setting: data,
             settingId,
@@ -102,7 +105,7 @@ function ChatSettingModal({ settingId }: ModalPayload) {
                 <FormRow>
                     <p style={{ margin: '0px 0px 5px 5px' }}>GPT Model</p>
                     <Select 
-                        fullWidth 
+                        fullWidth
                         defaultValue={currentSettings.currentModel}
                         onChange={(event) => setValue('currentModel', event.target.value)}
                     >

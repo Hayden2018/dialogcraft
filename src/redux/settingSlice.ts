@@ -1,20 +1,22 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { SettingConfig } from 'redux/type.d';
 
+const initialGlobalSetting: SettingConfig = {
+    availableModels: [],
+    currentModel: '',
+    temperature: 1,
+    topP: 1,
+    systemPrompt: '',
+    maxContext: 50,
+    status: 'noKey',
+    isGobal: true,
+    enterSend: false,
+    baseURL: 'https://api.openai.com',
+    apiKey: '',
+}
+
 const initialState: Record<string, SettingConfig> = {
-    global: {
-        availableModels: [],
-        currentModel: '',
-        temperature: 1,
-        topP: 1,
-        systemPrompt: '',
-        maxContext: 50,
-        status: 'noKey',
-        isGobal: true,
-        enterSend: false,
-        baseURL: 'https://api.openai.com',
-        apiKey: '',
-    }
+    global: initialGlobalSetting,
 };
 
 const settingSlice = createSlice({
@@ -58,6 +60,17 @@ const settingSlice = createSlice({
             }
             return settings;
         },
+        removeAPICredentials(settings) {
+            settings.global.baseURL = 'https://api.openai.com';
+            settings.global.apiKey = '';
+            settings.global.status = 'noKey';
+            return settings;
+        },
+        resetSettings() {
+            return {
+                global: initialGlobalSetting,
+            }
+        }
     }
 })
 
@@ -67,4 +80,6 @@ export const {
     addSetting,
     deleteSetting,
     updateModelList,
+    removeAPICredentials,
+    resetSettings,
 } = settingSlice.actions;

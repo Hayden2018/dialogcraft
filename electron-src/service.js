@@ -42,6 +42,7 @@ async function sendResponseStream(window, {
     model,
     messages,
     temperature,
+    requestId,
     topP,
 }) {
     try {
@@ -61,13 +62,13 @@ async function sendResponseStream(window, {
         stream.on('data', (chunk) => {
             const dataString = chunk.toString().trim();
             const jsonChunks = parseNoisyJSON(dataString);
-            jsonChunks.forEach((data) =>  {
-                window.webContents.send('STREAM', data.choices[0]);
+            jsonChunks.forEach((data) => {
+                window.webContents.send(requestId, data.choices[0]);
             });
         });
 
     } catch (error) {
-        window.webContents.send('STREAM', { 
+        window.webContents.send(requestId, { 
             finish_reason: 'error',
             delta: { },
         });

@@ -2,8 +2,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ChatList } from 'redux/type';
 
 const initialState: ChatList = {
-    chatOrder: [],
     currentChatId: '',
+    incrementer: 1,
+    chatOrder: [],
 }
 
 const chatListSlice = createSlice({
@@ -17,6 +18,7 @@ const chatListSlice = createSlice({
         addChatToList(chatList, { payload: chatId }: PayloadAction<string>) {
             chatList.chatOrder = [chatId, ...chatList.chatOrder];
             chatList.currentChatId = chatId;
+            chatList.incrementer += 1;
             return chatList;
         },
         moveChatToTop(chatList, { payload: chatId }: PayloadAction<string>) {
@@ -30,6 +32,13 @@ const chatListSlice = createSlice({
             }
             return chatList;
         },
+        resetChatList() {
+            return {
+                currentChatId: '',
+                incrementer: 1,
+                chatOrder: [],
+            }
+        },
     }
 })
 
@@ -39,4 +48,5 @@ export const {
     addChatToList,
     moveChatToTop,
     removeFromList,
+    resetChatList,
 } = chatListSlice.actions;

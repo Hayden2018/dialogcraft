@@ -8,11 +8,12 @@ const chatsSlice = createSlice({
     name: 'chats',
     initialState,
     reducers: {
-        createNewChat(chats, { payload: chatId }) {
+        createNewChat(chats, { payload }) {
+            const { chatId, title } = payload;
             chats[chatId] = {
                 id: chatId,
                 messages: [],
-                title: `New Conversation ${Object.keys(chats).length + 1}`,
+                title: title,
                 streamingMsgId: null,
                 rollbackMessage: null,
             };
@@ -118,6 +119,9 @@ const chatsSlice = createSlice({
             delete chats[chatId]
             return chats;
         },
+        resetChats() {
+            return { };
+        },
     }
 })
 
@@ -132,4 +136,5 @@ export const {
     restoreMessage,
     deleteChat,
     deleteMessage,
+    resetChats,
 } = chatsSlice.actions;

@@ -34,7 +34,7 @@ const BotMessageContainer = styled('div')(
 
 const UserMessageContainer = styled('div')(
     ({ theme }) => ({
-        textAlign: 'right',
+        textAlign: 'left',
         width: 'fit-content',
         maxWidth: 'calc(100% - 150px)',
         borderRadius: 12,
