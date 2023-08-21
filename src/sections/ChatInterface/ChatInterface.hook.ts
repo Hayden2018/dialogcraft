@@ -44,7 +44,6 @@ export const useMessageActions = (currentChat: Chat | null) => {
     );
 
     const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-        
         if (event.key === 'Enter') {
             if (event.shiftKey) {
                 !enterSend && sendMessage();

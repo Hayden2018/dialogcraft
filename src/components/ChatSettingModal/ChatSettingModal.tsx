@@ -54,7 +54,7 @@ const SliderTop = styled('div')(
 
 const ButtonRow = styled('div')(
     ({ theme }) => ({
-        margin: '16px 0px 25px',
+        margin: '0px 0px 26px',
         display: 'flex',
         justifyContent: 'center',
         gap: 20,
@@ -85,9 +85,7 @@ function ChatSettingModal({ settingId }: ModalPayload) {
     const topP = watch('topP');
 
     const onSubmit = (data: SettingConfig) => {
-
         data.systemPrompt = data.systemPrompt.trim();
-
         dispatch(updateChatSetting({
             setting: data,
             settingId,
@@ -101,6 +99,15 @@ function ChatSettingModal({ settingId }: ModalPayload) {
             <Form onSubmit={handleSubmit(onSubmit)}>
 
                 <FormHeader>Chat Settings - {chatTitle}</FormHeader>
+
+                <FormRow>
+                    <Alert severity='info'>
+                        <InfoList>
+                            <li>Temperature - higher values will make the output more random, and lower values more deterministic.</li> 
+                            <li>Top P - the model only considers tokens within top P probability mass.</li>
+                        </InfoList>
+                    </Alert>
+                </FormRow>
 
                 <FormRow>
                     <p style={{ margin: '0px 0px 5px 5px' }}>GPT Model</p>
@@ -117,16 +124,6 @@ function ChatSettingModal({ settingId }: ModalPayload) {
                     </Select>
                 </FormRow>
 
-                <FormRow tall>
-                    <Alert severity='info'>
-                        <InfoList>
-                            <li>Temperature - higher values will make the output more random, and lower values more deterministic.</li> 
-                            <li>Top P - the model only considers tokens within top P probability mass.</li>
-                            <li>It is suggested to change either one of them while leave the other one at default.</li>
-                        </InfoList>
-                    </Alert>
-                </FormRow>
-
                 <FormRow narrow>
                     <SliderTop>
                         <span>Temperature</span>
@@ -134,9 +131,9 @@ function ChatSettingModal({ settingId }: ModalPayload) {
                     </SliderTop>
                     <Slider
                         min={0}
-                        max={100}
-                        value={temperature * 50}
-                        onChange={(event, newValue) => setValue('temperature', newValue as number / 50)}
+                        max={200}
+                        value={temperature * 100}
+                        onChange={(event, newValue) => setValue('temperature', newValue as number / 100)}
                         aria-labelledby='temperature-slider'
                     />
                 </FormRow>
@@ -147,8 +144,8 @@ function ChatSettingModal({ settingId }: ModalPayload) {
                         <span>{topP}</span>
                     </SliderTop>
                     <Slider
-                        min={1}
-                        max={100}
+                        min={0}
+                        max={200}
                         value={topP * 100}
                         onChange={(event, newValue) => setValue('topP', newValue as number / 100)}
                         aria-labelledby='topP-slider'
@@ -177,7 +174,7 @@ function ChatSettingModal({ settingId }: ModalPayload) {
                     />
                 </FormRow>
 
-                <FormRow narrow tall>
+                <FormRow narrow>
                     <SliderTop>
                         <span>Maximum context messages</span>
                         <span>{maxContext}</span>

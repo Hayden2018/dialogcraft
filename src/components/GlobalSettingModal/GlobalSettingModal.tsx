@@ -160,7 +160,7 @@ function GlobalSettingModal() {
 
         const { chatList, chats } = store.getState();
 
-        if (!file.canceled) {
+        if (file && !file.canceled) {
             const dataString = JSON.stringify({ chatList, chats }, null, 2);
             fs.writeFile(file.filePath.toString(), dataString, () => {});
         }
@@ -168,7 +168,6 @@ function GlobalSettingModal() {
 
     return (
         <Dialog open fullScreen>
-            
             { 
                 (status === 'ok' || status === 'error') && 
                 <Form onSubmit={handleSubmit(onSubmit)}>
@@ -176,7 +175,12 @@ function GlobalSettingModal() {
 
                     <FormRow tall={status as any !== 'error'}>
                         <Alert severity='info'>
-                            Settings here includes API credentials and default values for new conversations.
+                            <InfoList>
+                                <li>API credentials - use for connecting to OpenAI services.</li> 
+                                <li>Reset App - remove all user data including conversations, settings and API credentials.</li> 
+                                <li>Disconnect - remove API credentials while keeping all other data.</li>
+                                <li>Export Chats - export all conversation history as JSON file.</li>
+                            </InfoList>
                         </Alert>
                     </FormRow>
 
@@ -222,13 +226,14 @@ function GlobalSettingModal() {
                     <FormRow>
                         <Alert severity='info'>
                             <InfoList>
+                                <li>GPT Model - default model for generating responses when starting a new conversation.</li> 
                                 <li>Temperature - higher values will make the output more random, while lower values more deterministic.</li> 
                                 <li>Top P - the model only considers tokens within top P probability mass.</li>
                             </InfoList>
                         </Alert>
                     </FormRow>
 
-                    <FormRow tall>
+                    <FormRow>
                         <p style={{ margin: '0px 0px 5px 5px' }}>Default GPT Model</p>
                         <Select 
                             fullWidth
@@ -250,9 +255,9 @@ function GlobalSettingModal() {
                         </SliderTop>
                         <Slider
                             min={0}
-                            max={100}
-                            value={temperature * 50}
-                            onChange={(event, newValue) => setValue('temperature', newValue as number / 50)}
+                            max={200}
+                            value={temperature * 100}
+                            onChange={(event, newValue) => setValue('temperature', newValue as number / 100)}
                             aria-labelledby='temperature-slider'
                         />
                     </FormRow>
@@ -263,7 +268,7 @@ function GlobalSettingModal() {
                             <span>{topP}</span>
                         </SliderTop>
                         <Slider
-                            min={1}
+                            min={0}
                             max={100}
                             value={topP * 100}
                             onChange={(event, newValue) => setValue('topP', newValue as number / 100)}

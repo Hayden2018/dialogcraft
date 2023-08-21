@@ -38,6 +38,7 @@ function createWindow() {
 }
 
 app.on('ready', () => {
+    console.log(`Runnig at ${app.getVersion()}`) 
     const menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);
     createWindow();

@@ -148,10 +148,10 @@ function GreetingPage() {
                 </SubmitButton>
 
                 <InfoText>
-                    If you do not have an OpenAI API Key. You can refer to <a onClick={() => shell.openExternal(openAIDocUrl)}>this</a> video on how to get one. 
+                    If you do not have an API Key. You may refer to <a onClick={() => shell.openExternal(openAIDocUrl)}>this</a> video on how to get one. 
                 </InfoText>
                 <InfoText>
-                    The API URL should be from OpenAI or strictly follow the standard specified in OpenAI <a onClick={() => shell.openExternal(openAIDocUrl)}>documentation</a>.
+                    The API URL should be from OpenAI or follow the standard specified in OpenAI <a onClick={() => shell.openExternal(openAIDocUrl)}>documentation</a>.
                 </InfoText>
                 <InfoText>
                     Your API Key will be securely stored on this device. This application does not interact with any outside systems except the URL you provided above.

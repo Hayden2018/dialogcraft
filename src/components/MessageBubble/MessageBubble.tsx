@@ -25,9 +25,9 @@ const BotMessageContainer = styled('div')(
     ({ theme }) => ({
         width: 'fit-content',
         maxWidth: 'calc(100% - 150px)',
-        borderRadius: 12,
+        borderRadius: 10,
         background: theme.palette.grey[800],
-        padding: '10px 12px',
+        padding: '8px 12px',
         margin: '0px 18px',
     })
 );
@@ -37,10 +37,10 @@ const UserMessageContainer = styled('div')(
         textAlign: 'left',
         width: 'fit-content',
         maxWidth: 'calc(100% - 150px)',
-        borderRadius: 12,
-        padding: '10px 12px',
+        borderRadius: 10,
+        padding: '8px 12px',
         margin: '0px 16px',
-        color: theme.palette.grey[800],
+        color: theme.palette.grey[900],
         background: theme.palette.primary.light,
     })
 );
