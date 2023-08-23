@@ -119,6 +119,9 @@ const chatsSlice = createSlice({
             delete chats[chatId]
             return chats;
         },
+        setChats(_, { payload }) {
+            return payload;
+        },
         resetChats() {
             return { };
         },

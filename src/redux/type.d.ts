@@ -58,7 +58,7 @@ export type SettingConfig = {
     maxContext: number;
     isGobal: boolean;
     availableModels: Array<string>;
-    status?: 'ok' | 'noKey' | 'reset' | 'verifying' | 'error';
+    status?: 'ok' | 'noKey' | 'reset' | 'import' | 'verifying' | 'error';
     enterSend?: boolean;
     apiKey?: string;
     baseURL?: string;

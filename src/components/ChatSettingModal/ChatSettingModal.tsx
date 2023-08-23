@@ -145,7 +145,7 @@ function ChatSettingModal({ settingId }: ModalPayload) {
                     </SliderTop>
                     <Slider
                         min={0}
-                        max={200}
+                        max={100}
                         value={topP * 100}
                         onChange={(event, newValue) => setValue('topP', newValue as number / 100)}
                         aria-labelledby='topP-slider'

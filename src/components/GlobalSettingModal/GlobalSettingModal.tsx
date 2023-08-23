@@ -9,6 +9,7 @@ import { updateGlobalSetting } from 'saga/actions';
 import { removeAPICredentials, updateChatSetting } from 'redux/settingSlice';
 import ResetAppWarning from 'components/ResetAppWarning/ResetAppWarning';
 import { store } from 'redux/store';
+import ImportChats from 'components/ChatImport/ChatImport';
 
 const Form = styled('form')(
     ({ theme }) => ({
@@ -122,19 +123,17 @@ function GlobalSettingModal() {
     const topP = watch('topP');
 
     const onSubmit = (data: SettingConfig) => {
-
         data.systemPrompt = data.systemPrompt.trim();
-
-        if (!dirtyFields.baseURL && !dirtyFields.apiKey) {
+        if (dirtyFields.baseURL || dirtyFields.apiKey) {
+            // API credentials verification
+            dispatch(updateGlobalSetting(data));
+        } else {
             // Verfication not required
             dispatch(updateChatSetting({
                 settingId: 'global',
                 setting: data,
             }));
             dispatch(closeModal());
-        } else {
-            // With credentials verification
-            dispatch(updateGlobalSetting(data));
         }
     }
 
@@ -148,7 +147,7 @@ function GlobalSettingModal() {
     }
 
     const exportChat = async () => {
-        const { dialog } = window.require('@electron/remote');
+        const { dialog, app } = window.require('@electron/remote');
         const fs = window.require('fs');
 
         const file = await dialog.showSaveDialog({
@@ -161,10 +160,25 @@ function GlobalSettingModal() {
         const { chatList, chats } = store.getState();
 
         if (file && !file.canceled) {
-            const dataString = JSON.stringify({ chatList, chats }, null, 2);
+            const exportPayload = { version: app.getVersion(), chatList, chats };
+            const dataString = JSON.stringify(exportPayload, null, 2);
             fs.writeFile(file.filePath.toString(), dataString, () => {});
         }
     }
+
+    const showResetPage = () => dispatch(
+        updateChatSetting({
+            settingId: 'global',
+            setting: { status: 'reset' },
+        })
+    )
+
+    const showImportPage = () => dispatch(
+        updateChatSetting({
+            settingId: 'global',
+            setting: { status: 'import' },
+        })
+    )
 
     return (
         <Dialog open fullScreen>
@@ -176,10 +190,11 @@ function GlobalSettingModal() {
                     <FormRow tall={status as any !== 'error'}>
                         <Alert severity='info'>
                             <InfoList>
-                                <li>API credentials - use for connecting to OpenAI services.</li> 
+                                <li>API credentials - use for accessing OpenAI services for response generation.</li> 
                                 <li>Reset App - remove all user data including conversations, settings and API credentials.</li> 
                                 <li>Disconnect - remove API credentials while keeping all other data.</li>
                                 <li>Export Chats - export all conversation history as JSON file.</li>
+                                <li>Import Chats - import conversation history from a previously exported JSON file.</li>
                             </InfoList>
                         </Alert>
                     </FormRow>
@@ -210,16 +225,18 @@ function GlobalSettingModal() {
                     </FormRow>
 
                     <ActionRow>
-                        <ActionButton color='error' variant='contained' onClick={() => dispatch(
-                            updateChatSetting({ settingId: 'global', setting: { status: 'reset' } })
-                        )}> 
+                        <ActionButton color='error' variant='contained' onClick={showResetPage}> 
                             Reset App
                         </ActionButton>
                         <ActionButton color='warning' variant='contained' onClick={() => dispatch(removeAPICredentials())}>
                             Disconnect
                         </ActionButton>
+                    
                         <ActionButton color='success' variant='contained' onClick={exportChat}>
                             Export Chats
+                        </ActionButton>
+                        <ActionButton color='info' variant='contained' onClick={showImportPage}>
+                            Import Chats
                         </ActionButton>
                     </ActionRow>
 
@@ -337,9 +354,8 @@ function GlobalSettingModal() {
                 
                 </Form> 
             }
-            {
-                status === 'reset' && <ResetAppWarning />
-            }
+            { status === 'reset' && <ResetAppWarning /> }
+            { status === 'import' && <ImportChats/> }
             {
                 status === 'verifying' && 
                 <ProgressContainer>

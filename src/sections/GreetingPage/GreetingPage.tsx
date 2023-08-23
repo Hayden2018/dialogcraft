@@ -93,6 +93,7 @@ const SubmitButton = styled(Button)(
 );
 
 const openAIDocUrl = 'https://platform.openai.com/docs/api-reference/completions';
+const videoUrl = 'https://www.youtube.com/watch?v=aVog4J6nIAU';
 
 function GreetingPage() {
 
@@ -148,7 +149,7 @@ function GreetingPage() {
                 </SubmitButton>
 
                 <InfoText>
-                    If you do not have an API Key. You may refer to <a onClick={() => shell.openExternal(openAIDocUrl)}>this</a> video on how to get one. 
+                    If you do not have an API Key. You may refer to <a onClick={() => shell.openExternal(videoUrl)}>this</a> video on how to get one. 
                 </InfoText>
                 <InfoText>
                     The API URL should be from OpenAI or follow the standard specified in OpenAI <a onClick={() => shell.openExternal(openAIDocUrl)}>documentation</a>.

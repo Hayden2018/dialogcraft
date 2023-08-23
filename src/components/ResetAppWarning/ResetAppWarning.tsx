@@ -58,6 +58,15 @@ function ResetAppWarning() {
         dispatch(resetChats());
     }
 
+    const backToSetting = () => {
+        dispatch(
+            updateChatSetting({
+                settingId: 'global',
+                setting: { status: 'ok' }
+            })
+        );
+    }
+
     return (
         <Container>
 
@@ -73,9 +82,7 @@ function ResetAppWarning() {
             </Alert>
 
             <ButtonRow>
-                <ActionButton color='success' variant='contained' onClick={() => dispatch(
-                    updateChatSetting({ settingId: 'global', setting: { status: 'ok' } })
-                )}>
+                <ActionButton color='success' variant='contained' onClick={backToSetting}>
                     Cancel
                 </ActionButton>
                 <ActionButton color='error' variant='contained' onClick={resetApp}>

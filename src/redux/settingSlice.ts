@@ -45,6 +45,22 @@ const settingSlice = createSlice({
             };
             return settings;
         },
+        bulkAddSetting(settings, { payload }) {
+            const { settingIds } = payload;
+            const settingDraft = settings.global;
+            for (const settingId of settingIds) {
+                settings[settingId] = {
+                    currentModel: settingDraft.currentModel,
+                    availableModels: settingDraft.availableModels,
+                    systemPrompt: settingDraft.systemPrompt,
+                    maxContext: settingDraft.maxContext,
+                    temperature: settingDraft.temperature,
+                    topP: settingDraft.topP,
+                    isGobal: false,
+                };
+            }
+            return settings;
+        },
         deleteSetting(settings, { payload }) {
             const { settingId } = payload;
             delete settings[settingId];

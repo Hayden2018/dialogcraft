@@ -1,12 +1,16 @@
 module.exports = {
   packagerConfig: {
+    icon: 'public/icon',
     asar: true,
   },
   rebuildConfig: {},
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        name: 'DialogCraft',
+        title: 'DialogCraft',
+      },
     },
     {
       name: '@electron-forge/maker-zip',

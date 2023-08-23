@@ -22,6 +22,7 @@ const chatListSlice = createSlice({
             return chatList;
         },
         moveChatToTop(chatList, { payload: chatId }: PayloadAction<string>) {
+            chatList.chatOrder = chatList.chatOrder.filter((cid) => cid !== chatId);
             chatList.chatOrder.unshift(chatId);
             return chatList;
         },
@@ -39,6 +40,9 @@ const chatListSlice = createSlice({
                 chatOrder: [],
             }
         },
+        setChatList(_, { payload }) {
+            return payload;
+        },
     }
 })
 
@@ -49,4 +53,5 @@ export const {
     moveChatToTop,
     removeFromList,
     resetChatList,
+    setChatList,
 } = chatListSlice.actions;

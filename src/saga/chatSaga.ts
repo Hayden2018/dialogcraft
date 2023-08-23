@@ -1,6 +1,7 @@
 import { request } from 'http';
 import { eventChannel } from 'redux-saga';
 import { put, take, select, call } from 'redux-saga/effects';
+import { moveChatToTop } from 'redux/chatListSlice';
 import { addRegenerationChunk, addStreamedChunk, addUserMessage } from 'redux/chatsSlice';
 import { openModal } from 'redux/modalSlice';
 import { AppState, ChatMessage, ModalType, SettingConfig } from 'redux/type.d';
@@ -76,6 +77,7 @@ export function* handleUserMessage({ payload } :
     const { chatId } = payload;
 
     yield put(addUserMessage(payload));
+    yield put(moveChatToTop(chatId));
 
     const messageHistory: Array<ChatMessage> = yield select(
         (state: AppState) => state.chats[chatId].messages
