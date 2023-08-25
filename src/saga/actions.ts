@@ -5,7 +5,6 @@ export const actionType = {
     REGENERATE: 'REGENERATE',
     CHAT_IMPORT: 'CHAT_IMPORT',
     GLOBAL_SETTING: 'GLOBAL_SETTING',
-
 }
 
 export function userMessageSent(data: { chatId: string, messageContent: string }) {
@@ -29,9 +28,9 @@ export function updateGlobalSetting(data: SettingConfig) {
     }
 }
 
-export function importChat(filePath: string) {
+export function importChat(data: { mode: string, filePath: string }) {
     return {
         type: actionType.CHAT_IMPORT,
-        payload: filePath,
+        payload: data,
     }
 }

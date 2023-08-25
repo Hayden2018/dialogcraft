@@ -1,10 +1,11 @@
 import ConversationList from 'sections/ConversationList/ConversationList';
 import ChatInterface from 'sections/ChatInterface/ChatInterface';
-import ModalHandler from 'sections/ModalHandler/ModalHandler';
+import GreetingPage from 'sections/GreetingPage/GreetingPage';
+import ModalSwitch from 'sections/ModalSwitch/ModalSwitch';
 import { useSelector } from "react-redux";
 import { AppState } from 'redux/type.d';
 import 'App.css';
-import GreetingPage from 'sections/GreetingPage/GreetingPage';
+
 
 function App() {
 
@@ -16,7 +17,7 @@ function App() {
                 <ConversationList />
                 <ChatInterface />
             </div>
-            <ModalHandler /> 
+            <ModalSwitch /> 
         </>
     )
 

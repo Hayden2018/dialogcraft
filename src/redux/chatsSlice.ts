@@ -23,7 +23,7 @@ const chatsSlice = createSlice({
             const { chatId, messageContent } = payload;
             chats[chatId].messages.push({
                 id: uuidv4(),
-                time: new Date(),
+                time: new Date().getTime(),
                 role: 'user',
                 content: messageContent,
                 editedContent: '',
@@ -45,7 +45,7 @@ const chatsSlice = createSlice({
                 targetChat.streamingMsgId = messageId;
                 targetChat.messages.push({
                     id: messageId,
-                    time: new Date(),
+                    time: new Date().getTime(),
                     role: 'assistant',
                     content: delta,
                     editedContent: '',
@@ -73,7 +73,7 @@ const chatsSlice = createSlice({
                 targetChat.rollbackMessage = targetChat.messages[targetMsgIndex];
                 targetChat.messages[targetMsgIndex] = {
                     id: msgId,
-                    time: new Date(),
+                    time: new Date().getTime(),
                     role: 'assistant',
                     content: delta,
                     editedContent: '',
@@ -140,4 +140,5 @@ export const {
     deleteChat,
     deleteMessage,
     resetChats,
+    setChats,
 } = chatsSlice.actions;

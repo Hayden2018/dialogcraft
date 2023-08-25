@@ -1,6 +1,6 @@
 export type ChatMessage = {
     id: string;
-    time: Date;
+    time: number;
     role: 'assistant' | 'system' | 'user';
     content: string;
     editedContent: string;

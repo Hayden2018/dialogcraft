@@ -12,7 +12,7 @@ import EditMessageModal from "components/EditMessageModal/EditMessageModal";
 import InfoModal from "components/InfoModal/InfoModal";
 
 
-function ModalHandler() {
+function ModalSwitch() {
 
     const dispatch = useDispatch();
     
@@ -80,4 +80,4 @@ function ModalHandler() {
 }
 
 
-export default ModalHandler;
+export default ModalSwitch;

@@ -49,6 +49,7 @@ const settingSlice = createSlice({
             const { settingIds } = payload;
             const settingDraft = settings.global;
             for (const settingId of settingIds) {
+                if (settings[settingId]) continue;
                 settings[settingId] = {
                     currentModel: settingDraft.currentModel,
                     availableModels: settingDraft.availableModels,
@@ -93,6 +94,7 @@ const settingSlice = createSlice({
 export default settingSlice.reducer;
 export const { 
     updateChatSetting,
+    bulkAddSetting,
     addSetting,
     deleteSetting,
     updateModelList,

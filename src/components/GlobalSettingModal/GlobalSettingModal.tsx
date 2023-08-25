@@ -147,22 +147,25 @@ function GlobalSettingModal() {
     }
 
     const exportChat = async () => {
-        const { dialog, app } = window.require('@electron/remote');
+        const { dialog, app, getCurrentWindow } = window.require('@electron/remote');
         const fs = window.require('fs');
 
-        const file = await dialog.showSaveDialog({
-            title: 'Save',
-            defaultPath: 'chats.json',
-            buttonLabel: 'Save',
-            filters: [{ name: 'json', extensions: ['json'] }],
-        });
+        const file = await dialog.showSaveDialog(
+            getCurrentWindow(),
+            {
+                title: 'Export',
+                defaultPath: 'chats.json',
+                buttonLabel: 'Save',
+                filters: [{ name: 'json', extensions: ['json'] }],
+            }
+        );
 
         const { chatList, chats } = store.getState();
 
         if (file && !file.canceled) {
             const exportPayload = { version: app.getVersion(), chatList, chats };
             const dataString = JSON.stringify(exportPayload, null, 2);
-            fs.writeFile(file.filePath.toString(), dataString, () => {});
+            fs.writeFile(file.filePath.toString(), dataString, () => dispatch(closeModal()));
         }
     }
 
@@ -187,7 +190,7 @@ function GlobalSettingModal() {
                 <Form onSubmit={handleSubmit(onSubmit)}>
                     <FormHeader>Settings</FormHeader>
 
-                    <FormRow tall={status as any !== 'error'}>
+                    <FormRow tall={status !== 'error'}>
                         <Alert severity='info'>
                             <InfoList>
                                 <li>API credentials - use for accessing OpenAI services for response generation.</li> 
@@ -354,8 +357,6 @@ function GlobalSettingModal() {
                 
                 </Form> 
             }
-            { status === 'reset' && <ResetAppWarning /> }
-            { status === 'import' && <ImportChats/> }
             {
                 status === 'verifying' && 
                 <ProgressContainer>
@@ -363,6 +364,11 @@ function GlobalSettingModal() {
                     <LinearProgress />
                 </ProgressContainer>
             }
+            { 
+                status?.startsWith('import') && 
+                <ImportChats status={status}/> 
+            }
+            { status === 'reset' && <ResetAppWarning /> }
         </Dialog>
     )
 }
