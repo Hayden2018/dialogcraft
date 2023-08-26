@@ -1,15 +1,17 @@
 import Dialog from '@mui/material/Dialog';
 import { useDispatch, useSelector } from "react-redux";
-import { closeModal } from "redux/modalSlice";
 import { useForm } from 'react-hook-form';
 import { TextField, FormControlLabel, Slider, Button, Select, Switch, MenuItem, Alert, LinearProgress } from '@mui/material';
 import { styled } from '@mui/system';
-import { AppState, SettingConfig } from 'redux/type.d';
+
+import { toggleTheme, updateChatSetting } from 'redux/settingSlice';
+import { AppState, SettingConfig, SettingStatus } from 'redux/type.d';
 import { updateGlobalSetting } from 'saga/actions';
-import { removeAPICredentials, updateChatSetting } from 'redux/settingSlice';
+import { closeModal } from 'redux/modalSlice';
+import { useDataActions } from './GlobalSettingModalHook';
 import ResetAppWarning from 'components/ResetAppWarning/ResetAppWarning';
-import { store } from 'redux/store';
 import ImportChats from 'components/ChatImport/ChatImport';
+
 
 const Form = styled('form')(
     ({ theme }) => ({
@@ -22,13 +24,13 @@ const Form = styled('form')(
 );
 
 const FormHeader = styled('div')(
-    ({ theme }) => ({
-        backgroundColor: '#383838',
+    ({ theme: { palette } }) => ({
+        backgroundColor: palette.mode === 'dark' ? '#383838' : '#fdfdfd',
         zIndex: 100,
         textAlign: 'center',
         fontSize: 30,
         lineHeight: '58px',
-        borderBottom: `1px solid ${theme.palette.grey[500]}`,
+        borderBottom: `1px solid ${palette.grey[500]}`,
         marginBottom: 22,
         position: 'sticky',
         top: 0,
@@ -59,7 +61,7 @@ const SliderTop = styled('div')(
 
 const SubmitRow = styled('div')(
     ({ theme }) => ({
-        margin: '20px 0px 30px',
+        margin: '20px 0px 35px',
         display: 'flex',
         justifyContent: 'center',
         gap: 20,
@@ -91,9 +93,10 @@ const ActionButton = styled(Button)(
 
 
 const ProgressContainer = styled('div')(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
         marginTop: 'calc(50vh - 120px)',
         textAlign: 'center',
+        color: palette.mode === 'dark' ? '#ffffff' : '#121212',
         '& p': {
             fontSize: 22,
             margin: 36,
@@ -111,7 +114,7 @@ function GlobalSettingModal() {
     const dispatch = useDispatch();
 
     const globalSettings: SettingConfig = useSelector((state: AppState) => state.setting.global);
-    const { status } = globalSettings;
+    const { status, darkMode } = globalSettings;
 
     const { register, handleSubmit, watch, setValue, formState: { dirtyFields } } = useForm<SettingConfig>({
         defaultValues: globalSettings,
@@ -123,6 +126,7 @@ function GlobalSettingModal() {
     const topP = watch('topP');
 
     const onSubmit = (data: SettingConfig) => {
+        delete data.darkMode;
         data.systemPrompt = data.systemPrompt.trim();
         if (dirtyFields.baseURL || dirtyFields.apiKey) {
             // API credentials verification
@@ -141,59 +145,22 @@ function GlobalSettingModal() {
         // Revert to original status
         dispatch(updateChatSetting({
             settingId: 'global',
-            setting: { status: 'ok' },
+            setting: { status: SettingStatus.OK },
         }));
         dispatch(closeModal());
     }
 
-    const exportChat = async () => {
-        const { dialog, app, getCurrentWindow } = window.require('@electron/remote');
-        const fs = window.require('fs');
-
-        const file = await dialog.showSaveDialog(
-            getCurrentWindow(),
-            {
-                title: 'Export',
-                defaultPath: 'chats.json',
-                buttonLabel: 'Save',
-                filters: [{ name: 'json', extensions: ['json'] }],
-            }
-        );
-
-        const { chatList, chats } = store.getState();
-
-        if (file && !file.canceled) {
-            const exportPayload = { version: app.getVersion(), chatList, chats };
-            const dataString = JSON.stringify(exportPayload, null, 2);
-            fs.writeFile(file.filePath.toString(), dataString, () => dispatch(closeModal()));
-        }
-    }
-
-    const showResetPage = () => dispatch(
-        updateChatSetting({
-            settingId: 'global',
-            setting: { status: 'reset' },
-        })
-    )
-
-    const showImportPage = () => dispatch(
-        updateChatSetting({
-            settingId: 'global',
-            setting: { status: 'import' },
-        })
-    )
+    const { disconnectApp, showResetPage, showImportPage, exportChat } = useDataActions();
 
     return (
         <Dialog open fullScreen>
             { 
-                (status === 'ok' || status === 'error') && 
+                (status === SettingStatus.OK || status === SettingStatus.ERROR) && 
                 <Form onSubmit={handleSubmit(onSubmit)}>
                     <FormHeader>Settings</FormHeader>
-
-                    <FormRow tall={status !== 'error'}>
+                    <FormRow tall={status !== SettingStatus.ERROR}>
                         <Alert severity='info'>
                             <InfoList>
-                                <li>API credentials - use for accessing OpenAI services for response generation.</li> 
                                 <li>Reset App - remove all user data including conversations, settings and API credentials.</li> 
                                 <li>Disconnect - remove API credentials while keeping all other data.</li>
                                 <li>Export Chats - export all conversation history as JSON file.</li>
@@ -201,16 +168,14 @@ function GlobalSettingModal() {
                             </InfoList>
                         </Alert>
                     </FormRow>
-
                     {
-                        status === 'error' &&
+                        status === SettingStatus.ERROR &&
                         <FormRow>
                             <Alert severity='error'>
-                                Verification failed. Please make sure your API credentails are correct and device connected to the internet.
+                                Verification failed. Please make sure your API credentials are correct and device connected to the internet.
                             </Alert>
                         </FormRow>
                     }
-
                     <FormRow>
                         <TextField
                             fullWidth
@@ -226,15 +191,13 @@ function GlobalSettingModal() {
                             {...register('apiKey')}
                         />
                     </FormRow>
-
                     <ActionRow>
                         <ActionButton color='error' variant='contained' onClick={showResetPage}> 
                             Reset App
                         </ActionButton>
-                        <ActionButton color='warning' variant='contained' onClick={() => dispatch(removeAPICredentials())}>
+                        <ActionButton color='warning' variant='contained' onClick={disconnectApp}>
                             Disconnect
                         </ActionButton>
-                    
                         <ActionButton color='success' variant='contained' onClick={exportChat}>
                             Export Chats
                         </ActionButton>
@@ -242,7 +205,6 @@ function GlobalSettingModal() {
                             Import Chats
                         </ActionButton>
                     </ActionRow>
-
                     <FormRow>
                         <Alert severity='info'>
                             <InfoList>
@@ -252,7 +214,6 @@ function GlobalSettingModal() {
                             </InfoList>
                         </Alert>
                     </FormRow>
-
                     <FormRow>
                         <p style={{ margin: '0px 0px 5px 5px' }}>Default GPT Model</p>
                         <Select 
@@ -267,7 +228,6 @@ function GlobalSettingModal() {
                             }
                         </Select>
                     </FormRow>
-
                     <FormRow narrow tall>
                         <SliderTop>
                             <span>Temperature</span>
@@ -281,7 +241,6 @@ function GlobalSettingModal() {
                             aria-labelledby='temperature-slider'
                         />
                     </FormRow>
-
                     <FormRow narrow tall>
                         <SliderTop>
                             <span>Top P</span>
@@ -295,7 +254,6 @@ function GlobalSettingModal() {
                             aria-labelledby='topP-slider'
                         />
                     </FormRow>
-
                     <FormRow tall>
                         <Alert severity='info'>
                             <InfoList>
@@ -307,7 +265,6 @@ function GlobalSettingModal() {
                             </InfoList>
                         </Alert>
                     </FormRow>
-                    
                     <FormRow>
                         <TextField
                             label='System Prompt'
@@ -317,7 +274,6 @@ function GlobalSettingModal() {
                             {...register('systemPrompt')}
                         />
                     </FormRow>
-
                     <FormRow narrow tall>
                         <SliderTop>
                             <span>Maximum context messages</span>
@@ -331,21 +287,24 @@ function GlobalSettingModal() {
                             aria-labelledby='topP-slider'
                         />
                     </FormRow>
-
                     <FormRow>
                         <Alert severity='info'>
                             <li>Press <b>{ enterSend ?  'Enter' : 'Shift + Enter' }</b> to send your message.</li>
                             <li>Press <b>{ enterSend ?  'Shift + Enter' : 'Enter' }</b> to add a new line in your message.</li>
                         </Alert>
                     </FormRow>
-
                     <FormRow narrow>
                         <FormControlLabel
                             control={<Switch {...register('enterSend')} checked={enterSend}/>}
-                            label='Press Enter to send message'
+                            label='Press Enter to Send Messages'
                         />
                     </FormRow>
-
+                    <FormRow narrow>
+                        <FormControlLabel
+                            control={<Switch onClick={() => dispatch(toggleTheme())} checked={darkMode}/>}
+                            label='Enable Dark Mode'
+                        />
+                    </FormRow>
                     <SubmitRow>
                         <SubmitButton color='warning' variant='contained' onClick={onDiscard}>
                             Discard
@@ -354,21 +313,20 @@ function GlobalSettingModal() {
                             Save
                         </SubmitButton>
                     </SubmitRow>
-                
                 </Form> 
             }
             {
-                status === 'verifying' && 
+                status === SettingStatus.VERIFYING && 
                 <ProgressContainer>
                     <p>Verifying your API credentials...</p>
                     <LinearProgress />
                 </ProgressContainer>
             }
             { 
-                status?.startsWith('import') && 
-                <ImportChats status={status}/> 
+                (status === SettingStatus.IMPORT || status === SettingStatus.IMPORT_ERROR || status === SettingStatus.IMPORT_SUCCESS) && 
+                <ImportChats /> 
             }
-            { status === 'reset' && <ResetAppWarning /> }
+            { status === SettingStatus.RESET && <ResetAppWarning /> }
         </Dialog>
     )
 }

@@ -2,7 +2,7 @@ import { put, select } from "redux-saga/effects";
 import { setChatList } from "redux/chatListSlice";
 import { setChats } from "redux/chatsSlice";
 import { bulkAddSetting, updateChatSetting } from "redux/settingSlice";
-import { AppState, Chat, ChatList } from "redux/type";
+import { AppState, Chat, ChatList, SettingStatus } from "redux/type.d";
 
 
 function validateImportData(
@@ -61,7 +61,7 @@ export function* handleChatMerge({ payload } :
             yield put(
                 updateChatSetting({
                     settingId: 'global',
-                    setting: { status: 'import-success' },
+                    setting: { status: SettingStatus.IMPORT_SUCCESS },
                 })
             );
             return;
@@ -112,7 +112,7 @@ export function* handleChatMerge({ payload } :
         yield put(
             updateChatSetting({
                 settingId: 'global',
-                setting: { status: 'import-success' },
+                setting: { status: SettingStatus.IMPORT_SUCCESS },
             })
         );
 
@@ -120,7 +120,7 @@ export function* handleChatMerge({ payload } :
         yield put(
             updateChatSetting({
                 settingId: 'global',
-                setting: { status: 'import-error' },
+                setting: { status: SettingStatus.IMPORT_ERROR },
             })
         );
     }

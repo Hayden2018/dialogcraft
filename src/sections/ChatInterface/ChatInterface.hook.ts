@@ -36,12 +36,16 @@ export const useMessageActions = (currentChat: Chat | null) => {
         setDraft('');
     }
 
-    const regenerate = () => dispatch(
-        triggerRegenerate({
-            chatId: currentChat?.id,
-            msgId: currentChat?.messages.at(-1)?.id,
-        })
-    );
+    const regenerate = () => {
+        if (currentChat!.messages.at(-1)) {
+            dispatch(
+                triggerRegenerate({
+                    chatId: currentChat!.id,
+                    msgId: currentChat!.messages.at(-1)!.id,
+                })
+            );
+        }
+    }
 
     const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {

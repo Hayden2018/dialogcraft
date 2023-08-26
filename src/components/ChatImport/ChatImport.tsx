@@ -1,17 +1,19 @@
-import { useDispatch } from "react-redux";
+import { useDispatch } from 'react-redux';
 import { Button, Alert } from '@mui/material';
-import { styled } from '@mui/system';
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
-import { ChangeEvent, useState } from "react";
+import { styled } from '@mui/system';
+
 import { updateChatSetting } from 'redux/settingSlice';
-import { importChat } from "saga/actions";
 import { ReactComponent as TickIcon } from './tick.svg';
-import { closeModal } from "redux/modalSlice";
+import { useChatImport } from './ChatImportHook';
+import { closeModal } from 'redux/modalSlice';
+import { SettingStatus } from 'redux/type.d';
+
 
 const Container = styled('div')(
     ({ theme }) => ({
         margin: '20px auto',
-        width: 595,
+        width: 590,
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'column',
@@ -60,52 +62,36 @@ const CancelButton = styled(Button)(
     })
 );
 
-function ImportChats({ status } : { status: string }) {
+function ImportChats() {
 
     const dispatch = useDispatch();
 
-    const [importMode, setImportMode] = useState<string>('merge');
-
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setImportMode(event.target.value);
-    }
+    const { importStatus, importMode, onModeChange, importJSON } = useChatImport();
 
     const backToChats = () => {
         dispatch(closeModal());
         dispatch(
             updateChatSetting({
                 settingId: 'global',
-                setting: { status: 'ok' },
+                setting: { status: SettingStatus.OK },
             })
         );
     }
 
-    const importJSON = async () => {
-        const { dialog, getCurrentWindow } = window.require('@electron/remote');
-        const file = await dialog.showOpenDialog(
-            getCurrentWindow(),
-            {
-                title: 'Import',
-                buttonLabel: 'Import',
-                filters: [{ name: 'json', extensions: ['json'] }],
-            }
+    const backToSetting = () => {
+        dispatch(
+            updateChatSetting({
+                settingId: 'global',
+                setting: { status: SettingStatus.OK },
+            })
         );
-
-        if (file && !file.canceled) {
-            dispatch(
-                importChat({
-                    filePath: file.filePaths[0],
-                    mode: importMode,
-                })
-            );
-        }
     }
 
-    if (status === 'import-success') return (
+    if (importStatus === SettingStatus.IMPORT_SUCCESS) return (
         <Container>
             <h1>Import successful</h1>
             <SuccessIcon />
-            <SuccessMessage>Chats import successful. Please note that chats are ordered by time with older imported chats appearing further down the list.</SuccessMessage>
+            <SuccessMessage>Chats import successful. Note that chats are arranged in time order with older imported chats appearing further down the list.</SuccessMessage>
             <ButtonRow>
                 <CancelButton variant='contained' onClick={backToChats}>
                     Complete
@@ -124,12 +110,12 @@ function ImportChats({ status } : { status: string }) {
                 </Alert>
             }
             {
-                status === 'import-error' &&
+                importStatus === SettingStatus.IMPORT_ERROR &&
                 <Alert severity='error' style={{ margin: '-10px 6px 6px -6px' }}>
                     Invalid file format. Make sure the file is previously exported from this app.
                 </Alert>
             }
-            <RadioGroup value={importMode} onChange={handleChange}>
+            <RadioGroup value={importMode} onChange={onModeChange}>
                 <FormControlLabel
                     value='merge'
                     control={<Radio />}
@@ -141,9 +127,8 @@ function ImportChats({ status } : { status: string }) {
                     label='Replace all existing conversations with imported conversations'
                 />
             </RadioGroup>
-
             <ButtonRow>
-                <CancelButton color='success' variant='contained' onClick={backToChats}>
+                <CancelButton color='success' variant='contained' onClick={backToSetting}>
                     Cancel
                 </CancelButton>
                 <ImportButton color={importMode === 'merge' ? 'info' : 'warning'} variant='contained' onClick={importJSON}>

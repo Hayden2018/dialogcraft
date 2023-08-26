@@ -1,6 +1,6 @@
 {
   "name": "dialogcraft",
-  "version": "0.8.0",
+  "version": "0.9.1",
   "author": "Hayden Chiu",
   "description": "Chat client for GPT API",
   "main": "electron-src/main.js",
@@ -28,6 +28,7 @@
     "redux": "^4.2.1",
     "redux-persist": "^6.0.0",
     "redux-saga": "^1.2.3",
+    "sass": "^1.66.1",
     "typescript": "^4.9.5",
     "uuid": "^9.0.0",
     "yield-stream": "^3.1.0"

@@ -50,15 +50,26 @@ export type AppState = {
     setting: Record<string, SettingConfig>,
 }
 
+export enum SettingStatus {
+    OK = 'OK',
+    NO_KEY = 'NO_KEY',
+    VERIFYING = 'VERIFYING',
+    ERROR = 'ERROR',
+    RESET = 'RESET',
+    IMPORT = 'IMPORT',
+    IMPORT_ERROR = 'IMPORT_ERROR',
+    IMPORT_SUCCESS = 'IMPORT_SUCCESS',
+}
+
 export type SettingConfig = {
     currentModel: string;
     temperature: number;
     topP: number;
     systemPrompt: string;
     maxContext: number;
-    isGobal: boolean;
+    darkMode?: boolean; 
     availableModels: Array<string>;
-    status?: 'ok' | 'noKey' | 'reset' | 'import' | 'verifying' | 'error';
+    status?: SettingStatus;
     enterSend?: boolean;
     apiKey?: string;
     baseURL?: string;

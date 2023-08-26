@@ -11,12 +11,12 @@ import { openModal } from 'redux/modalSlice';
 import { ModalType } from 'redux/type.d';
 
 const Container = styled('div')(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
         display: 'inline-block',
         height: '100vh',
         width: 345,
-        borderRight: `1px solid ${theme.palette.grey[800]}`,
-        background: theme.palette.grey[900],
+        borderRight: `1px solid ${palette.grey[palette.mode === 'dark' ? 800 : 300]}`,
+        background: palette.grey[palette.mode === 'dark' ? 900 : 100],
     })
 );
 

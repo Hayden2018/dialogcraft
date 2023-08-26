@@ -14,17 +14,17 @@ interface ContainerProps {
 }
 
 const TitleContainer = styled('div')<ContainerProps>(
-    ({ theme, edit, isCurrent }) => ({
+    ({ theme: { palette }, edit, isCurrent }) => ({
         display: edit ? 'none' : 'block',
         width: 'calc(100% - 20px)',
         margin: '8px auto',
-        padding: '8px 12px',
+        padding: '8px 12px 2px',
         overflow: 'auto',
         borderRadius: 8,
         height: 47,
-        background: isCurrent && theme.palette.grey[700],
+        background: isCurrent && palette.grey[palette.mode === 'dark' ? 700 : 300],
         ':hover': {
-            background: theme.palette.grey[800],
+            background: palette.grey[palette.mode === 'dark' ? 800 : 200],
             'div': {
                 width: 'calc(100% - 60px)',
             },
@@ -36,19 +36,19 @@ const TitleContainer = styled('div')<ContainerProps>(
 );
 
 const TitleEditContainer = styled('div')<ContainerProps>(
-    ({ theme, edit }) => ({
+    ({ theme: { palette }, edit }) => ({
         display: edit ? 'block' : 'none',
         width: 'calc(100% - 20px)',
         margin: '8px auto',
-        padding: '8px 12px',
+        padding: '8px 12px 2px',
         borderRadius: 8,
         height: 47,
-        background: theme.palette.grey[800],
+        background: palette.grey[palette.mode === 'dark' ? 700 : 300],
     })
 );
 
 const Title = styled('div')(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
         width: '100%',
         display: 'inline-block',
         verticalAlign: 'top',
@@ -57,74 +57,75 @@ const Title = styled('div')(
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+        color: palette.mode === 'dark' ? '#ffffff' : '#121212',
     })
 );
 
 const TitleInput = styled('input')(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
         verticalAlign: 'top',
         marginTop: 3,
         fontSize: 'inherit',
-        color: 'inherit',
+        color: palette.mode === 'dark' ? '#ffffff' : '#121212',
         width: 'calc(100% - 60px)',
-        backgroundColor: 'transparent',
-        borderBottom: `1px solid ${theme.palette.grey[500]}`,
+        background: 'transparent',
+        borderBottom: `1px solid ${palette.grey[500]}`,
         border: 'none',
         outline: 'none',
         '&:focus': {
-            borderBottom: `1px solid ${theme.palette.grey[500]}`,
+            borderBottom: `1px solid ${palette.grey[500]}`,
         },
     })
 );
 
 const EditButton = styled(EditIcon)(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
         display: 'none',
         width: 20,
         height: 20,
         margin: '3px 0px 0px 10px',
-        stroke: theme.palette.grey[600],
+        stroke: palette.grey[500],
         '&:hover': {
-            stroke: theme.palette.grey[300],
+            stroke: palette.grey[palette.mode === 'dark' ? 300 : 700],
         }
     })
 );
 
 const DeleteButton = styled(DeleteIcon)(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
         display: 'none',
         width: 20,
         height: 20,
         margin: '3px 0px 0px 10px',
-        fill: theme.palette.grey[600],
+        fill: palette.grey[500],
         '&:hover': {
-            fill: theme.palette.grey[300],
+            fill: palette.grey[palette.mode === 'dark' ? 300 : 700],
         }
     })
 );
 
 const CrossButton = styled(CrossIcon)(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
         display: 'inline-block',
         width: 18,
         height: 18,
         margin: '4px 0px 0px 10px',
-        fill: theme.palette.grey[600],
+        fill: palette.grey[500],
         '&:hover': {
-            fill: theme.palette.grey[300],
+            fill: palette.grey[palette.mode === 'dark' ? 300 : 700],
         }
     })
 );
 
 const TickButton = styled(TickIcon)(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
         display: 'inline-block',
         width: 20,
         height: 20,
         margin: '3px 0px 0px 10px',
-        fill: theme.palette.grey[600],
+        fill: palette.grey[500],
         '&:hover': {
-            fill: theme.palette.grey[300],
+            fill: palette.grey[palette.mode === 'dark' ? 300 : 700],
         }
     })
 );

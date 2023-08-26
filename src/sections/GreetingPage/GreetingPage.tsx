@@ -2,9 +2,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm } from 'react-hook-form';
 import { TextField, Button, Alert, LinearProgress } from '@mui/material';
 import { styled } from '@mui/system';
-import { AppState, SettingConfig } from 'redux/type.d';
+
+import { AppState, SettingConfig, SettingStatus } from 'redux/type.d';
 import { updateGlobalSetting } from "saga/actions";
-import { ReactComponent as AppIcon } from './logo.svg';
+import { ReactComponent as AppIcon } from "./logo.svg";
 
 const { shell } = window.require('electron');
 
@@ -20,9 +21,9 @@ const GreetingContainer = styled('div')(
 );
 
 const AppTitle= styled('h1')(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
         textAlign: 'center',
-        color: theme.palette.grey[200],
+        color: palette.grey[palette.mode === 'dark' ? 200 : 800],
         '& > svg': {
             height: 45,
             width: 45,
@@ -40,15 +41,15 @@ const CredentialInput = styled(TextField)(
 );
 
 const InfoText = styled('p')(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
         width: 720,
         margin: '0px auto',
         textAlign: 'center',
-        color: theme.palette.grey[400],
+        color: palette.grey[palette.mode === 'dark' ? 400 : 600],
         fontSize: 14,
         '& > a': {
             cursor: 'pointer',
-            color: theme.palette.primary.main,
+            color: palette.primary.main,
             '&:hover': {
                 textDecoration: 'underline',
             },
@@ -109,7 +110,7 @@ function GreetingPage() {
         dispatch(updateGlobalSetting(data as SettingConfig));
     }
 
-    if (status === 'verifying') return (
+    if (status === SettingStatus.VERIFYING) return (
         <GreetingContainer>
             <ProgressContainer>
                 <p>Verifying your API credentials...</p>
@@ -139,7 +140,7 @@ function GreetingPage() {
                     helperText={errors.apiKey?.message}
                 />
                 {
-                    status === 'error' &&
+                    status === SettingStatus.ERROR &&
                     <ErrorAlert severity='error'>
                         Verification failed. Please check your API credentails and internet connection.
                     </ErrorAlert>
@@ -147,7 +148,6 @@ function GreetingPage() {
                 <SubmitButton variant='contained' type='submit'>
                     Connect
                 </SubmitButton>
-
                 <InfoText>
                     If you do not have an API Key. You may refer to <a onClick={() => shell.openExternal(videoUrl)}>this</a> video on how to get one. 
                 </InfoText>
@@ -157,7 +157,6 @@ function GreetingPage() {
                 <InfoText>
                     Your API Key will be securely stored on this device. This application does not interact with any outside systems except the URL you provided above.
                 </InfoText>
-
             </GreetingContainer>
         </form>
     )

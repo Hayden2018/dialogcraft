@@ -1,9 +1,10 @@
-import { useDispatch } from "react-redux";
+import { useDispatch } from 'react-redux';
 import { Button, Alert } from '@mui/material';
 import { styled } from '@mui/system';
 import { resetSettings, updateChatSetting } from 'redux/settingSlice';
 import { resetChatList } from 'redux/chatListSlice';
 import { resetChats } from 'redux/chatsSlice';
+import { SettingStatus } from "redux/type.d";
 
 const Container = styled('div')(
     ({ theme }) => ({
@@ -62,7 +63,7 @@ function ResetAppWarning() {
         dispatch(
             updateChatSetting({
                 settingId: 'global',
-                setting: { status: 'ok' }
+                setting: { status: SettingStatus.OK }
             })
         );
     }

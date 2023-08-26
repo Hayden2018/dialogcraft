@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { SettingConfig } from 'redux/type.d';
+import { SettingConfig, SettingStatus } from 'redux/type.d';
 
 const initialGlobalSetting: SettingConfig = {
     availableModels: [],
@@ -8,9 +8,9 @@ const initialGlobalSetting: SettingConfig = {
     topP: 1,
     systemPrompt: '',
     maxContext: 50,
-    status: 'noKey',
-    isGobal: true,
-    enterSend: false,
+    status: SettingStatus.NO_KEY,
+    darkMode: true,
+    enterSend: true,
     baseURL: 'https://api.openai.com',
     apiKey: '',
 }
@@ -41,7 +41,6 @@ const settingSlice = createSlice({
                 maxContext: settingDraft.maxContext,
                 temperature: settingDraft.temperature,
                 topP: settingDraft.topP,
-                isGobal: false,
             };
             return settings;
         },
@@ -57,7 +56,6 @@ const settingSlice = createSlice({
                     maxContext: settingDraft.maxContext,
                     temperature: settingDraft.temperature,
                     topP: settingDraft.topP,
-                    isGobal: false,
                 };
             }
             return settings;
@@ -77,10 +75,14 @@ const settingSlice = createSlice({
             }
             return settings;
         },
+        toggleTheme(settings) {
+            settings.global.darkMode = !settings.global.darkMode;
+            return settings;
+        },
         removeAPICredentials(settings) {
             settings.global.baseURL = 'https://api.openai.com';
             settings.global.apiKey = '';
-            settings.global.status = 'noKey';
+            settings.global.status = SettingStatus.NO_KEY;
             return settings;
         },
         resetSettings() {
@@ -98,6 +100,7 @@ export const {
     addSetting,
     deleteSetting,
     updateModelList,
+    toggleTheme,
     removeAPICredentials,
     resetSettings,
 } = settingSlice.actions;

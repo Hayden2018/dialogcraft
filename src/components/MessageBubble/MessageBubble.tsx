@@ -22,26 +22,27 @@ const LeftAligner = styled('div')(
 );
 
 const BotMessageContainer = styled('div')(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
         width: 'fit-content',
         maxWidth: 'calc(100% - 150px)',
         borderRadius: 10,
-        background: theme.palette.grey[800],
+        background: palette.grey[palette.mode === 'dark' ? 800 : 200],
         padding: '8px 12px',
         margin: '0px 18px',
+        color: palette.mode === 'dark' ? '#ffffff' : '#000000',
     })
 );
 
 const UserMessageContainer = styled('div')(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
         textAlign: 'left',
         width: 'fit-content',
         maxWidth: 'calc(100% - 150px)',
         borderRadius: 10,
         padding: '8px 12px',
         margin: '0px 16px',
-        color: theme.palette.grey[900],
-        background: theme.palette.primary.light,
+        color: '#121212',
+        background: '#A2D5FF',
     })
 );
 

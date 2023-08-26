@@ -17,13 +17,14 @@ const Form = styled('form')(
 );
 
 const FormHeader = styled('div')(
-    ({ theme }) => ({
-        backgroundColor: '#383838',
+    ({ theme: { palette } }) => ({
+        backgroundColor: palette.mode === 'dark' ? '#383838' : '#fdfdfd',
         zIndex: 100,
         textAlign: 'center',
         fontSize: 23,
-        lineHeight: '50px',
-        borderBottom: `1px solid ${theme.palette.grey[500]}`,
+        lineHeight: '48px',
+        paddingTop: 2,
+        borderBottom: `1px solid ${palette.grey[500]}`,
         marginBottom: 20,
         position: 'sticky',
         top: 0,

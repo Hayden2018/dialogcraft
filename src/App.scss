@@ -1,0 +1,69 @@
+body {
+    background-color: #FDFDFD !important;
+
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+      
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        border-radius: 4px;
+        background: #B5B5B5;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #A2A2A2;
+    }
+}
+
+body.dark {
+    background-color: #121212 !important;
+
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+      
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        border-radius: 4px;
+        background: #636363;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #727272;
+    }
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../public/font/Roboto-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../public/font/Roboto-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../public/font/Roboto-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../public/font/Roboto-BoldItalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}

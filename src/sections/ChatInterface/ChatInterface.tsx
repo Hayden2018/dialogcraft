@@ -20,10 +20,10 @@ const ChatContainer = styled('div')(
 );
 
 const HeaderBanner = styled('div')(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
         padding: '12px 16px 4px 25px',
-        background: theme.palette.grey[900],
-        borderBottom: `1px solid ${theme.palette.grey[800]}`,
+        background: palette.grey[palette.mode === 'dark' ? 900 : 100],
+        borderBottom: `1px solid ${palette.grey[palette.mode === 'dark' ? 800 : 300]}`,
         height: 'fit-content',
     })
 );
@@ -100,10 +100,11 @@ const RegenerateButton = styled(Button)(
 );
 
 const ProgressContainer = styled('div')(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
         height: 125,
         padding: '10px 50px',
         textAlign: 'center',
+        color: palette.mode === 'dark' ? '#ffffff' : '#121212',
         '& p': {
             fontSize: 20,
         },
@@ -126,9 +127,9 @@ const NoChatIcon = styled(noChatIcon)(
 )
 
 const NoChatInfo = styled('p')(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
         textAlign: 'center',
-        color: theme.palette.grey[500],
+        color: palette.grey[500],
         fontSize: 20,
         margin: 15,
     })

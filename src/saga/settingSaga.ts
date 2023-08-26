@@ -1,7 +1,7 @@
 import { call, put } from "redux-saga/effects";
 import { closeModal } from "redux/modalSlice";
 import { updateChatSetting, updateModelList } from "redux/settingSlice";
-import { SettingConfig } from "redux/type";
+import { SettingConfig, SettingStatus } from "redux/type.d";
 
 async function fetchModelList(url: string, apiKey: string) {
 
@@ -13,23 +13,17 @@ async function fetchModelList(url: string, apiKey: string) {
             }
         });
 
-        if (!response.ok) {
-            throw Error('Unauthorized');
-        }
+        if (!response.ok) throw Error('Unauthorized');
     
-        let { data } = await response.json();
-        data = data.map((model: any) => model.id);
-        data = data.filter((modelId: string) => modelId.includes('gpt'));
-        return { 
-            error: false,
-            data, 
-        };
+        const { data } = await response.json();
+        const availableModels = data
+            .map((model: any) => model.id)
+            .filter((modelId: string) => modelId.includes('gpt'));
+        
+        return { error: false, data: availableModels };
 
     } catch (error) {
-        return {
-            error: true,
-            data: null,
-        };
+        return { error: true, data: null };
     }
 }
 
@@ -43,7 +37,7 @@ export function* handleGlobalSettingUpdate({ payload }:
 
     yield put(updateChatSetting({
         settingId: 'global',
-        setting: { status: 'verifying' },
+        setting: { status: SettingStatus.VERIFYING },
     }));
 
     const { baseURL, apiKey } = payload;
@@ -52,7 +46,7 @@ export function* handleGlobalSettingUpdate({ payload }:
     if (error) {
         yield put(updateChatSetting({
             settingId: 'global',
-            setting: { status: 'error' },
+            setting: { status: SettingStatus.ERROR },
         }));
         return;
     }
@@ -61,7 +55,7 @@ export function* handleGlobalSettingUpdate({ payload }:
         settingId: 'global',
         setting: {
             ...payload,
-            status: 'ok',
+            status: SettingStatus.OK,
         },
     }));
 
