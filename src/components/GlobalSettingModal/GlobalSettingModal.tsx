@@ -96,7 +96,6 @@ const ProgressContainer = styled('div')(
     ({ theme: { palette } }) => ({
         marginTop: 'calc(50vh - 120px)',
         textAlign: 'center',
-        color: palette.mode === 'dark' ? '#ffffff' : '#121212',
         '& p': {
             fontSize: 22,
             margin: 36,

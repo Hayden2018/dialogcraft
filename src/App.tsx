@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import 'App.scss';
 
 import ConversationList from 'sections/ConversationList/ConversationList';
@@ -9,6 +10,7 @@ import { useSelector } from "react-redux";
 import { AppState } from 'redux/type.d';
 import { darkTheme, lightTheme } from 'theme';
 import { useEffect } from 'react';
+
 
 
 function App() {
@@ -23,6 +25,7 @@ function App() {
 
     if (baseURL && apiKey) return (
         <ThemeProvider theme={theme}>
+            <CssBaseline />
             <div>
                 <ConversationList />
                 <ChatInterface />
@@ -33,6 +36,7 @@ function App() {
 
     return (
         <ThemeProvider theme={theme}>
+            <CssBaseline />
             <GreetingPage />
         </ThemeProvider>
     )

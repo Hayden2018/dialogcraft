@@ -57,7 +57,6 @@ const Title = styled('div')(
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-        color: palette.mode === 'dark' ? '#ffffff' : '#121212',
     })
 );
 
@@ -66,7 +65,6 @@ const TitleInput = styled('input')(
         verticalAlign: 'top',
         marginTop: 3,
         fontSize: 'inherit',
-        color: palette.mode === 'dark' ? '#ffffff' : '#121212',
         width: 'calc(100% - 60px)',
         background: 'transparent',
         borderBottom: `1px solid ${palette.grey[500]}`,

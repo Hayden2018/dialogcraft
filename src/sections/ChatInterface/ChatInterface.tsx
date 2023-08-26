@@ -29,7 +29,7 @@ const HeaderBanner = styled('div')(
 );
 
 const ChatTitle = styled('div')(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
         fontSize: 20,
         display: 'inline-block',
         width: 'calc(100% - 360px)',
@@ -104,7 +104,6 @@ const ProgressContainer = styled('div')(
         height: 125,
         padding: '10px 50px',
         textAlign: 'center',
-        color: palette.mode === 'dark' ? '#ffffff' : '#121212',
         '& p': {
             fontSize: 20,
         },
