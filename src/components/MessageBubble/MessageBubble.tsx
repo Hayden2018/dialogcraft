@@ -24,7 +24,7 @@ const LeftAligner = styled('div')(
 const BotMessageContainer = styled('div')(
     ({ theme: { palette } }) => ({
         width: 'fit-content',
-        maxWidth: 'calc(100% - 150px)',
+        maxWidth: 'calc(100% - 120px)',
         borderRadius: 10,
         background: palette.grey[palette.mode === 'dark' ? 800 : 200],
         padding: '8px 12px',
@@ -37,12 +37,12 @@ const UserMessageContainer = styled('div')(
     ({ theme: { palette } }) => ({
         textAlign: 'left',
         width: 'fit-content',
-        maxWidth: 'calc(100% - 150px)',
+        maxWidth: 'calc(100% - 120px)',
         borderRadius: 10,
         padding: '8px 12px',
         margin: '0px 16px',
         color: '#121212',
-        background: '#A2D5FF',
+        background: '#AADCFF',
     })
 );
 

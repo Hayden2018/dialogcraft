@@ -234,7 +234,7 @@ function GlobalSettingModal() {
                         </SliderTop>
                         <Slider
                             min={0}
-                            max={200}
+                            max={100}
                             value={temperature * 100}
                             onChange={(event, newValue) => setValue('temperature', newValue as number / 100)}
                             aria-labelledby='temperature-slider'

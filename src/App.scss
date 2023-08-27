@@ -1,5 +1,5 @@
 body {
-    background-color: #FDFDFD !important;
+    background-color: #FCFCFC !important;
 
     ::-webkit-scrollbar {
         width: 8px;
@@ -11,11 +11,11 @@ body {
     
     ::-webkit-scrollbar-thumb {
         border-radius: 4px;
-        background: #B5B5B5;
+        background: #BCBCBC;
     }
     
     ::-webkit-scrollbar-thumb:hover {
-        background: #A2A2A2;
+        background: #AAAAAA;
     }
 }
 
@@ -32,11 +32,11 @@ body.dark {
     
     ::-webkit-scrollbar-thumb {
         border-radius: 4px;
-        background: #636363;
+        background: #686868;
     }
     
     ::-webkit-scrollbar-thumb:hover {
-        background: #727272;
+        background: #777777;
     }
 }
 

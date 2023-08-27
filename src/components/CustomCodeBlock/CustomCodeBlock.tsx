@@ -1,18 +1,20 @@
-import { styled } from '@mui/system';
-import { CodeBlock, vs2015 } from 'react-code-blocks';
+import { styled, useTheme } from '@mui/system';
+import { CodeBlock, vs2015, googlecode } from 'react-code-blocks';
 
 const CodeBlockHeader = styled('div')(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
         fontSize: 16,
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10,
-        color: theme.palette.text.primary,
-        backgroundColor: '#323232',
-        padding: '10px 12px',
+        color: palette.text.primary,
+        backgroundColor: palette.grey[palette.mode === 'dark' ? 700 : 300],
+        padding: '10px 15px',
     })
 );
 
 function CustomCodeBlock({ language, code, style = {} } : { language: string , code: string, style?: object }) {
+
+    const { palette } = useTheme();
 
     return (
         <div style={style}>
@@ -22,7 +24,7 @@ function CustomCodeBlock({ language, code, style = {} } : { language: string , c
             <CodeBlock
                 language={language}
                 text={code}
-                theme={vs2015}
+                theme={palette.mode === 'dark' ? vs2015 : googlecode}
                 showLineNumbers={false}
                 wrapLongLines={false}
                 startingLineNumber={1}
@@ -31,7 +33,7 @@ function CustomCodeBlock({ language, code, style = {} } : { language: string , c
                     borderRadius: 0,
                     borderBottomRightRadius: 10,
                     borderBottomLeftRadius: 10,
-                }}                   
+                }}          
             />
         </div>
     );

@@ -14,8 +14,8 @@ export const lightTheme: Theme = createTheme({
     palette: { 
         mode: 'light',
         background: {
-            paper: '#FDFDFD',
-            default: '#FDFDFD',
+            paper: '#FCFCFC',
+            default: '#FCFCFC',
         }
     }
 });

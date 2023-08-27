@@ -63,6 +63,7 @@ async function sendResponseStream(window, {
             const dataString = chunk.toString().trim();
             const jsonChunks = parseNoisyJSON(dataString);
             jsonChunks.forEach((data) => {
+                if (!data.choices || data.choices.length === 0) return;
                 window.webContents.send(requestId, data.choices[0]);
             });
         });
