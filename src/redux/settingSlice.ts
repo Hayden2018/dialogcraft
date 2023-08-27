@@ -4,7 +4,7 @@ import { SettingConfig, SettingStatus } from 'redux/type.d';
 const initialGlobalSetting: SettingConfig = {
     availableModels: [],
     currentModel: '',
-    temperature: 1,
+    temperature: 0.7,
     topP: 1,
     systemPrompt: '',
     maxContext: 50,
