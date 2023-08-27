@@ -44,7 +44,6 @@ const TitleEditContainer = styled('div')<ContainerProps>(
         borderRadius: 8,
         height: 47,
         background: palette.grey[palette.mode === 'dark' ? 700 : 300],
-        color: palette.mode === 'dark' ? '#FFFFFF' : '#121212',
     })
 );
 
@@ -69,6 +68,7 @@ const TitleInput = styled('input')(
         width: 'calc(100% - 60px)',
         background: 'transparent',
         borderBottom: `1px solid ${palette.grey[500]}`,
+        color: palette.mode === 'dark' ? '#FFFFFF' : '#121212',
         border: 'none',
         outline: 'none',
         '&:focus': {
