@@ -67,3 +67,10 @@ body.dark {
     font-weight: bold;
     font-style: italic;
 }
+
+@font-face {
+    font-family: 'Consolas';
+    src: url('../public/font/Consolas.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}

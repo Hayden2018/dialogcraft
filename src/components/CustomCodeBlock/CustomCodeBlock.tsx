@@ -21,20 +21,22 @@ function CustomCodeBlock({ language, code, style = {} } : { language: string , c
             <CodeBlockHeader>
                 {language}
             </CodeBlockHeader>
-            <CodeBlock
-                language={language}
-                text={code}
-                theme={palette.mode === 'dark' ? vs2015 : googlecode}
-                showLineNumbers={false}
-                wrapLongLines={false}
-                startingLineNumber={1}
-                customStyle={{
-                    padding: '5px 8px',
-                    borderRadius: 0,
-                    borderBottomRightRadius: 10,
-                    borderBottomLeftRadius: 10,
-                }}          
-            />
+            <div style={{fontFamily: 'Consolas', fontSize: '15px'}}>
+                <CodeBlock
+                    language={language}
+                    text={code}
+                    theme={palette.mode === 'dark' ? vs2015 : googlecode}
+                    showLineNumbers={false}
+                    wrapLongLines={false}
+                    startingLineNumber={1}
+                    customStyle={{
+                        padding: '5px 8px',
+                        borderRadius: 0,
+                        borderBottomRightRadius: 10,
+                        borderBottomLeftRadius: 10,
+                    }}          
+                />
+            </div>
         </div>
     );
 }
