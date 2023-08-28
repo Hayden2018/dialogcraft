@@ -7,7 +7,7 @@ import { AppState, SettingConfig, SettingStatus } from 'redux/type.d';
 import { updateGlobalSetting } from "saga/actions";
 import { ReactComponent as AppIcon } from "./logo.svg";
 
-const { shell } = window.require('electron');
+const { shell = null } = window.isElectron ? window.require('electron') : { };
 
 const GreetingContainer = styled('div')(
     ({ theme }) => ({
@@ -110,6 +110,14 @@ function GreetingPage() {
         dispatch(updateGlobalSetting(data as SettingConfig));
     }
 
+    const openLink = (url: string) => {
+        if (window.isElectron) {
+            shell.openExternal(url);
+        } else {
+            window.open(url);
+        }
+    }
+
     if (status === SettingStatus.VERIFYING) return (
         <GreetingContainer>
             <ProgressContainer>
@@ -149,10 +157,10 @@ function GreetingPage() {
                     Connect
                 </SubmitButton>
                 <InfoText>
-                    If you do not have an API Key. You may refer to <a onClick={() => shell.openExternal(videoUrl)}>this</a> video on how to get one. 
+                    If you do not have an API Key. You may refer to <a onClick={() => openLink(videoUrl)}>this</a> video on how to get one. 
                 </InfoText>
                 <InfoText>
-                    The API URL should be from OpenAI or follow the standard specified in OpenAI <a onClick={() => shell.openExternal(openAIDocUrl)}>documentation</a>.
+                    The API URL should be from OpenAI or follow the standard specified in OpenAI <a onClick={() => openLink(openAIDocUrl)}>documentation</a>.
                 </InfoText>
                 <InfoText>
                     Your API Key will be securely stored on this device. This application does not interact with any outside systems except the URL you provided above.

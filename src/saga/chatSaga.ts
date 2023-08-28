@@ -1,13 +1,14 @@
-import { request } from 'http';
-import { eventChannel } from 'redux-saga';
+// **** This file is for Electron environment only **** 
+
 import { put, take, select, call } from 'redux-saga/effects';
+import { eventChannel } from 'redux-saga';
+import { v4 as uuidv4 } from 'uuid';
 import { moveChatToTop } from 'redux/chatListSlice';
 import { addRegenerationChunk, addStreamedChunk, addUserMessage } from 'redux/chatsSlice';
 import { openModal } from 'redux/modalSlice';
 import { AppState, ChatMessage, ModalType, SettingConfig } from 'redux/type.d';
-import { v4 as uuidv4 } from 'uuid';
-const { ipcRenderer } = window.require('electron');
 
+const { ipcRenderer = null } = window.isElectron ? window.require('electron') : { };
 
 function getResponseStream(requestId: string) {
     return eventChannel(

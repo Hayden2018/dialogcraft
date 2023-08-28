@@ -1,3 +1,5 @@
+// **** This file is for Electron environment only **** 
+
 import { put, select } from "redux-saga/effects";
 import { setChatList } from "redux/chatListSlice";
 import { setChats } from "redux/chatsSlice";

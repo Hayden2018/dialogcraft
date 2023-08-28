@@ -40,7 +40,7 @@
     "eject": "react-scripts eject",
     "electron": "electron .",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "react-scripts build && electron-forge make"
   },
   "eslintConfig": {
     "extends": [
