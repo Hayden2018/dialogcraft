@@ -1,13 +1,14 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { TextField, Button, Alert, LinearProgress } from '@mui/material';
+import { TextField, Button, Alert, LinearProgress, Link } from '@mui/material';
 import { styled } from '@mui/system';
 
 import { AppState, SettingConfig, SettingStatus } from 'redux/type.d';
 import { updateGlobalSetting } from "saga/actions";
 import { ReactComponent as AppIcon } from "./logo.svg";
+import { onElectronEnv } from 'utils';
 
-const { shell = null } = window.isElectron ? window.require('electron') : { };
+const { shell = null } = onElectronEnv() ? window.require('electron') : { };
 
 const GreetingContainer = styled('div')(
     ({ theme }) => ({
@@ -16,6 +17,7 @@ const GreetingContainer = styled('div')(
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
+        minWidth: '800px',
         gap: 14,
     })
 );
@@ -49,10 +51,6 @@ const InfoText = styled('p')(
         fontSize: 14,
         '& > a': {
             cursor: 'pointer',
-            color: palette.primary.main,
-            '&:hover': {
-                textDecoration: 'underline',
-            },
         }
     })
 );
@@ -111,11 +109,8 @@ function GreetingPage() {
     }
 
     const openLink = (url: string) => {
-        if (window.isElectron) {
-            shell.openExternal(url);
-        } else {
-            window.open(url);
-        }
+        if (onElectronEnv()) shell.openExternal(url);
+        else window.open(url);
     }
 
     if (status === SettingStatus.VERIFYING) return (
@@ -157,10 +152,10 @@ function GreetingPage() {
                     Connect
                 </SubmitButton>
                 <InfoText>
-                    If you do not have an API Key. You may refer to <a onClick={() => openLink(videoUrl)}>this</a> video on how to get one. 
+                    If you do not have an API Key. You may refer to <Link onClick={() => openLink(videoUrl)}>this</Link> video on how to get one. 
                 </InfoText>
                 <InfoText>
-                    The API URL should be from OpenAI or follow the standard specified in OpenAI <a onClick={() => openLink(openAIDocUrl)}>documentation</a>.
+                    The API URL should be from OpenAI or follow the standard specified in OpenAI <Link onClick={() => openLink(openAIDocUrl)}>documentation</Link>.
                 </InfoText>
                 <InfoText>
                     Your API Key will be securely stored on this device. This application does not interact with any outside systems except the URL you provided above.

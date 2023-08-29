@@ -11,6 +11,7 @@ import { closeModal } from 'redux/modalSlice';
 import { useDataActions } from './GlobalSettingModalHook';
 import ResetAppWarning from 'components/ResetAppWarning/ResetAppWarning';
 import ImportChats from 'components/ChatImport/ChatImport';
+import { onElectronEnv } from 'utils';
 
 
 const Form = styled('form')(
@@ -197,12 +198,18 @@ function GlobalSettingModal() {
                         <ActionButton color='warning' variant='contained' onClick={disconnectApp}>
                             Disconnect
                         </ActionButton>
-                        <ActionButton color='success' variant='contained' onClick={exportChat}>
-                            Export Chats
-                        </ActionButton>
-                        <ActionButton color='info' variant='contained' onClick={showImportPage}>
-                            Import Chats
-                        </ActionButton>
+                        {
+                            onElectronEnv() &&
+                            <ActionButton color='info' variant='contained' onClick={showImportPage}>
+                                Import Chats
+                            </ActionButton>
+                        }
+                        {
+                            onElectronEnv() &&
+                            <ActionButton color='success' variant='contained' onClick={exportChat}>
+                                Export Chats
+                            </ActionButton>
+                        }   
                     </ActionRow>
                     <FormRow>
                         <Alert severity='info'>

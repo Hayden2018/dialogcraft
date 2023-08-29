@@ -148,14 +148,18 @@ function ChatInterface() {
 
     const scrollRef = useRef<HTMLDivElement | null>(null);
     useEffect(() => {
-        if (!scrollRef.current) {
-            return
-        } else if (isRegenerating) {
-            scrollRef.current.scrollIntoView({ block: 'end' });
-        } else {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        if (scrollRef.current && isStreaming) {
+            if (isRegenerating) scrollRef.current.scrollIntoView({ block: 'end' });
+            else scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
     }, [currentChat?.messages]);
+
+    // Show latest message when click on a chat
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    }, [currentChat?.id]);
 
     if (currentChat) return (
         <ChatContainer>
@@ -197,6 +201,7 @@ function ChatInterface() {
                             msgContent={msg.editedContent || msg.content}
                             role={msg.role}
                             editMode={editing}
+                            generating={msg.id === streamingMsgId}
                             forwardRef={
                                 (msg.id === streamingMsgId && isRegenerating) ?
                                 scrollRef : null

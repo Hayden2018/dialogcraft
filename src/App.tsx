@@ -11,8 +11,6 @@ import { AppState } from 'redux/type.d';
 import { darkTheme, lightTheme } from 'theme';
 import { useEffect } from 'react';
 
-
-
 function App() {
 
     const { baseURL, apiKey, darkMode } = useSelector((state: AppState) => state.setting.global);
@@ -26,7 +24,7 @@ function App() {
     if (baseURL && apiKey) return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <div>
+            <div style={{ minWidth: '800px' }}>
                 <ConversationList />
                 <ChatInterface />
             </div>

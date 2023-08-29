@@ -4,9 +4,10 @@ import { handleGlobalSettingUpdate } from "./settingSaga";
 import { handleChatMerge } from './importSaga';
 import { handleUserMessage, handleRegenerate } from "./chatSaga";
 import { handleBrowserRegenerate, handleBrowserUserMessage } from './chatBrowserSaga';
+import { onElectronEnv } from 'utils';
 
 function* rootSaga() {
-    if (window.isElectron) {
+    if (onElectronEnv()) {
         yield takeEvery(actionType.ON_MESSAGE, handleUserMessage);
         yield takeEvery(actionType.REGENERATE, handleRegenerate);
     } else {

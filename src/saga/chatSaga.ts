@@ -7,8 +7,9 @@ import { moveChatToTop } from 'redux/chatListSlice';
 import { addRegenerationChunk, addStreamedChunk, addUserMessage } from 'redux/chatsSlice';
 import { openModal } from 'redux/modalSlice';
 import { AppState, ChatMessage, ModalType, SettingConfig } from 'redux/type.d';
+import { onElectronEnv } from 'utils';
 
-const { ipcRenderer = null } = window.isElectron ? window.require('electron') : { };
+const { ipcRenderer = null } = onElectronEnv() ? window.require('electron') : { };
 
 function getResponseStream(requestId: string) {
     return eventChannel(

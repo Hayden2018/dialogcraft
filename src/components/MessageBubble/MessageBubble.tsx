@@ -2,8 +2,9 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import CustomCodeBlock from 'components/CustomCodeBlock/CustomCodeBlock';
 import { useMessageEditActions, useMessageSegmentMemo } from './MessageBubble.hook';
 import { styled } from '@mui/system';
-import { Button } from '@mui/material';
+import { Button, Link } from '@mui/material';
 import { RefObject } from 'react';
+import { onElectronEnv } from 'utils';
 
 const RightAligner = styled('div')(
     ({ theme }) => ({
@@ -16,6 +17,7 @@ const RightAligner = styled('div')(
 const LeftAligner = styled('div')(
     ({ theme }) => ({
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'left',
         margin: '16px 0px',
     })
@@ -24,11 +26,11 @@ const LeftAligner = styled('div')(
 const BotMessageContainer = styled('div')(
     ({ theme: { palette } }) => ({
         width: 'fit-content',
-        maxWidth: 'calc(100% - 120px)',
+        maxWidth: 'calc(100% - 100px)',
         borderRadius: 10,
         background: palette.grey[palette.mode === 'dark' ? 800 : 200],
         padding: '8px 12px',
-        margin: '0px 18px',
+        margin: '0px 16px',
         color: palette.mode === 'dark' ? '#ffffff' : '#000000',
     })
 );
@@ -37,10 +39,10 @@ const UserMessageContainer = styled('div')(
     ({ theme: { palette } }) => ({
         textAlign: 'left',
         width: 'fit-content',
-        maxWidth: 'calc(100% - 120px)',
+        maxWidth: 'calc(100% - 100px)',
         borderRadius: 10,
-        padding: '8px 12px',
-        margin: '0px 16px',
+        padding: '7px 12px',
+        margin: '0px 12px',
         color: '#121212',
         background: '#AADCFF',
     })
@@ -76,9 +78,23 @@ const EditButton = styled(Button)(
     })
 );
 
-function MessageBubble(
-    { chatId, msgId, msgContent, role, editMode, forwardRef } : 
-    { chatId: string, msgId: string, msgContent: string, role: string, editMode: boolean, forwardRef: RefObject<HTMLDivElement> | null }
+const ResponseNotice = styled('p')(
+    ({ theme }) => ({
+        fontSize: 13,
+        margin: '8px 20px',
+    })
+);
+
+function MessageBubble({ chatId, msgId, msgContent, role, editMode, generating, forwardRef } : 
+    { 
+        chatId: string,
+        msgId: string,
+        msgContent: string,
+        role: string,
+        editMode: boolean,
+        generating: boolean,
+        forwardRef: RefObject<HTMLDivElement> | null 
+    }
 ) {
 
     // restoreMessage is null if message is unedited
@@ -146,6 +162,12 @@ function MessageBubble(
                 }
                 
             </BotMessageContainer>
+            {
+                (generating && !onElectronEnv()) &&
+                <ResponseNotice>
+                    Response is being generated. Text streaming available on <Link href="https://www.github.com" target="_blank">Desktop App</Link>
+                </ResponseNotice>
+            }   
         </LeftAligner>
     );
 }
