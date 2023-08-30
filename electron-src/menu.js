@@ -15,7 +15,7 @@ function createAboutWindow () {
                 nodeIntegration: true,
                 contextIsolation: false,
             },
-        })
+        });
       
         aboutWindow.loadFile('public/about.html');
         aboutWindow.on('closed', () => {

@@ -39,6 +39,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron": "electron .",
+    "electron-dev": "nodemon --watch ./electron-src --exec \"electron .\"",
     "package": "electron-forge package",
     "make": "react-scripts build && electron-forge make"
   },
@@ -68,6 +69,7 @@
     "@electron-forge/maker-zip": "^6.2.1",
     "@electron-forge/plugin-auto-unpack-natives": "^6.2.1",
     "@types/uuid": "^9.0.2",
-    "electron": "^25.3.1"
+    "electron": "^25.3.1",
+    "nodemon": "^3.0.1"
   }
 }
