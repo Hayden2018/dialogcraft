@@ -14,7 +14,8 @@ const Container = styled('div')(
     ({ theme: { palette } }) => ({
         display: 'inline-block',
         height: '100vh',
-        width: 345,
+        maxWidth: '360px',
+        width: '35%',
         borderRight: `1px solid ${palette.grey[palette.mode === 'dark' ? 800 : 300]}`,
         background: palette.grey[palette.mode === 'dark' ? 900 : 100],
     })

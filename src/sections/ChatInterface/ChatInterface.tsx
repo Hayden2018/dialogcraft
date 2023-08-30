@@ -13,7 +13,8 @@ const ChatContainer = styled('div')(
     ({ theme }) => ({
         display: 'inline-block',
         height: '100vh',
-        width: 'calc(100% - 346px)',
+        width: 'calc(100% - 360px)',
+        minWidth: '65%',
         verticalAlign: 'top',
         position: 'relative',
     })

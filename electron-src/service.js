@@ -58,13 +58,27 @@ async function sendResponseStream(window, {
         }, { responseType: 'stream' });
     
         const stream = completion.data;
+
+        let lastChunkTime = new Date().getTime();
+        let timeoutChecker = setInterval(() => {
+            if (new Date().getTime() - lastChunkTime > 6000) {
+                clearInterval(timeoutChecker);
+                window.webContents.send(requestId, { 
+                    finish_reason: 'error',
+                    delta: { },
+                });
+            }
+        }, 1000);
     
         stream.on('data', (chunk) => {
-            const dataString = chunk.toString().trim();
-            const jsonChunks = parseNoisyJSON(dataString);
+            const jsonChunks = parseNoisyJSON(chunk.toString());
             jsonChunks.forEach((data) => {
                 if (!data.choices || data.choices.length === 0) return;
                 window.webContents.send(requestId, data.choices[0]);
+                lastChunkTime = new Date().getTime();
+                if (data.choices[0].finish_reason === 'stop') {
+                    clearInterval(timeoutChecker);
+                }
             });
         });
 
