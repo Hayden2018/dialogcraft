@@ -61,7 +61,7 @@ async function sendResponseStream(window, {
 
         let lastChunkTime = new Date().getTime();
         let timeoutChecker = setInterval(() => {
-            if (new Date().getTime() - lastChunkTime > 6000) {
+            if (new Date().getTime() - lastChunkTime > 8000) {
                 clearInterval(timeoutChecker);
                 window.webContents.send(requestId, { 
                     finish_reason: 'error',
