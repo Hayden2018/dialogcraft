@@ -1,5 +1,4 @@
 const { shell, BrowserWindow } = require('electron');
-const path = require('path')
 
 let aboutWindow = null;
 
@@ -62,14 +61,6 @@ exports.template = [
                 label: 'Delete',
                 accelerator: 'CmdOrCtrl+V',
                 role: 'delete'
-            },
-            {
-                type: 'separator'
-            },
-            {
-                label: 'Select All',
-                accelerator: 'CmdOrCtrl+A',
-                role: 'selectall'
             },
         ]
     },

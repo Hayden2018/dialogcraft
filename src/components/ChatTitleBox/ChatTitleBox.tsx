@@ -167,6 +167,7 @@ function ChatTitleBox({ chatId, isCurrent } : { chatId: string, isCurrent: boole
         }
         document.addEventListener('click', unFocus);
         return () => document.removeEventListener('click', unFocus);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {

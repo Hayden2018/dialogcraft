@@ -153,7 +153,7 @@ function ChatInterface() {
             if (isRegenerating) scrollRef.current.scrollIntoView({ block: 'end' });
             else scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }, [currentChat?.messages]);
+    }, [currentChat?.messages, isRegenerating, isStreaming]);
 
     // Show latest message when click on a chat
     useEffect(() => {
