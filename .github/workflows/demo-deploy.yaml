@@ -38,5 +38,5 @@ jobs:
       run: |
         aws s3 sync build/ s3://dialogcraft --delete --acl public-read
 
-    # - name: Invalidate CloudFront cache
-    #   run: aws cloudfront create-invalidation --distribution-id E1IZOVDGJQS54S --paths "/*"
+    - name: Invalidate CloudFront cache
+      run: aws cloudfront create-invalidation --distribution-id E131KHFX460NXK --paths "/*"
