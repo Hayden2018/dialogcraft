@@ -1,46 +1,46 @@
-# Getting Started with Create React App
+# DialogCraft
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<p align="center">
+  <img src="public/icon.ico" alt="DialogCraft Icon" width="80" height="80">
+</p>
 
-## Available Scripts
+DialogCraft is a desktop application built to interact seamlessly with OpenAI's Chat APIs. It provides a user-friendly interface to manage and control your conversations with AI, all from the comfort of your PC, without involving any third-party services.
 
-In the project directory, you can run:
+## Demo
 
-### `npm start`
+Check out our application in action in this [video demo](<Video-link>). For a quick hands on, try our [web demo](<Demo-link>).   
+Please note that text streaming is not available in the web demo but is fully functional in the desktop app.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Features
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+DialogCraft offers a range of features:
 
-### `npm test`
+- **Local Storage**: Your API credentials are stored securely on your local machine, and the app communicates directly with OpenAI's endpoints.
+- **Conversation Control**: You have full control over your conversation history. You can edit or delete messages from both user and bots. You can also regenerate responses with a single click.
+- **Customizability**: Switch between all available models in your OpenAI account, with full control over parameters such as temperature and top P. You can also set the maximum context messages for cost efficiency. Choose between dark and light modes based on your preference.
+- **Import/Export**: You can import and export your chat history in JSON format.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Tech Stack
 
-### `npm run build`
+DialogCraft is built using React for the user interface and Electron for desktop integration.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Getting Started
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Before you begin, make sure you have the NodeJS installed on your system.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+To start working with DialogCraft, clone the repository and follow the steps below:
 
-### `npm run eject`
+```bash
+npm install # Install dependencies
+npm start # Start React development server
+npm run electron-dev # Run this command after npm start for electron development
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+To build the app for your system:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+npm run make # Electron forge will build for your platform
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Contributing
+Contributions and feature requests are welcomed. Feel free to create a Merge Request or contact the author at yikhei123@gmail.com
