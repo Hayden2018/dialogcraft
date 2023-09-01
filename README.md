@@ -8,8 +8,13 @@ DialogCraft is a desktop application built to interact seamlessly with OpenAI's 
 
 ## Demo
 
-Check out our application in action in this [video demo](<Video-link>). For a quick hands on, try our [web demo](<Demo-link>).   
-Please note that text streaming is not available in the web demo but is fully functional in the desktop app.
+For a quick try out you can visit the [demo website](https://dialogcraft.hayden.life). Please note that text streaming is not available in the web demo but is fully functional in the desktop app. You may also refer to the screenshots below.
+
+<div align="left">
+    <img src="screenshots/01.png" width="240" height="150" style="margin-right: 10px; margin-bottom: 10px;">
+    <img src="screenshots/02.png" width="240" height="150" style="margin-right: 10px; margin-bottom: 10px;">
+    <img src="screenshots/03.png" width="240" height="150" style="margin-bottom: 10px;">
+</div>
 
 ## Features
 
@@ -20,9 +25,9 @@ DialogCraft offers a range of features:
 - **Customizability**: Switch between all available models in your OpenAI account, with full control over parameters such as temperature and top P. You can also set the maximum context messages for cost efficiency. Choose between dark and light modes based on your preference.
 - **Import/Export**: You can import and export your chat history in JSON format.
 
-## Tech Stack
+## Technology
 
-DialogCraft is built using React for the user interface and Electron for desktop integration.
+DialogCraft is built using React with Redux-Saga + Material UI for the user interface and Electron for desktop integration.
 
 ## Getting Started
 
