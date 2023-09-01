@@ -11,9 +11,9 @@ DialogCraft is a desktop application built to interact seamlessly with OpenAI's 
 For a quick try out you can visit the [demo website](https://dialogcraft.hayden.life). Please note that text streaming is not available in the web demo but is fully functional in the desktop app. You may also refer to the screenshots below.
 
 <div align="left">
-    <img src="screenshots/01.png" width="260" height="165" style="margin-right: 12px; margin-bottom: 12px;">
-    <img src="screenshots/02.png" width="260" height="165" style="margin-right: 12px; margin-bottom: 12px;">
-    <img src="screenshots/03.png" width="260" height="165" style="margin-bottom: 12px;">
+    <img src="screenshots/01.png" width="262" height="165" style="margin-right: 12px; margin-bottom: 12px;">
+    <img src="screenshots/02.png" width="262" height="165" style="margin-right: 12px; margin-bottom: 12px;">
+    <img src="screenshots/03.png" width="262" height="165" style="margin-bottom: 12px;">
 </div>
 
 ## Features
@@ -31,7 +31,7 @@ DialogCraft is built using React with Redux-Saga + Material UI for the user inte
 
 ## Getting Started
 
-Before you begin, make sure you have the NodeJS installed on your system.
+Before you begin, make sure you have NodeJS installed on your system.
 
 To start working with DialogCraft, clone the repository and follow the steps below:
 
@@ -47,5 +47,5 @@ To build the app for your system:
 npm run make # Electron forge will build for your platform
 ```
 
-## Contributing
-Contributions and feature requests are welcomed. Feel free to create a Merge Request or contact the author at yikhei123@gmail.com
+## Contribution
+Contributions or feature requests are welcomed. Feel free to create a Merge Request or [contact](mailto:yikhei123@gmail.com) the author.
