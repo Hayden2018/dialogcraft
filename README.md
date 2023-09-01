@@ -11,9 +11,9 @@ DialogCraft is a desktop application built to interact seamlessly with OpenAI's 
 For a quick try out you can visit the [demo website](https://dialogcraft.hayden.life). Please note that text streaming is not available in the web demo but is fully functional in the desktop app. You may also refer to the screenshots below.
 
 <div align="left">
-    <img src="screenshots/01.png" width="240" height="150" style="margin-right: 10px; margin-bottom: 10px;">
-    <img src="screenshots/02.png" width="240" height="150" style="margin-right: 10px; margin-bottom: 10px;">
-    <img src="screenshots/03.png" width="240" height="150" style="margin-bottom: 10px;">
+    <img src="screenshots/01.png" width="250" height="160" style="margin-right: 12px; margin-bottom: 12px;">
+    <img src="screenshots/02.png" width="250" height="160" style="margin-right: 12px; margin-bottom: 12px;">
+    <img src="screenshots/03.png" width="250" height="160" style="margin-bottom: 12px;">
 </div>
 
 ## Features
