@@ -120,6 +120,7 @@ function GlobalSettingModal() {
         defaultValues: globalSettings,
     });
 
+    const autoTitle = watch('autoTitle');
     const enterSend = watch('enterSend');
     const maxContext = watch('maxContext');
     const temperature = watch('temperature');
@@ -303,6 +304,12 @@ function GlobalSettingModal() {
                         <FormControlLabel
                             control={<Switch {...register('enterSend')} checked={enterSend}/>}
                             label='Press Enter to Send Messages'
+                        />
+                    </FormRow>
+                    <FormRow narrow>
+                        <FormControlLabel
+                            control={<Switch {...register('autoTitle')} checked={autoTitle}/>}
+                            label='Autofill Chat Title'
                         />
                     </FormRow>
                     <FormRow narrow>

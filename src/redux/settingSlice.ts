@@ -9,6 +9,7 @@ const initialGlobalSetting: SettingConfig = {
     systemPrompt: '',
     maxContext: 50,
     status: SettingStatus.NO_KEY,
+    autoTitle: true,
     darkMode: true,
     enterSend: true,
     baseURL: 'https://api.openai.com',

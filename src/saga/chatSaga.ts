@@ -1,13 +1,13 @@
-// **** This file is for Electron environment only **** 
-
 import { put, take, select, call } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
 import { v4 as uuidv4 } from 'uuid';
 import { moveChatToTop } from 'redux/chatListSlice';
-import { addRegenerationChunk, addStreamedChunk, addUserMessage } from 'redux/chatsSlice';
+import { addRegenerationChunk, addStreamedChunk, addUserMessage, editChatTitle } from 'redux/chatsSlice';
 import { openModal } from 'redux/modalSlice';
 import { AppState, ChatMessage, ModalType, SettingConfig } from 'redux/type.d';
-import { onElectronEnv } from 'utils';
+import { onElectronEnv, chatTitlePrompt } from 'utils';
+
+// **** This file is for Electron environment only ****
 
 const { ipcRenderer = null } = onElectronEnv() ? window.require('electron') : { };
 
@@ -21,6 +21,42 @@ function getResponseStream(requestId: string) {
         }
     );
 }
+
+
+async function getChatTitle(messageHistory: Array<ChatMessage>, baseURL:string, apiKey: string) {
+    try {
+        const response = await fetch(`${baseURL}/v1/chat/completions`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({
+                model: 'gpt-3.5-turbo',
+                temperature: 0.5,
+                messages: [
+                    ...messageHistory.map(
+                        (msg) => ({
+                            role: msg.role,
+                            content: msg.editedContent || msg.content,
+                        })
+                    ),
+                    {
+                        role: 'user',
+                        content: chatTitlePrompt,
+                    }
+                ]
+            }),
+        });
+    
+        const data = await response.json();
+        return data.choices[0].message.content;
+
+    } catch (error) {
+        return '';
+    }
+}
+
 
 function* requestResponse(messageHistory: Array<ChatMessage>, chatId: string) {
 
@@ -125,6 +161,29 @@ export function* handleUserMessage({ payload } :
         if (!!msgChunk.finish_reason) {
             break;
         }
+    }
+
+    const chatTitle: string = yield select(
+        (state: AppState) => state.chats[chatId].title
+    );
+
+    const defaultTitleRegex = /^New Conversation \d+$/;
+    const { baseURL, apiKey, autoTitle }: SettingConfig = yield select(
+        (state: AppState) => state.setting.global
+    );
+
+    if (autoTitle && messageHistory.length === 1 && defaultTitleRegex.test(chatTitle)) {
+        const updatedMessageHistory: Array<ChatMessage> = yield select(
+            (state: AppState) => state.chats[chatId].messages
+        );
+
+        const newTitle: string = yield call(getChatTitle, updatedMessageHistory, baseURL!, apiKey!);
+        if (newTitle) yield put(
+            editChatTitle({
+                chatId,
+                newTitle,
+            })
+        );
     }
 }
 

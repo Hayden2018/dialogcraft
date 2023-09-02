@@ -67,8 +67,9 @@ export type SettingConfig = {
     topP: number;
     systemPrompt: string;
     maxContext: number;
-    darkMode?: boolean; 
     availableModels: Array<string>;
+    darkMode?: boolean;
+    autoTitle?: boolean;
     status?: SettingStatus;
     enterSend?: boolean;
     apiKey?: string;

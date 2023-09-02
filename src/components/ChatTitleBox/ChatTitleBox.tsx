@@ -63,17 +63,14 @@ const Title = styled('div')(
 const TitleInput = styled('input')(
     ({ theme: { palette } }) => ({
         verticalAlign: 'top',
-        marginTop: 3,
+        marginTop: 5,
         fontSize: 'inherit',
         width: 'calc(100% - 60px)',
         background: 'transparent',
-        borderBottom: `1px solid ${palette.grey[500]}`,
         color: palette.mode === 'dark' ? '#FFFFFF' : '#121212',
         border: 'none',
         outline: 'none',
-        '&:focus': {
-            borderBottom: `1px solid ${palette.grey[500]}`,
-        },
+        borderBottom: `1px solid ${palette.grey[500]}`,
     })
 );
 
@@ -109,7 +106,7 @@ const CrossButton = styled(CrossIcon)(
         width: 18,
         height: 18,
         margin: '4px 0px 0px 10px',
-        fill: palette.grey[500],
+        fill: palette.grey[palette.mode === 'dark' ? 400 : 500],
         '&:hover': {
             fill: palette.grey[palette.mode === 'dark' ? 300 : 700],
         }
@@ -122,7 +119,7 @@ const TickButton = styled(TickIcon)(
         width: 20,
         height: 20,
         margin: '3px 0px 0px 10px',
-        fill: palette.grey[500],
+        fill: palette.grey[palette.mode === 'dark' ? 400 : 500],
         '&:hover': {
             fill: palette.grey[palette.mode === 'dark' ? 300 : 700],
         }
