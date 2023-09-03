@@ -298,6 +298,11 @@ function GlobalSettingModal() {
                         <Alert severity='info'>
                             <li>Press <b>{ enterSend ?  'Enter' : 'Shift + Enter' }</b> to send your message.</li>
                             <li>Press <b>{ enterSend ?  'Shift + Enter' : 'Enter' }</b> to add a new line in your message.</li>
+                            {
+                                autoTitle ?
+                                <li>AI will generate a title for your new chat after responding the first message.</li> :
+                                <li>Auto chat title generation disabled.</li>
+                            }
                         </Alert>
                     </FormRow>
                     <FormRow narrow>
@@ -309,7 +314,7 @@ function GlobalSettingModal() {
                     <FormRow narrow>
                         <FormControlLabel
                             control={<Switch {...register('autoTitle')} checked={autoTitle}/>}
-                            label='Autofill Chat Title'
+                            label='Auto-generate Chat Title'
                         />
                     </FormRow>
                     <FormRow narrow>
