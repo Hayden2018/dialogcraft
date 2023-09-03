@@ -16,6 +16,10 @@ For a quick try out you can visit the [demo website](https://dialogcraft.hayden.
     <img src="screenshots/03.png" width="262" height="165" style="margin-bottom: 12px;">
 </div>
 
+## Download
+
+To start using DialogCraft, visit the [release page](https://github.com/Hayden2018/dialogcraft/releases) on GitHub to download the installer. Only Windows installer is available at the moment.
+
 ## Features
 
 DialogCraft offers a range of features:
