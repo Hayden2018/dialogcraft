@@ -164,8 +164,8 @@ function GlobalSettingModal() {
                             <InfoList>
                                 <li>Reset App - remove all user data including conversations, settings and API credentials.</li> 
                                 <li>Disconnect - remove API credentials while keeping all other data.</li>
-                                <li>Export Chats - export all conversation history as JSON file.</li>
-                                <li>Import Chats - import conversation history from a previously exported JSON file.</li>
+                                { onElectronEnv() && <li>Export Chats - export all conversation history as JSON file.</li> }
+                                { onElectronEnv() && <li>Import Chats - import conversation history from a previously exported JSON file.</li> }
                             </InfoList>
                         </Alert>
                     </FormRow>
