@@ -91,7 +91,7 @@ const SubmitButton = styled(Button)(
     })
 );
 
-const openAIDocUrl = 'https://platform.openai.com/docs/api-reference/completions';
+const releaseUrl = 'https://github.com/Hayden2018/dialogcraft/releases';
 const videoUrl = 'https://www.youtube.com/watch?v=aVog4J6nIAU';
 
 function GreetingPage() {
@@ -155,7 +155,7 @@ function GreetingPage() {
                     If you do not have an API Key. You may refer to <Link onClick={() => openLink(videoUrl)}>this</Link> video on how to get one. 
                 </InfoText>
                 <InfoText>
-                    The API URL should be from OpenAI or follow the standard specified in OpenAI <Link onClick={() => openLink(openAIDocUrl)}>documentation</Link>.
+                    This is a web demo for DialogCraft. More features such as text streaming only available on <Link onClick={() => openLink(releaseUrl)}>Desktop App</Link>.
                 </InfoText>
                 <InfoText>
                     Your API Key will be securely stored on this device. This application does not interact with any outside systems except the URL you provided above.
