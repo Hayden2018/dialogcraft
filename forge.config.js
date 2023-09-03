@@ -9,7 +9,8 @@ module.exports = {
       name: '@electron-forge/maker-squirrel',
       config: {
         name: 'DialogCraft',
-        title: 'DialogCraft',
+        certificateFile: './certificate.pfx',
+        certificatePassword: process.env.CERT_KEY,
       },
     },
     {
