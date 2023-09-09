@@ -19,11 +19,15 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-deb',
-      config: {},
+      config: {
+        name: 'DialogCraft',
+      },
     },
     {
       name: '@electron-forge/maker-rpm',
-      config: {},
+      config: {
+        name: 'DialogCraft',
+      },
     },
   ],
   plugins: [
