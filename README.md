@@ -18,7 +18,7 @@ For a quick try out you can visit the [demo website](https://dialogcraft.hayden.
 
 ## Download
 
-To start using DialogCraft, visit the [release page](https://github.com/Hayden2018/dialogcraft/releases) on GitHub to download the installer. Only Windows installer is available at the moment.
+To start using DialogCraft, visit the [release page](https://github.com/Hayden2018/dialogcraft/releases) on GitHub to download the installer. It is available for Windows and Ubuntu at the moment.
 
 ## Features
 

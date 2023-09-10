@@ -11,6 +11,7 @@
 # production
 /build
 /out
+*.pfx
 
 # misc
 .DS_Store
