@@ -187,7 +187,6 @@ function ChatInterface() {
                         { editing ? 'Stop Editing' : 'Edit Messages' }
                     </HeaderButton> 
                 }
-
             </HeaderBanner>
             <MessageArea 
                 isEditing={editing && !isStreaming}
@@ -201,7 +200,7 @@ function ChatInterface() {
                             chatId={currentChat.id}
                             msgContent={msg.editedContent || msg.content}
                             role={msg.role}
-                            editMode={editing}
+                            editMode={editing && !isStreaming}
                             generating={msg.id === streamingMsgId}
                             forwardRef={
                                 (msg.id === streamingMsgId && isRegenerating) ?
