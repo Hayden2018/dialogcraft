@@ -8,8 +8,6 @@ import { updateGlobalSetting } from "saga/actions";
 import { ReactComponent as AppIcon } from "./logo.svg";
 import { onElectronEnv } from 'utils';
 
-const { shell = null } = onElectronEnv() ? window.require('electron') : { };
-
 const GreetingContainer = styled('div')(
     ({ theme }) => ({
         height: '100vh',
@@ -91,6 +89,7 @@ const SubmitButton = styled(Button)(
     })
 );
 
+const documentationUrl = 'https://platform.openai.com/docs/api-reference/models/list';
 const releaseUrl = 'https://github.com/Hayden2018/dialogcraft/releases';
 const videoUrl = 'https://www.youtube.com/watch?v=aVog4J6nIAU';
 
@@ -109,8 +108,12 @@ function GreetingPage() {
     }
 
     const openLink = (url: string) => {
-        if (onElectronEnv()) shell.openExternal(url);
-        else window.open(url);
+        if (onElectronEnv()) {
+            const { shell } = window.require('electron');
+            shell.openExternal(url);
+        } else {
+            window.open(url);
+        }
     }
 
     if (status === SettingStatus.VERIFYING) return (
@@ -154,12 +157,25 @@ function GreetingPage() {
                 <InfoText>
                     If you do not have an API Key. You may refer to <Link onClick={() => openLink(videoUrl)}>this</Link> video on how to get one. 
                 </InfoText>
-                <InfoText>
-                    This is a web demo for DialogCraft. More features such as text streaming only available on <Link onClick={() => openLink(releaseUrl)}>Desktop App</Link>.
-                </InfoText>
-                <InfoText>
-                    Your API Key will be securely stored on this device. This application does not interact with any outside systems except the URL you provided above.
-                </InfoText>
+                {
+                    onElectronEnv() ?
+                    <>
+                        <InfoText>
+                            The provided API URL should come from OpenAI or strictly follow their <Link onClick={() => openLink(documentationUrl)}>documentation</Link>.
+                        </InfoText>
+                        <InfoText>
+                            Your API Key will be stored securely on this device. This application does not interact with any other systems except the URL you provided above.
+                        </InfoText>
+                    </> :
+                    <>
+                        <InfoText>
+                            You are using the web version of DialogCraft. More features available on <Link onClick={() => openLink(releaseUrl)}>desktop app</Link>.
+                        </InfoText>
+                        <InfoText>
+                            Your API Key will be stored securely on this device. Our service do not collect or record any user data.
+                        </InfoText>
+                    </>
+                }
             </GreetingContainer>
         </form>
     )

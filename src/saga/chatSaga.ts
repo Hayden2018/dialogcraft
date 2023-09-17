@@ -7,19 +7,39 @@ import { openModal } from 'redux/modalSlice';
 import { AppState, ChatMessage, ModalType, SettingConfig } from 'redux/type.d';
 import { onElectronEnv, chatTitlePrompt } from 'utils';
 
-// **** This file is for Electron environment only ****
+let messageAgent = onElectronEnv() ? 
+    window.require('electron').ipcRenderer : 
+    new WebSocket('wss://j6oxd42s6h.execute-api.us-east-1.amazonaws.com/production/');
 
-const { ipcRenderer = null } = onElectronEnv() ? window.require('electron') : { };
+window.onfocus = () => {
+    if (!onElectronEnv() && messageAgent.readyState === 3) {
+        messageAgent = new WebSocket('wss://j6oxd42s6h.execute-api.us-east-1.amazonaws.com/production/');
+    }
+}
+
 
 function getResponseStream(requestId: string) {
-    return eventChannel(
-        (emit) => {
-            ipcRenderer.on(requestId, (event: unknown, data: any) => {
+    return eventChannel((emit) => {
+        // On Electron use Ipc to communicate with Node backend
+        if (onElectronEnv()) {
+            const listener = (_: unknown, data: any) => {
                 emit(data);
-            });
-            return () => {};
+            };
+            messageAgent.on(requestId, listener);
+            return () => messageAgent.removeListener(requestId, listener);
+        } 
+        // On Browser use Websocket proxy for text streaming
+        else {
+            const listener = (event: MessageEvent) => {
+                const data = JSON.parse(event.data);
+                if (data.requestId === requestId) {
+                    emit(data);
+                }
+            };
+            messageAgent.addEventListener('message', listener);
+            return () => messageAgent.removeEventListener('message', listener);
         }
-    );
+    });
 }
 
 
@@ -92,15 +112,32 @@ function* requestResponse(messageHistory: Array<ChatMessage>, chatId: string) {
 
     const requestId = uuidv4();
 
-    ipcRenderer.send('MESSAGE', {
-        baseURL,
-        apiKey,
-        topP,
-        temperature,
-        model: currentModel,
-        messages: messagesPayload,
-        requestId,
-    });
+    // On Electron use Ipc to communicate with Node backend
+    if (onElectronEnv()) {
+        messageAgent.send('MESSAGE', {
+            baseURL,
+            apiKey,
+            topP,
+            temperature,
+            model: currentModel,
+            messages: messagesPayload,
+            requestId,
+        });
+    }
+    // On Browser use Websocket proxy for text streaming
+    else {
+        messageAgent.send(
+            JSON.stringify({
+                baseURL,
+                apiKey,
+                topP: topP,
+                temperature,
+                model: currentModel,
+                messages: messagesPayload,
+                requestId,
+            })
+        );
+    }
 
     return requestId;
 }
@@ -159,6 +196,7 @@ export function* handleUserMessage({ payload } :
         }));
 
         if (!!msgChunk.finish_reason) {
+            responseStream.close();
             break;
         }
     }
@@ -249,6 +287,7 @@ export function* handleRegenerate({ payload } :
             }));
 
             if (!!msgChunk.finish_reason) {
+                responseStream.close();
                 break;
             }
         }
@@ -301,6 +340,7 @@ export function* handleRegenerate({ payload } :
             }));
 
             if (!!msgChunk.finish_reason) {
+                responseStream.close();
                 break;
             }
         }

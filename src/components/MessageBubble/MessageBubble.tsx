@@ -2,9 +2,8 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import CustomCodeBlock from 'components/CustomCodeBlock/CustomCodeBlock';
 import { useMessageEditActions, useMessageSegmentMemo } from './MessageBubble.hook';
 import { styled } from '@mui/system';
-import { Button, Link } from '@mui/material';
+import { Button } from '@mui/material';
 import { RefObject } from 'react';
-import { onElectronEnv } from 'utils';
 
 const RightAligner = styled('div')(
     ({ theme }) => ({
@@ -75,13 +74,6 @@ const EditButton = styled(Button)(
         padding: '0px 18px',
         height: 25,
         fontSize: 12,
-    })
-);
-
-const ResponseNotice = styled('p')(
-    ({ theme }) => ({
-        fontSize: 13,
-        margin: '8px 20px',
     })
 );
 
@@ -162,12 +154,6 @@ function MessageBubble({ chatId, msgId, msgContent, role, editMode, generating, 
                 }
                 
             </BotMessageContainer>
-            {
-                (generating && !onElectronEnv()) &&
-                <ResponseNotice>
-                    Response is being generated. Text streaming available on <Link href="https://www.github.com" target="_blank">Desktop App</Link>
-                </ResponseNotice>
-            }   
         </LeftAligner>
     );
 }
