@@ -18,7 +18,7 @@ You can start using the [web version](https://dialogcraft.hayden.life) of Dialog
 
 ## Download
 
-To start using DialogCraft, visit the [release page](https://github.com/Hayden2018/dialogcraft/releases) on GitHub to download the installer. It is available for Windows and Ubuntu at the moment.
+To download the desktop version of DialogCraft, visit the [release page](https://github.com/Hayden2018/dialogcraft/releases) on GitHub to download the installer. It is available for Windows and Ubuntu at the moment.
 
 ## Features
 
