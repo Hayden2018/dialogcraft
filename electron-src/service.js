@@ -11,7 +11,7 @@ function parseNoisyJSON(noisyString) {
         let char = noisyString[i];
         let prevChar = i > 0 ? noisyString[i - 1] : null;
 
-        if (char === '\"' && prevChar !== '\\') {
+        if (char === '"' && prevChar !== '\\') {
             insideString = !insideString;
         }
         if (!insideString && char === '{') {
@@ -52,9 +52,9 @@ async function sendResponseStream(window, {
         const completion = await openai.createChatCompletion({
             model,
             messages,
-            stream: true,
             temperature,
             top_p: topP,
+            stream: true,
         }, { responseType: 'stream' });
     
         const stream = completion.data;
@@ -71,15 +71,14 @@ async function sendResponseStream(window, {
         }, 1000);
     
         stream.on('data', (chunk) => {
+            lastChunkTime = new Date().getTime();
             const jsonChunks = parseNoisyJSON(chunk.toString());
-            jsonChunks.forEach((data) => {
-                if (!data.choices || data.choices.length === 0) return;
-                window.webContents.send(requestId, data.choices[0]);
-                lastChunkTime = new Date().getTime();
-                if (data.choices[0].finish_reason === 'stop') {
-                    clearInterval(timeoutChecker);
+            for (const data of jsonChunks) {
+                if (data.choices && data.choices.length) {
+                    window.webContents.send(requestId, data.choices[0]);
+                    if (data.choices[0].finish_reason === 'stop') clearInterval(timeoutChecker);
                 }
-            });
+            }
         });
 
     } catch (error) {
