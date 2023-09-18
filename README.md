@@ -6,15 +6,15 @@
 
 DialogCraft is a desktop application built to interact seamlessly with OpenAI's Chat APIs. It provides a user-friendly interface to manage and control your conversations with AI, all from the comfort of your PC, without involving any third-party services.
 
-## Demo
-
-For a quick try out you can visit the [demo website](https://dialogcraft.hayden.life). Please note that text streaming is not available in the web demo but is fully functional in the desktop app. You may also refer to the screenshots below.
-
-<div align="left">
+<div align="center">
     <img src="screenshots/01.png" width="262" height="165" style="margin-right: 12px; margin-bottom: 12px;">
     <img src="screenshots/02.png" width="262" height="165" style="margin-right: 12px; margin-bottom: 12px;">
     <img src="screenshots/03.png" width="262" height="165" style="margin-bottom: 12px;">
 </div>
+
+## Start Using
+
+You can start using the [web version](https://dialogcraft.hayden.life) of DialogCraft right now. For best performance and maximum security, consider downloading the desktop app.
 
 ## Download
 
@@ -27,7 +27,7 @@ DialogCraft offers a range of features:
 - **Local Storage**: Your API credentials are stored securely on your local machine, and the app communicates directly with OpenAI's endpoints.
 - **Conversation Control**: You have full control over your conversation history. You can edit or delete messages from both user and bots. You can also regenerate responses with a single click.
 - **Customizability**: Switch between all available models in your OpenAI account, with full control over parameters such as temperature and top P. You can also set the maximum context messages for cost efficiency. Choose between dark and light modes based on your preference.
-- **Import/Export**: You can import and export your chat history in JSON format.
+- **Import/Export**: You can import and export your chat history in JSON format if you are using the desktop app.
 
 ## Technology
 
