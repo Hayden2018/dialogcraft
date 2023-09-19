@@ -4,7 +4,7 @@
   <img src="public/icon.ico" alt="DialogCraft Icon" width="80" height="80">
 </p>
 
-DialogCraft is a desktop application built to interact seamlessly with OpenAI's Chat APIs. It provides a user-friendly interface to manage and control your conversations with AI, all from the comfort of your PC, without involving any third-party services.
+DialogCraft is an application built to interact seamlessly with OpenAI's Chat APIs. It provides a user-friendly interface to manage and control your conversations with AI, all from the comfort of your PC, without involving any third-party services.
 
 <div align="center">
     <img src="screenshots/01.png" width="262" height="165" style="margin-right: 12px; margin-bottom: 12px;">
