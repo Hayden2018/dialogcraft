@@ -8,9 +8,7 @@ async function fetchModelList(url: string, apiKey: string) {
     try {
         const response = await fetch(`${url}/v1/models`, {
             method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`
-            }
+            headers: { Authorization: `Bearer ${apiKey}` },
         });
 
         if (!response.ok) throw Error('Unauthorized');
@@ -18,7 +16,8 @@ async function fetchModelList(url: string, apiKey: string) {
         const { data } = await response.json();
         const availableModels = data
             .map((model: any) => model.id)
-            .filter((modelId: string) => modelId.includes('gpt'));
+            .filter((modelId: string) => modelId.includes('gpt'))
+            .filter((modelId: string) => !modelId.includes('instruct'));
         
         return { error: false, data: availableModels };
 
