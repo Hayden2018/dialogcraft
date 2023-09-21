@@ -12,6 +12,7 @@ const initialGlobalSetting: SettingConfig = {
     autoTitle: true,
     darkMode: true,
     enterSend: true,
+    urlType: 'openai',
     baseURL: 'https://api.openai.com',
     apiKey: '',
 }

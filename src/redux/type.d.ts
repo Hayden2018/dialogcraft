@@ -68,6 +68,7 @@ export type SettingConfig = {
     systemPrompt: string;
     maxContext: number;
     availableModels: Array<string>;
+    urlType?: 'openai' | 'azure';
     darkMode?: boolean;
     autoTitle?: boolean;
     status?: SettingStatus;
