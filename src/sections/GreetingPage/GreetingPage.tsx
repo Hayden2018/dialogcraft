@@ -17,7 +17,7 @@ const GreetingContainer = styled('div')(
         flexDirection: 'column',
         justifyContent: 'center',
         minWidth: '800px',
-        gap: 13,
+        gap: 14,
     })
 );
 
@@ -41,7 +41,7 @@ const EndpointTypeChooser = styled(Tabs)(
         height: 32,
         width: 580,
         margin: '0px auto',
-        marginBottom: '6px',
+        marginBottom: '5px',
         '& div': {
             height: 32,
             minHeight: '32px',
@@ -204,7 +204,7 @@ export default function GreetingPage() {
                     If you do not have an OpenAI API Key. You may refer to <Link onClick={() => openLink(videoUrl)}>this</Link> video on how to get one. 
                 </InfoText>
                 <InfoText>
-                    Your API Key will be stored on this device. This application does not interact with system other than the URL provided above.
+                    Your API Key will be stored on this device. This application does not interact with system other than the provided URL.
                 </InfoText>
                 {
                     onElectronEnv() ||
@@ -252,7 +252,7 @@ export default function GreetingPage() {
                     You are using this app with a Azure OpenAI service deployment.
                 </InfoText>
                 <InfoText>
-                    Your API Key will be stored on this device. This application does not interact with system other than the URL provided above.
+                    Your API Key will be stored on this device. This application does not interact with system other than the provided URL.
                 </InfoText>
                 {
                     onElectronEnv() ||
