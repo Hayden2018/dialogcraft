@@ -5,8 +5,9 @@ import chatListReducer from './chatListSlice';
 import chatsReducer from './chatsSlice';
 import modalReducer from './modalSlice';
 import settingReducer from './settingSlice';
+import migrations from './migration';
 
-import { persistStore, persistReducer } from 'redux-persist';
+import { persistStore, persistReducer, createMigrate } from 'redux-persist';
 import localForage from 'localforage';
 
 const rootReducer = combineReducers({
@@ -18,11 +19,13 @@ const rootReducer = combineReducers({
 
 const persistConfig = {
     key: 'root',
+    version: 0,
     storage: localForage,
     throttle: 3000,
     serialize: false,
     deserialize: false,
     blacklist: ['modal'],
+    migrate: createMigrate(migrations as any),
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

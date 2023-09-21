@@ -6,13 +6,11 @@ import { styled } from '@mui/system';
 
 import { toggleTheme, updateChatSetting } from 'redux/settingSlice';
 import { AppState, SettingConfig, SettingStatus } from 'redux/type.d';
-import { updateGlobalSetting } from 'saga/actions';
 import { closeModal } from 'redux/modalSlice';
 import { useDataActions } from './GlobalSettingModalHook';
 import ResetAppWarning from 'components/ResetAppWarning/ResetAppWarning';
 import ImportChats from 'components/ChatImport/ChatImport';
 import { onElectronEnv } from 'utils';
-
 
 const Form = styled('form')(
     ({ theme }) => ({
@@ -92,7 +90,6 @@ const ActionButton = styled(Button)(
     })
 );
 
-
 const ProgressContainer = styled('div')(
     ({ theme: { palette } }) => ({
         marginTop: 'calc(50vh - 120px)',
@@ -109,14 +106,16 @@ const ProgressContainer = styled('div')(
     })
 );
 
-function GlobalSettingModal() {
+export default function GlobalSettingModal() {
 
     const dispatch = useDispatch();
 
     const globalSettings: SettingConfig = useSelector((state: AppState) => state.setting.global);
-    const { status, darkMode } = globalSettings;
+    const { status, darkMode, urlType } = globalSettings;
 
-    const { register, handleSubmit, watch, setValue, formState: { dirtyFields } } = useForm<SettingConfig>({
+    console.log(urlType)
+
+    const { register, handleSubmit, watch, setValue } = useForm<SettingConfig>({
         defaultValues: globalSettings,
     });
 
@@ -129,17 +128,11 @@ function GlobalSettingModal() {
     const onSubmit = (data: SettingConfig) => {
         delete data.darkMode;
         data.systemPrompt = data.systemPrompt.trim();
-        if (dirtyFields.baseURL || dirtyFields.apiKey) {
-            // API credentials verification
-            dispatch(updateGlobalSetting(data));
-        } else {
-            // Verfication not required
-            dispatch(updateChatSetting({
-                settingId: 'global',
-                setting: data,
-            }));
-            dispatch(closeModal());
-        }
+        dispatch(updateChatSetting({
+            settingId: 'global',
+            setting: data,
+        }));
+        dispatch(closeModal());
     }
 
     const onDiscard = () => {
@@ -163,32 +156,26 @@ function GlobalSettingModal() {
                         <Alert severity='info'>
                             <InfoList>
                                 <li>Reset App - remove all user data including conversations, settings and API credentials.</li> 
-                                <li>Disconnect - remove API credentials while keeping all other data.</li>
+                                <li>Disconnect - remove API credentials but keep other data and return to login page.</li>
                                 { onElectronEnv() && <li>Export Chats - export all conversation history as JSON file.</li> }
                                 { onElectronEnv() && <li>Import Chats - import conversation history from a previously exported JSON file.</li> }
                             </InfoList>
                         </Alert>
                     </FormRow>
-                    {
-                        status === SettingStatus.ERROR &&
-                        <FormRow>
-                            <Alert severity='error'>
-                                Verification failed. Please make sure your API credentials are correct and device connected to the internet.
-                            </Alert>
-                        </FormRow>
-                    }
                     <FormRow>
                         <TextField
+                            disabled
                             fullWidth
-                            label='API Base URL'
+                            label={urlType === 'openai' ? 'API Base URL' : 'Azure OpenAI Endpoint'}
                             {...register('baseURL')}
                         />
                     </FormRow>
                     <FormRow>
                         <TextField
+                            disabled
                             fullWidth
-                            label='API Key (Bearer token)'
                             type='password'
+                            label={urlType === 'openai' ? 'API Key (Bearer token)' : 'API Key'}
                             {...register('apiKey')}
                         />
                     </FormRow>
@@ -221,20 +208,23 @@ function GlobalSettingModal() {
                             </InfoList>
                         </Alert>
                     </FormRow>
-                    <FormRow>
-                        <p style={{ margin: '0px 0px 5px 5px' }}>Default GPT Model</p>
-                        <Select 
-                            fullWidth
-                            defaultValue={globalSettings.currentModel}
-                            onChange={(event) => setValue('currentModel', event.target.value)}
-                        >
-                            {
-                                globalSettings.availableModels.map(
-                                    (modelId, index) => <MenuItem value={modelId} key={index}>{modelId}</MenuItem>
-                                )
-                            }
-                        </Select>
-                    </FormRow>
+                    {
+                        urlType === 'openai' &&
+                        <FormRow>
+                            <p style={{ margin: '0px 0px 5px 5px' }}>Default GPT Model</p>
+                            <Select 
+                                fullWidth
+                                defaultValue={globalSettings.currentModel}
+                                onChange={(event) => setValue('currentModel', event.target.value)}
+                            >
+                                {
+                                    globalSettings.availableModels.map(
+                                        (modelId, index) => <MenuItem value={modelId} key={index}>{modelId}</MenuItem>
+                                    )
+                                }
+                            </Select>
+                        </FormRow>
+                    }
                     <FormRow narrow tall>
                         <SliderTop>
                             <span>Temperature</span>
@@ -348,5 +338,3 @@ function GlobalSettingModal() {
         </Dialog>
     )
 }
-
-export default GlobalSettingModal;

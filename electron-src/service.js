@@ -1,5 +1,5 @@
 const { ipcMain } = require('electron');
-const { Configuration, OpenAIApi } = require("openai");
+const axios = require('axios');
 
 function parseNoisyJSON(noisyString) {
     let parsedObjects = [];
@@ -37,6 +37,7 @@ function parseNoisyJSON(noisyString) {
 }
 
 async function sendResponseStream(window, {
+    urlType,
     apiKey,
     baseURL,
     model,
@@ -46,37 +47,54 @@ async function sendResponseStream(window, {
     topP,
 }) {
     try {
-        const configuration = new Configuration({ apiKey, basePath: `${baseURL}/v1/` });
-        const openai = new OpenAIApi(configuration);
-    
-        const completion = await openai.createChatCompletion({
-            model,
-            messages,
-            temperature,
-            top_p: topP,
-            stream: true,
-        }, { responseType: 'stream' });
-    
-        const stream = completion.data;
+        const requestConfig = urlType === 'openai' ?
+        {
+            method: 'post',
+            responseType: 'stream',
+            url: `${baseURL}/v1/chat/completions`,
+            headers: { Authorization: `Bearer ${apiKey}` },
+            data: {
+                model,
+                messages,
+                top_p: topP,
+                temperature,
+                stream: true,
+            },
+        }
+            :
+        {
+            method: 'post',
+            responseType: 'stream',
+            url: baseURL,
+            headers: { 'API-Key': apiKey },
+            data: {
+                messages,
+                top_p: topP,
+                temperature,
+                stream: true,
+            },
+        };
+
+        const response = await axios(requestConfig);
 
         let lastChunkTime = new Date().getTime();
-        let timeoutChecker = setInterval(() => {
+        let checkTimeout = setInterval(() => {
             if (new Date().getTime() - lastChunkTime > 8000) {
-                clearInterval(timeoutChecker);
+                clearInterval(checkTimeout);
                 window.webContents.send(requestId, { 
                     finish_reason: 'error',
                     delta: { },
                 });
             }
-        }, 1000);
+        }, 800);
     
-        stream.on('data', (chunk) => {
+        response.data.on('data', (chunk) => {
             lastChunkTime = new Date().getTime();
             const jsonChunks = parseNoisyJSON(chunk.toString());
-            for (const data of jsonChunks) {
-                if (data.choices && data.choices.length) {
-                    window.webContents.send(requestId, data.choices[0]);
-                    if (data.choices[0].finish_reason === 'stop') clearInterval(timeoutChecker);
+            for (const { choices } of jsonChunks) {
+                if (choices && choices.length) {
+                    window.webContents.send(requestId, choices[0]);
+                    if (choices[0].finish_reason === 'stop') clearInterval(checkTimeout);
                 }
             }
         });

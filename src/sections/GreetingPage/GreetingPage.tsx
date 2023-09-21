@@ -1,12 +1,13 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { useForm } from 'react-hook-form';
-import { TextField, Button, Alert, LinearProgress, Link } from '@mui/material';
+import { useForm, Controller } from 'react-hook-form';
+import { TextField, Button, Alert, LinearProgress, Link, Tabs, Tab } from '@mui/material';
 import { styled } from '@mui/system';
 
 import { AppState, SettingConfig, SettingStatus } from 'redux/type.d';
 import { updateGlobalSetting } from "saga/actions";
 import { ReactComponent as AppIcon } from "./logo.svg";
 import { onElectronEnv } from 'utils';
+import { useEffect } from 'react';
 
 const GreetingContainer = styled('div')(
     ({ theme }) => ({
@@ -20,8 +21,9 @@ const GreetingContainer = styled('div')(
     })
 );
 
-const AppTitle= styled('h1')(
+const AppTitle = styled('h1')(
     ({ theme: { palette } }) => ({
+        margin: '10px 0px 5px',
         textAlign: 'center',
         color: palette.grey[palette.mode === 'dark' ? 200 : 800],
         '& > svg': {
@@ -30,6 +32,27 @@ const AppTitle= styled('h1')(
             marginRight: 12,
             verticalAlign: 'top',
         }
+    })
+);
+
+const EndpointTypeChooser = styled(Tabs)(
+    ({ theme: { palette } }) => ({
+        minHeight: '32px',
+        height: 32,
+        width: 580,
+        margin: '0px auto',
+        marginBottom: '5px',
+        '& div': {
+            height: 32,
+            minHeight: '32px',
+        },
+        '& button': {
+            width: 75,
+            minWidth: '75px',
+            height: 32,
+            minHeight: '32px',
+            fontSize: '12px',
+        },
     })
 );
 
@@ -42,7 +65,7 @@ const CredentialInput = styled(TextField)(
 
 const InfoText = styled('p')(
     ({ theme: { palette } }) => ({
-        width: 720,
+        width: 800,
         margin: '0px auto',
         textAlign: 'center',
         color: palette.grey[palette.mode === 'dark' ? 400 : 600],
@@ -89,30 +112,49 @@ const SubmitButton = styled(Button)(
     })
 );
 
-const documentationUrl = 'https://platform.openai.com/docs/api-reference/models/list';
 const releaseUrl = 'https://github.com/Hayden2018/dialogcraft/releases';
 const videoUrl = 'https://www.youtube.com/watch?v=aVog4J6nIAU';
 
-function GreetingPage() {
+const openLink = (url: string) => {
+    if (onElectronEnv()) {
+        const { shell } = window.require('electron');
+        shell.openExternal(url);
+    } else {
+        window.open(url);
+    }
+}
+
+export default function GreetingPage() {
 
     const dispatch = useDispatch();
+    const { status } = useSelector((state: AppState) => state.setting.global);
 
-    const { baseURL, apiKey, status } = useSelector((state: AppState) => state.setting.global);
-
-    const { register, handleSubmit, formState: { errors } } = useForm({
-        defaultValues: { baseURL: baseURL!, apiKey: apiKey! },
+    const { handleSubmit, watch, setValue, reset, control, formState: { isDirty } } = useForm({
+        defaultValues: {
+            baseURL: 'https://api.openai.com',
+            apiKey: '',
+            urlType: 'openai',
+        },
     });
 
-    const onSubmit = (data: { apiKey: string, baseURL:string }) => {
-        dispatch(updateGlobalSetting(data as SettingConfig));
-    }
+    const urlType = watch('urlType');
+    const baseURL = watch('baseURL');
+    const apiKey = watch('apiKey');
 
-    const openLink = (url: string) => {
-        if (onElectronEnv()) {
-            const { shell } = window.require('electron');
-            shell.openExternal(url);
+    useEffect(() => {
+        if (urlType === 'openai') {
+            setValue('baseURL', 'https://api.openai.com');
+            setValue('apiKey', '');
         } else {
-            window.open(url);
+            setValue('baseURL', '');
+            setValue('apiKey', '');
+        }
+    }, [setValue, urlType]);
+
+    const onSubmit = (data: { apiKey: string, baseURL:string }) => {
+        if (baseURL && apiKey) {
+            dispatch(updateGlobalSetting(data as SettingConfig));
+            reset(data);
         }
     }
 
@@ -125,28 +167,32 @@ function GreetingPage() {
         </GreetingContainer>
     )
 
-    return (
+    if (urlType === 'openai') return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <GreetingContainer>
                 <AppTitle>
                     <AppIcon />
                     DialogCraft
                 </AppTitle>
-                <CredentialInput
-                    label='API Base URL'
-                    {...register('baseURL', { required: 'API URL is required' })}
-                    error={!!errors.baseURL}
-                    helperText={errors.baseURL?.message}
+                <EndpointTypeChooser
+                    value={urlType}
+                    onChange={(_, value) => setValue('urlType', value)}
+                >
+                    <Tab value='openai' label='OpenAI' />
+                    <Tab value='azure' label='Azure' />
+                </EndpointTypeChooser>
+                <Controller
+                    name='baseURL'
+                    control={control}
+                    render={({ field }) => <CredentialInput {...field} label='API Base URL' />}
                 />
-                <CredentialInput
-                    label='API Key (Bearer token)'
-                    type='password'
-                    {...register('apiKey', { required: 'API Key is required' })}
-                    error={!!errors.apiKey}
-                    helperText={errors.apiKey?.message}
+                <Controller
+                    name='apiKey'
+                    control={control}
+                    render={({ field }) => <CredentialInput {...field} type='password' label='API Key (Bearer token)' />}
                 />
                 {
-                    status === SettingStatus.ERROR &&
+                    (status === SettingStatus.ERROR && !isDirty) &&
                     <ErrorAlert severity='error'>
                         Verification failed. Please check your API credentails and internet connection.
                     </ErrorAlert>
@@ -155,30 +201,66 @@ function GreetingPage() {
                     Connect
                 </SubmitButton>
                 <InfoText>
-                    If you do not have an API Key. You may refer to <Link onClick={() => openLink(videoUrl)}>this</Link> video on how to get one. 
+                    If you do not have an OpenAI API Key. You may refer to <Link onClick={() => openLink(videoUrl)}>this</Link> video on how to get one. 
+                </InfoText>
+                <InfoText>
+                    Your API Key will be stored on this device. This application does not interact with system other than the provided URL.
                 </InfoText>
                 {
-                    onElectronEnv() ?
-                    <>
-                        <InfoText>
-                            The provided API URL should come from OpenAI or strictly follow their <Link onClick={() => openLink(documentationUrl)}>documentation</Link>.
-                        </InfoText>
-                        <InfoText>
-                            Your API Key will be stored securely on this device. This application does not interact with any other systems except the URL you provided above.
-                        </InfoText>
-                    </> :
-                    <>
-                        <InfoText>
-                            You are using the web version of DialogCraft. More features available on <Link onClick={() => openLink(releaseUrl)}>desktop app</Link>.
-                        </InfoText>
-                        <InfoText>
-                            Your API Key will be stored securely on this device. Our service do not collect or record any user data.
-                        </InfoText>
-                    </>
+                    onElectronEnv() ||
+                    <InfoText>
+                        You are using the web version of DialogCraft. More features available on <Link onClick={() => openLink(releaseUrl)}>desktop app</Link>.
+                    </InfoText>
+                }
+            </GreetingContainer>
+        </form>
+    )
+    else return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <GreetingContainer>
+                <AppTitle>
+                    <AppIcon />
+                    DialogCraft
+                </AppTitle>
+                <EndpointTypeChooser
+                    value={urlType}
+                    onChange={(_, value) => setValue('urlType', value)}
+                >
+                    <Tab value='openai' label='OpenAI' />
+                    <Tab value='azure' label='Azure' />
+                </EndpointTypeChooser>
+                <Controller
+                    name='baseURL'
+                    control={control}
+                    render={({ field }) => <CredentialInput {...field} label='Azure OpenAI Endpoint'/>}
+                />
+                <Controller
+                    name='apiKey'
+                    control={control}
+                    render={({ field }) => <CredentialInput {...field} type='password' label='API Key'/>}
+                />
+                {
+                    (status === SettingStatus.ERROR && !isDirty) &&
+                    <ErrorAlert severity='error'>
+                        Verification failed. Please check your API credentails and internet connection.
+                    </ErrorAlert>
+                }
+                <SubmitButton variant='contained' type='submit'>
+                    Connect
+                </SubmitButton>
+                <InfoText>
+                    Please provide the full URL to your a Azure OpenAI service deployment.
+                </InfoText>
+                <InfoText>
+                    Your API Key will be stored on this device. This application does not interact with system other than the provided URL.
+                </InfoText>
+                {
+                    onElectronEnv() ||
+                    <InfoText>
+                        You are using the web version of DialogCraft. More features available on <Link onClick={() => openLink(releaseUrl)}>desktop app</Link>.
+                    </InfoText>
                 }
             </GreetingContainer>
         </form>
     )
 }
-
-export default GreetingPage;

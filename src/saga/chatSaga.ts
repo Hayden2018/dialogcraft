@@ -52,8 +52,7 @@ export function* handleUserMessage({ payload } :
 
         yield put(addStreamedChunk({
             stop: !!msgChunk.finish_reason,
-            delta: msgChunk.delta.content,
-            error: false,
+            delta: msgChunk.delta.content || '',
             chatId,
         }));
 
@@ -68,7 +67,7 @@ export function* handleUserMessage({ payload } :
     );
 
     const defaultTitleRegex = /^New Conversation \d+$/;
-    const { baseURL, apiKey, autoTitle }: SettingConfig = yield select(
+    const { baseURL, apiKey, autoTitle, urlType }: SettingConfig = yield select(
         (state: AppState) => state.setting.global
     );
 
@@ -77,7 +76,14 @@ export function* handleUserMessage({ payload } :
             (state: AppState) => state.chats[chatId].messages
         );
 
-        const newTitle: string = yield call(getChatTitle, updatedMessageHistory, baseURL!, apiKey!);
+        const newTitle: string = yield call(
+            getChatTitle, 
+            updatedMessageHistory, 
+            baseURL!, 
+            apiKey!, 
+            urlType!,
+        );
+        
         if (newTitle) yield put(
             editChatTitle({
                 chatId,
@@ -145,7 +151,7 @@ export function* handleRegenerate({ payload } :
             yield put(addStreamedChunk({
                 chatId: payload.chatId,
                 stop: !!msgChunk.finish_reason,
-                delta: msgChunk.delta.content,
+                delta: msgChunk.delta.content || '',
             }));
 
             if (!!msgChunk.finish_reason) {
@@ -196,7 +202,7 @@ export function* handleRegenerate({ payload } :
 
             yield put(addRegenerationChunk({
                 stop: !!msgChunk.finish_reason,
-                delta: msgChunk.delta.content,
+                delta: msgChunk.delta.content || '',
                 chatId,
                 msgId,
             }));
