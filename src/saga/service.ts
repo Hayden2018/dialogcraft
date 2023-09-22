@@ -14,7 +14,6 @@ window.onfocus = () => {
     }
 }
 
-
 export function getResponseStream(requestId: string) {
     return eventChannel((emit) => {
         // On Electron use Ipc to communicate with Node backend
@@ -40,14 +39,28 @@ export function getResponseStream(requestId: string) {
 }
 
 
-export async function getChatTitle(messageHistory: Array<ChatMessage>, baseURL:string, apiKey: string) {
+export async function getChatTitle(
+    messageHistory: Array<ChatMessage>,
+    baseURL: string,
+    apiKey: string,
+    urlType: string,
+) {
     try {
-        const response = await fetch(`${baseURL}/v1/chat/completions`, {
+        const URL = urlType === 'openai' ? `${baseURL}/v1/chat/completions` : baseURL;
+        const headers = urlType === 'openai' ? 
+        { 
+            Authorization: `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+        } 
+            :
+        { 
+            'API-Key': apiKey,
+            'Content-Type': 'application/json',
+        };
+
+        const response = await fetch(URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`,
-            },
+            headers: headers as any,
             body: JSON.stringify({
                 model: 'gpt-3.5-turbo',
                 temperature: 0.5,
@@ -77,9 +90,9 @@ export async function getChatTitle(messageHistory: Array<ChatMessage>, baseURL:s
 
 export function* requestResponse(messageHistory: Array<ChatMessage>, chatId: string) {
 
-    const { 
-        temperature,
+    const {
         topP,
+        temperature,
         systemPrompt,
         currentModel,
         maxContext,
@@ -87,7 +100,7 @@ export function* requestResponse(messageHistory: Array<ChatMessage>, chatId: str
         (state: AppState) => state.setting[chatId]
     );
 
-    const { baseURL, apiKey }: SettingConfig = yield select(
+    const { baseURL, apiKey, urlType }: SettingConfig = yield select(
         (state: AppState) => state.setting.global
     );
 
@@ -112,6 +125,7 @@ export function* requestResponse(messageHistory: Array<ChatMessage>, chatId: str
     // On Electron use Ipc to communicate with Node backend
     if (onElectronEnv()) {
         messageAgent.send('MESSAGE', {
+            urlType,
             baseURL,
             apiKey,
             topP,

@@ -249,7 +249,7 @@ export default function GreetingPage() {
                     Connect
                 </SubmitButton>
                 <InfoText>
-                    You are using this app with a Azure OpenAI service deployment.
+                    Please provide the full URL to your a Azure OpenAI service deployment.
                 </InfoText>
                 <InfoText>
                     Your API Key will be stored on this device. This application does not interact with system other than the provided URL.

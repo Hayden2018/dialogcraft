@@ -70,10 +70,11 @@ const FormButton = styled(Button)(
     })
 );
 
-function ChatSettingModal({ settingId }: ModalPayload) {
+export default function ChatSettingModal({ settingId }: ModalPayload) {
 
     const dispatch = useDispatch();
 
+    const { urlType } = useSelector((state: AppState) => state.setting.global);
     const currentSettings = useSelector((state: AppState) => state.setting[settingId!]);
     const chatTitle = useSelector((state: AppState) => state.chats[settingId!].title);
 
@@ -96,11 +97,8 @@ function ChatSettingModal({ settingId }: ModalPayload) {
 
     return (
         <Dialog open fullWidth maxWidth='md'>
-            
             <Form onSubmit={handleSubmit(onSubmit)}>
-
                 <FormHeader>Chat Settings - {chatTitle}</FormHeader>
-
                 <FormRow>
                     <Alert severity='info'>
                         <InfoList>
@@ -109,22 +107,23 @@ function ChatSettingModal({ settingId }: ModalPayload) {
                         </InfoList>
                     </Alert>
                 </FormRow>
-
-                <FormRow>
-                    <p style={{ margin: '0px 0px 5px 5px' }}>GPT Model</p>
-                    <Select 
-                        fullWidth
-                        defaultValue={currentSettings.currentModel}
-                        onChange={(event) => setValue('currentModel', event.target.value)}
-                    >
-                        {
-                            currentSettings.availableModels.map(
-                                (modelId) => <MenuItem value={modelId}>{modelId}</MenuItem>
-                            )
-                        }
-                    </Select>
-                </FormRow>
-
+                {
+                    urlType === 'openai' &&
+                    <FormRow>
+                        <p style={{ margin: '0px 0px 5px 5px' }}>GPT Model</p>
+                        <Select 
+                            fullWidth
+                            defaultValue={currentSettings.currentModel}
+                            onChange={(event) => setValue('currentModel', event.target.value)}
+                        >
+                            {
+                                currentSettings.availableModels.map(
+                                    (modelId) => <MenuItem value={modelId}>{modelId}</MenuItem>
+                                )
+                            }
+                        </Select>
+                    </FormRow>
+                }
                 <FormRow narrow>
                     <SliderTop>
                         <span>Temperature</span>
@@ -138,7 +137,6 @@ function ChatSettingModal({ settingId }: ModalPayload) {
                         aria-labelledby='temperature-slider'
                     />
                 </FormRow>
-
                 <FormRow narrow>
                     <SliderTop>
                         <span>Top P</span>
@@ -148,11 +146,10 @@ function ChatSettingModal({ settingId }: ModalPayload) {
                         min={0}
                         max={100}
                         value={topP * 100}
-                        onChange={(event, newValue) => setValue('topP', newValue as number / 100)}
+                        onChange={(_, newValue) => setValue('topP', newValue as number / 100)}
                         aria-labelledby='topP-slider'
                     />
                 </FormRow>
-
                 <FormRow tall>
                     <Alert severity='info'>
                         <InfoList>
@@ -164,7 +161,6 @@ function ChatSettingModal({ settingId }: ModalPayload) {
                         </InfoList>
                     </Alert>
                 </FormRow>
-                
                 <FormRow>
                     <TextField
                         label='System Prompt'
@@ -174,7 +170,6 @@ function ChatSettingModal({ settingId }: ModalPayload) {
                         {...register('systemPrompt')}
                     />
                 </FormRow>
-
                 <FormRow narrow>
                     <SliderTop>
                         <span>Maximum context messages</span>
@@ -188,7 +183,6 @@ function ChatSettingModal({ settingId }: ModalPayload) {
                         aria-labelledby='topP-slider'
                     />
                 </FormRow>
-
                 <ButtonRow>
                     <FormButton color='warning' variant='contained' onClick={() => dispatch(closeModal())}>
                         Discard
@@ -197,10 +191,7 @@ function ChatSettingModal({ settingId }: ModalPayload) {
                         Save
                     </FormButton>
                 </ButtonRow>
-                
             </Form>
         </Dialog>
     )
 }
-
-export default ChatSettingModal;
