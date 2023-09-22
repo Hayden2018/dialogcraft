@@ -201,10 +201,7 @@ export default function GreetingPage() {
                     Connect
                 </SubmitButton>
                 <InfoText>
-                    If you do not have an OpenAI API Key. You may refer to <Link onClick={() => openLink(videoUrl)}>this</Link> video on how to get one. 
-                </InfoText>
-                <InfoText>
-                    Your API Key will be stored on this device. This application does not interact with system other than the provided URL.
+                    If you do not have an OpenAI API key refer to <Link onClick={() => openLink(videoUrl)}>this</Link> video on how to get one. 
                 </InfoText>
                 {
                     onElectronEnv() ||
@@ -212,6 +209,9 @@ export default function GreetingPage() {
                         You are using the web version of DialogCraft. More features available on <Link onClick={() => openLink(releaseUrl)}>desktop app</Link>.
                     </InfoText>
                 }
+                <InfoText>
+                    Your API key will be stored on this device. This application does not interact with system other than the provided URL.
+                </InfoText>
             </GreetingContainer>
         </form>
     )
@@ -249,10 +249,7 @@ export default function GreetingPage() {
                     Connect
                 </SubmitButton>
                 <InfoText>
-                    Please provide the full URL to your a Azure OpenAI service deployment.
-                </InfoText>
-                <InfoText>
-                    Your API Key will be stored on this device. This application does not interact with system other than the provided URL.
+                    Please provide the full URL to your Azure OpenAI service deployment.
                 </InfoText>
                 {
                     onElectronEnv() ||
@@ -260,6 +257,9 @@ export default function GreetingPage() {
                         You are using the web version of DialogCraft. More features available on <Link onClick={() => openLink(releaseUrl)}>desktop app</Link>.
                     </InfoText>
                 }
+                <InfoText>
+                    Your API key will be stored on this device. This application does not interact with system other than the provided URL.
+                </InfoText>
             </GreetingContainer>
         </form>
     )
