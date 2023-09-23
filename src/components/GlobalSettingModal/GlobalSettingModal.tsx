@@ -113,8 +113,6 @@ export default function GlobalSettingModal() {
     const globalSettings: SettingConfig = useSelector((state: AppState) => state.setting.global);
     const { status, darkMode, urlType } = globalSettings;
 
-    console.log(urlType)
-
     const { register, handleSubmit, watch, setValue } = useForm<SettingConfig>({
         defaultValues: globalSettings,
     });

@@ -118,7 +118,7 @@ export default function ChatSettingModal({ settingId }: ModalPayload) {
                         >
                             {
                                 currentSettings.availableModels.map(
-                                    (modelId) => <MenuItem value={modelId}>{modelId}</MenuItem>
+                                    (modelId, index) => <MenuItem key={index} value={modelId}>{modelId}</MenuItem>
                                 )
                             }
                         </Select>

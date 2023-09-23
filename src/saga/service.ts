@@ -14,31 +14,6 @@ window.onfocus = () => {
     }
 }
 
-export function getResponseStream(requestId: string) {
-    return eventChannel((emit) => {
-        // On Electron use Ipc to communicate with Node backend
-        if (onElectronEnv()) {
-            const listener = (_: unknown, data: any) => {
-                emit(data);
-            };
-            messageAgent.on(requestId, listener);
-            return () => messageAgent.removeListener(requestId, listener);
-        } 
-        // On Browser use Websocket proxy for text streaming
-        else {
-            const listener = (event: MessageEvent) => {
-                const data = JSON.parse(event.data);
-                if (data.requestId === requestId) {
-                    emit(data);
-                }
-            };
-            messageAgent.addEventListener('message', listener);
-            return () => messageAgent.removeEventListener('message', listener);
-        }
-    });
-}
-
-
 export async function getChatTitle(
     messageHistory: Array<ChatMessage>,
     baseURL: string,
@@ -85,6 +60,31 @@ export async function getChatTitle(
     } catch (error) {
         return '';
     }
+}
+
+
+export function getResponseStream(requestId: string) {
+    return eventChannel((emit) => {
+        // On Electron use Ipc to communicate with Node backend
+        if (onElectronEnv()) {
+            const listener = (_: unknown, data: any) => {
+                emit(data);
+            };
+            messageAgent.on(requestId, listener);
+            return () => messageAgent.removeListener(requestId, listener);
+        } 
+        // On Browser use Websocket proxy for text streaming
+        else {
+            const listener = (event: MessageEvent) => {
+                const data = JSON.parse(event.data);
+                if (data.requestId === requestId) {
+                    emit(data);
+                }
+            };
+            messageAgent.addEventListener('message', listener);
+            return () => messageAgent.removeEventListener('message', listener);
+        }
+    });
 }
 
 
@@ -139,6 +139,7 @@ export function* requestResponse(messageHistory: Array<ChatMessage>, chatId: str
     else {
         messageAgent.send(
             JSON.stringify({
+                urlType,
                 baseURL,
                 apiKey,
                 top_p: topP,
