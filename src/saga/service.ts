@@ -109,15 +109,15 @@ export function* requestResponse(messageHistory: Array<ChatMessage>, chatId: str
         content: msg.editedContent || msg.content,
     }));
 
+    if (messagesPayload.length > maxContext) {
+        messagesPayload = messagesPayload.slice(-maxContext);
+    }
+
     if (systemPrompt) {
         messagesPayload.unshift({
             role: 'system',
             content: systemPrompt,
         });
-    }
-
-    if (messagesPayload.length > maxContext) {
-        messagesPayload = messagesPayload.slice(-maxContext);
     }
 
     const requestId = uuidv4();
