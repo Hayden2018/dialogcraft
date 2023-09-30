@@ -1,8 +1,8 @@
 import { select } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
-import { v4 as uuidv4 } from 'uuid';
 import { AppState, ChatMessage, SettingConfig } from 'redux/type.d';
 import { onElectronEnv, chatTitlePrompt } from 'utils';
+import { v4 as uuidv4 } from 'uuid';
 
 let messageAgent = onElectronEnv() ? 
     window.require('electron').ipcRenderer : 
@@ -35,7 +35,7 @@ export async function getChatTitle(
 
         const response = await fetch(URL, {
             method: 'POST',
-            headers: headers as any,
+            headers: headers,
             body: JSON.stringify({
                 model: 'gpt-3.5-turbo',
                 temperature: 0.5,
@@ -60,31 +60,6 @@ export async function getChatTitle(
     } catch (error) {
         return '';
     }
-}
-
-
-export function getResponseStream(requestId: string) {
-    return eventChannel((emit) => {
-        // On Electron use Ipc to communicate with Node backend
-        if (onElectronEnv()) {
-            const listener = (_: unknown, data: any) => {
-                emit(data);
-            };
-            messageAgent.on(requestId, listener);
-            return () => messageAgent.removeListener(requestId, listener);
-        } 
-        // On Browser use Websocket proxy for text streaming
-        else {
-            const listener = (event: MessageEvent) => {
-                const data = JSON.parse(event.data);
-                if (data.requestId === requestId) {
-                    emit(data);
-                }
-            };
-            messageAgent.addEventListener('message', listener);
-            return () => messageAgent.removeEventListener('message', listener);
-        }
-    });
 }
 
 
@@ -134,6 +109,20 @@ export function* requestResponse(messageHistory: Array<ChatMessage>, chatId: str
             messages: messagesPayload,
             requestId,
         });
+        return eventChannel((emit) => {
+            const msgListener = (_: unknown, data: any) => emit(data);
+            const interruptListener = (event: CustomEvent<{ chatId: string }>) => {
+                if (event.detail.chatId === chatId) {
+                    emit({ finish_reason: 'interrupt' });
+                }
+            }
+            messageAgent.on(requestId, msgListener);
+            document.addEventListener('interrupt', interruptListener);
+            return () => {
+                messageAgent.removeListener(requestId, msgListener);
+                document.removeEventListener('interrupt', interruptListener);
+            };
+        });
     }
     // On Browser use Websocket proxy for text streaming
     else {
@@ -150,7 +139,22 @@ export function* requestResponse(messageHistory: Array<ChatMessage>, chatId: str
                 requestId,
             })
         );
+        return eventChannel((emit) => {
+            const listener = (event: MessageEvent) => {
+                const data = JSON.parse(event.data);
+                if (data.requestId === requestId) emit(data);
+            }
+            const interruptListener = (event: CustomEvent<{ chatId: string }>) => {
+                if (event.detail.chatId === chatId) {
+                    emit({ finish_reason: 'interrupt' });
+                }
+            }
+            messageAgent.addEventListener('message', listener);
+            document.addEventListener('interrupt', interruptListener);
+            return () => {
+                messageAgent.removeEventListener('message', listener);
+                document.removeEventListener('interrupt', interruptListener);
+            }
+        });
     }
-
-    return requestId;
 }

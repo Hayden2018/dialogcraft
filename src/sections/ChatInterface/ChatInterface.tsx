@@ -140,7 +140,7 @@ function ChatInterface() {
     const dispatch = useDispatch();
 
     const currentChat = useCurrentChatSelector();
-    const { onChange, sendMessage, regenerate, onKeyDown, value } = useMessageActions(currentChat);
+    const { onChange, sendMessage, regenerate, onKeyDown, stopGenerate, value } = useMessageActions(currentChat);
     const { editing, toggleEdit } = useChatEditActions(currentChat);
 
     const streamingMsgId = currentChat?.streamingMsgId;
@@ -166,26 +166,35 @@ function ChatInterface() {
         <ChatContainer>
             <HeaderBanner>
                 <ChatTitle>{currentChat.title}</ChatTitle>
-                { isStreaming || 
-                    <HeaderButton variant='contained' onClick={
-                        () => dispatch(
-                            openModal({
-                                type: ModalType.CHAT_SETTING,
-                                settingId: currentChat.id,
-                            })
-                        )
-                    }>
-                        Chat Setting
-                    </HeaderButton> 
-                }
-                { isStreaming || 
+                { isStreaming ? 
                     <HeaderButton 
                         variant='contained'
-                        color={editing ? 'success' : 'warning'} 
-                        onClick={toggleEdit}
+                        color='error' 
+                        onClick={stopGenerate}
+                        style={{ marginLeft: '178px' }}
                     >
-                        { editing ? 'Stop Editing' : 'Edit Messages' }
-                    </HeaderButton> 
+                        Stop Generation
+                    </HeaderButton>       
+                    :
+                    <>
+                        <HeaderButton variant='contained' onClick={
+                            () => dispatch(
+                                openModal({
+                                    type: ModalType.CHAT_SETTING,
+                                    settingId: currentChat.id,
+                                })
+                            )
+                        }>
+                            Chat Setting
+                        </HeaderButton>
+                        <HeaderButton 
+                            variant='contained'
+                            color={editing ? 'success' : 'warning'} 
+                            onClick={toggleEdit}
+                        >
+                            { editing ? 'Stop Editing' : 'Edit Messages' }
+                        </HeaderButton>
+                    </> 
                 }
             </HeaderBanner>
             <MessageArea 

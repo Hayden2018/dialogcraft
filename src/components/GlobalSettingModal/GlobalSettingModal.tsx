@@ -295,13 +295,13 @@ export default function GlobalSettingModal() {
                     </FormRow>
                     <FormRow narrow>
                         <FormControlLabel
-                            control={<Switch {...register('enterSend')} checked={enterSend}/>}
+                            control={<Switch onClick={() => setValue('enterSend', !enterSend)} checked={enterSend}/>}
                             label='Press Enter to Send Messages'
                         />
                     </FormRow>
                     <FormRow narrow>
                         <FormControlLabel
-                            control={<Switch {...register('autoTitle')} checked={autoTitle}/>}
+                            control={<Switch onClick={() => setValue('autoTitle', !autoTitle)} checked={autoTitle}/>}
                             label='Auto-generate Chat Title'
                         />
                     </FormRow>

@@ -3,7 +3,139 @@ import { moveChatToTop } from 'redux/chatListSlice';
 import { addRegenerationChunk, addStreamedChunk, addUserMessage, editChatTitle } from 'redux/chatsSlice';
 import { openModal } from 'redux/modalSlice';
 import { AppState, ChatMessage, ModalType, SettingConfig } from 'redux/type.d';
-import { requestResponse, getChatTitle, getResponseStream } from './service';
+import { requestResponse, getChatTitle } from './service';
+import { EventChannel } from 'redux-saga';
+
+
+function* handleResponseStream(responseStream: EventChannel<any>, chatId: string) {
+
+    // Enable streaming mode
+    yield put(addStreamedChunk({
+        chatId,
+        stop: false,
+        delta: '',
+    }));
+
+    while (true) {
+        const msgChunk: {
+            finish_reason: string | null;
+            delta: {
+                role?: string;
+                content?: string;
+            }
+        } = yield take(responseStream);
+
+        if (msgChunk.finish_reason) responseStream.close();
+
+        if (msgChunk.finish_reason === 'error') {
+            yield put(openModal({ type: ModalType.CHAT_ERROR }));
+            yield put(addStreamedChunk({
+                stop: true,
+                error: true,
+                delta: '',
+                chatId,
+            }));
+            break;
+        }
+
+        if (msgChunk.finish_reason === 'timeout') {
+            yield put(openModal({ type: ModalType.CHAT_TIMEOUT }));
+            yield put(addStreamedChunk({
+                stop: true,
+                error: true,
+                delta: '',
+                chatId,
+            }));
+            break;
+        }
+
+        if (msgChunk.finish_reason === 'interrupt') {
+            yield put(addStreamedChunk({
+                stop: true,
+                error: false,
+                delta: '',
+                chatId,
+            }));
+            break;
+        }
+
+        yield put(addStreamedChunk({
+            stop: !!msgChunk.finish_reason,
+            delta: msgChunk.delta.content || '',
+            chatId,
+        }));
+    }
+}
+
+
+function* handleRegenerationStream(
+    responseStream: EventChannel<any>,
+    chatId: string,
+    msgId: string,
+) {
+    // Set chat to streaming mode
+    yield put(addRegenerationChunk({
+        stop: false,
+        delta: '',
+        chatId,
+        msgId,
+    }));
+
+    while (true) {
+        const msgChunk: {
+            finish_reason: string | null;
+            delta: {
+                role: string,
+                content: string,
+            }
+        } = yield take(responseStream);
+
+        if (msgChunk.finish_reason) responseStream.close();
+
+        if (msgChunk.finish_reason === 'error') {
+            yield put(openModal({ type: ModalType.CHAT_ERROR }));
+            yield put(addRegenerationChunk({
+                stop: true,
+                error: true,
+                delta: '',
+                chatId,
+                msgId,
+            }));
+            break;
+        }
+
+        if (msgChunk.finish_reason === 'timeout') {
+            yield put(openModal({ type: ModalType.CHAT_TIMEOUT }));
+            yield put(addRegenerationChunk({
+                stop: true,
+                error: true,
+                delta: '',
+                chatId,
+                msgId,
+            }));
+            break;
+        }
+
+        if (msgChunk.finish_reason === 'interrupt') {
+            yield put(addRegenerationChunk({
+                stop: true,
+                error: false,
+                delta: '',
+                chatId,
+                msgId,
+            }));
+            break;
+        }
+
+        yield put(addRegenerationChunk({
+            stop: !!msgChunk.finish_reason,
+            delta: msgChunk.delta.content || '',
+            chatId,
+            msgId,
+        }));
+    }
+}
+
 
 export function* handleUserMessage({ payload } : 
     {
@@ -20,47 +152,8 @@ export function* handleUserMessage({ payload } :
         (state: AppState) => state.chats[chatId].messages
     );
 
-    const requestId: string = yield call(requestResponse, messageHistory, chatId);
-
-    // Enable streaming mode
-    yield put(addStreamedChunk({
-        chatId,
-        stop: false,
-        delta: '',
-    }));
-
-    const responseStream = getResponseStream(requestId);
-    while (true) {
-        const msgChunk: {
-            finish_reason: string | null;
-            delta: {
-                role?: string;
-                content?: string;
-            }
-        } = yield take(responseStream);
-
-        if (msgChunk.finish_reason === 'error') {
-            yield put(openModal({ type: ModalType.CHAT_ERROR }));
-            yield put(addStreamedChunk({
-                stop: true,
-                error: true,
-                delta: '',
-                chatId,
-            }));
-            break;
-        }
-
-        yield put(addStreamedChunk({
-            stop: !!msgChunk.finish_reason,
-            delta: msgChunk.delta.content || '',
-            chatId,
-        }));
-
-        if (!!msgChunk.finish_reason) {
-            responseStream.close();
-            break;
-        }
-    }
+    const responseStream: EventChannel<any> = yield call(requestResponse, messageHistory, chatId);
+    yield call(handleResponseStream, responseStream, chatId);
 
     const chatTitle: string = yield select(
         (state: AppState) => state.chats[chatId].title
@@ -101,7 +194,6 @@ export function* handleRegenerate({ payload } :
     }
 ) {
     const { chatId, msgId } = payload;
-    
     const messageRole: string = yield select(
         (state: AppState) => {
             const messages = state.chats[chatId].messages;
@@ -113,52 +205,13 @@ export function* handleRegenerate({ payload } :
     // The message to regenerate is sent by the user
     // Happens only when user press regenerate after deleting last message by assistant
     if (messageRole !== 'assistant') {
-
         const messageHistory: Array<ChatMessage> = yield select(
             (state: AppState) => state.chats[chatId].messages
         );
 
-        const requestId: string = yield call(requestResponse, messageHistory, chatId);
+        const responseStream: EventChannel<any> = yield call(requestResponse, messageHistory, chatId);
+        yield call(handleResponseStream, responseStream, chatId);
 
-        // Set chat to streaming mode
-        yield put(addStreamedChunk({
-            chatId: payload.chatId,
-            stop: false,
-            delta: '',
-        }));
-
-        const responseStream = getResponseStream(requestId);
-        while (true) {
-            const msgChunk: {
-                finish_reason: string | null;
-                delta: {
-                    role: string,
-                    content: string,
-                }
-            } = yield take(responseStream);
-
-            if (msgChunk.finish_reason === 'error') {
-                yield put(openModal({ type: ModalType.CHAT_ERROR }));
-                yield put(addStreamedChunk({
-                    stop: true,
-                    error: true,
-                    delta: '',
-                    chatId,
-                }));
-                break;
-            }
-
-            yield put(addStreamedChunk({
-                chatId: payload.chatId,
-                stop: !!msgChunk.finish_reason,
-                delta: msgChunk.delta.content || '',
-            }));
-
-            if (!!msgChunk.finish_reason) {
-                responseStream.close();
-                break;
-            }
-        }
     } else {
         const messageHistory: Array<ChatMessage> = yield select(
             (state: AppState) => {
@@ -168,49 +221,7 @@ export function* handleRegenerate({ payload } :
             }
         );
 
-        const requestId: string = yield call(requestResponse, messageHistory, chatId);
-
-        // Set chat to streaming mode
-        yield put(addRegenerationChunk({
-            stop: false,
-            delta: '',
-            chatId,
-            msgId,
-        }));
-
-        const responseStream = getResponseStream(requestId);
-        while (true) {
-            const msgChunk: {
-                finish_reason: string | null;
-                delta: {
-                    role: string,
-                    content: string,
-                }
-            } = yield take(responseStream);
-
-            if (msgChunk.finish_reason === 'error') {
-                yield put(openModal({ type: ModalType.CHAT_ERROR }));
-                yield put(addRegenerationChunk({
-                    stop: true,
-                    error: true,
-                    delta: '',
-                    chatId,
-                    msgId,
-                }));
-                break;
-            }
-
-            yield put(addRegenerationChunk({
-                stop: !!msgChunk.finish_reason,
-                delta: msgChunk.delta.content || '',
-                chatId,
-                msgId,
-            }));
-
-            if (!!msgChunk.finish_reason) {
-                responseStream.close();
-                break;
-            }
-        }
+        const responseStream: EventChannel<any> = yield call(requestResponse, messageHistory, chatId);
+        yield call(handleRegenerationStream, responseStream, chatId, msgId);     
     }
 }

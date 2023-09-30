@@ -23,11 +23,10 @@ function parseNoisyJSON(noisyString) {
         if (!insideString && char === '}') {
             bracketCount -= 1;
         }
-
         if (jsonString.length > 0 && bracketCount === 0 && !insideString) {
             try {
                 parsedObjects.push(JSON.parse(jsonString));
-            } catch (e) {
+            } catch {
                 // The string was not a valid JSON object, so we ignore it
             }
             jsonString = '';
@@ -79,14 +78,13 @@ async function sendResponseStream(window, {
 
         let lastChunkTime = new Date().getTime();
         let checkTimeout = setInterval(() => {
-            if (new Date().getTime() - lastChunkTime > 8000) {
+            if (new Date().getTime() - lastChunkTime > 9000) {
                 clearInterval(checkTimeout);
                 window.webContents.send(requestId, { 
-                    finish_reason: 'error',
-                    delta: { },
+                    finish_reason: 'timeout',
                 });
             }
-        }, 800);
+        }, 900);
     
         response.data.on('data', (chunk) => {
             lastChunkTime = new Date().getTime();
@@ -102,7 +100,6 @@ async function sendResponseStream(window, {
     } catch (error) {
         window.webContents.send(requestId, { 
             finish_reason: 'error',
-            delta: { },
         });
     }
 }

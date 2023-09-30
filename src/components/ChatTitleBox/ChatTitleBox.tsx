@@ -18,7 +18,7 @@ const TitleContainer = styled('div')<ContainerProps>(
         display: edit ? 'none' : 'block',
         width: 'calc(100% - 20px)',
         margin: '8px auto',
-        padding: '8px 12px 2px',
+        padding: '9px 12px 1px',
         overflow: 'auto',
         borderRadius: 8,
         height: 47,

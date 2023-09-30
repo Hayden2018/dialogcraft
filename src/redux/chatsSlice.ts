@@ -36,7 +36,7 @@ const chatsSlice = createSlice({
             if (targetChat.streamingMsgId) {
                 if (stop) {
                     targetChat.streamingMsgId = null;
-                    error && targetChat.messages.pop();
+                    if (error) targetChat.messages.pop();
                 } else {
                     targetChat.messages.at(-1)!.content += delta;
                 }

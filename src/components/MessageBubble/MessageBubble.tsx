@@ -1,4 +1,5 @@
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import remarkGfm from 'remark-gfm';
 import CustomCodeBlock from 'components/CustomCodeBlock/CustomCodeBlock';
 import { useMessageEditActions, useMessageSegmentMemo } from './MessageBubble.hook';
 import { styled } from '@mui/system';
@@ -28,7 +29,7 @@ const BotMessageContainer = styled('div')(
         maxWidth: 'calc(100% - 100px)',
         borderRadius: 10,
         background: palette.grey[palette.mode === 'dark' ? 800 : 200],
-        padding: '8px 12px',
+        padding: '9px 12px',
         margin: '0px 16px',
         color: palette.mode === 'dark' ? '#ffffff' : '#000000',
     })
@@ -40,7 +41,7 @@ const UserMessageContainer = styled('div')(
         width: 'fit-content',
         maxWidth: 'calc(100% - 100px)',
         borderRadius: 10,
-        padding: '7px 12px',
+        padding: '8px 12px',
         margin: '0px 12px',
         color: '#121212',
         background: '#AADCFF',
@@ -48,7 +49,18 @@ const UserMessageContainer = styled('div')(
 );
 
 const MarginRemoveContainer = styled('div')(
-    ({ theme }) => ({
+    ({ theme: { palette } }) => ({
+        '& table, th, td': {
+            border: `1px solid ${palette.mode === 'dark' ? 'white' : 'black'}`,
+            borderCollapse: 'collapse',
+            borderSpacing: '0px',
+        },
+        '& th, td': {
+            padding: '4px 6px',
+        },
+        '& a': {
+            color: palette.primary.main,
+        },
         '& > :first-child': {
             marginTop: 0,
         },  
@@ -77,7 +89,7 @@ const EditButton = styled(Button)(
     })
 );
 
-function MessageBubble({ chatId, msgId, msgContent, role, editMode, generating, forwardRef } : 
+function MessageBubble({ chatId, msgId, msgContent, role, editMode, forwardRef } : 
     { 
         chatId: string,
         msgId: string,
@@ -101,7 +113,7 @@ function MessageBubble({ chatId, msgId, msgContent, role, editMode, generating, 
                 {
                     messageSegments.map(({ type, content } : { type: string, content: string }, index) => {
                         if (type === 'text') return (
-                            <ReactMarkdown children={content} key={index} />
+                            <ReactMarkdown children={content} remarkPlugins={[remarkGfm]} key={index} />
                         ) 
                         return (
                             <CustomCodeBlock language={type} code={content} key={index} />
@@ -131,7 +143,7 @@ function MessageBubble({ chatId, msgId, msgContent, role, editMode, generating, 
                 {
                     messageSegments.map(({ type, content } : { type: string, content: string }, index) => {
                         if (type === 'text') return (
-                            <ReactMarkdown children={content} key={index} />
+                            <ReactMarkdown children={content} remarkPlugins={[remarkGfm]} key={index} />
                         ) 
                         return (
                             <CustomCodeBlock language={type} code={content} key={index} />

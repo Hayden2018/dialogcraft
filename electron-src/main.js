@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu } = require('electron');
+const { app, BrowserWindow, Menu, shell } = require('electron');
 
 // Prevent showing app content during windows setup
 if (require('electron-squirrel-startup')) app.quit();
@@ -49,6 +49,11 @@ function createWindow() {
 
     // For @electron/remote module
     enable(mainWindow.webContents);
+
+    mainWindow.webContents.on('will-navigate', (event, url) => {
+        event.preventDefault();
+        shell.openExternal(url);
+    });
 
     startListenForMessage(mainWindow);
 }

@@ -30,6 +30,7 @@ export enum ModalType {
     CHAT_SETTING = 'CHAT_SETTING',
     GLOBAL_SETTING = 'GLOBAL_SETTING',
     CHAT_ERROR = 'CHAT_ERROR',
+    CHAT_TIMEOUT = 'CHAT_TIMEOUT',
 }
 
 export type ModalPayload = {

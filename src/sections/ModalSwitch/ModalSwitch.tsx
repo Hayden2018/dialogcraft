@@ -63,7 +63,15 @@ function ModalSwitch() {
         case ModalType.CHAT_ERROR:
             return (
                 <InfoModal 
-                    message='An error occurs while generating response. Please make sure your API credentails are correct and device connected to the internet.'
+                    message='An error occurs while generating response. Make sure your API credentials are correct and device connected to the internet.'
+                    actionName='OK'
+                    color='error'
+                />
+            )
+        case ModalType.CHAT_TIMEOUT:
+            return (
+                <InfoModal 
+                    message='Response generation timeout. Please try again later.'
                     actionName='OK'
                     color='error'
                 />

@@ -57,11 +57,20 @@ export const useMessageActions = (currentChat: Chat | null) => {
         }
     }
 
+    const stopGenerate = () => {
+        document.dispatchEvent(
+            new CustomEvent('interrupt', {
+                detail: { chatId: currentChat.id }
+            })
+        );
+    }
+
     return {
         onChange,
         sendMessage,
         regenerate,
         onKeyDown,
+        stopGenerate,
         value: draft,
     };
 }

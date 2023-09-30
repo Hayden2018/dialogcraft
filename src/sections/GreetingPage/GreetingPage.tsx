@@ -114,15 +114,7 @@ const SubmitButton = styled(Button)(
 
 const releaseUrl = 'https://github.com/Hayden2018/dialogcraft/releases';
 const videoUrl = 'https://www.youtube.com/watch?v=aVog4J6nIAU';
-
-const openLink = (url: string) => {
-    if (onElectronEnv()) {
-        const { shell } = window.require('electron');
-        shell.openExternal(url);
-    } else {
-        window.open(url);
-    }
-}
+const openTarget = onElectronEnv() ? '' : '_blank';
 
 export default function GreetingPage() {
 
@@ -201,12 +193,12 @@ export default function GreetingPage() {
                     Connect
                 </SubmitButton>
                 <InfoText>
-                    If you do not have an OpenAI API key refer to <Link onClick={() => openLink(videoUrl)}>this</Link> video on how to get one. 
+                    If you do not have an OpenAI API key refer to <Link target={openTarget} href={videoUrl}>this</Link> video on how to get one. 
                 </InfoText>
                 {
                     onElectronEnv() ||
                     <InfoText>
-                        You are using the web version of DialogCraft. More features available on <Link onClick={() => openLink(releaseUrl)}>desktop app</Link>.
+                        You are using the web version of DialogCraft. More features available on <Link target={openTarget} href={releaseUrl}>desktop app</Link>.
                     </InfoText>
                 }
                 <InfoText>
@@ -254,7 +246,7 @@ export default function GreetingPage() {
                 {
                     onElectronEnv() ||
                     <InfoText>
-                        You are using the web version of DialogCraft. More features available on <Link onClick={() => openLink(releaseUrl)}>desktop app</Link>.
+                        You are using the web version of DialogCraft. More features available on <Link target={openTarget} href={releaseUrl}>desktop app</Link>.
                     </InfoText>
                 }
                 <InfoText>
