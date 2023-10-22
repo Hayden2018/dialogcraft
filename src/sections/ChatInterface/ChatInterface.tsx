@@ -102,10 +102,10 @@ const MessageArea = styled('div')<AreaProps>(
             marginBottom: '4px',
         },
         [theme.breakpoints.down(800)]: {
-            height: isEditing ? 'calc(100% - 55px)' : 'calc(100% - 225px)',
+            height: isEditing ? 'calc(100% - 55px)' : 'calc(100% - 205px)',
         },
         [theme.breakpoints.down(600)]: {
-            height: isEditing ? 'calc(100% - 95px)' : 'calc(100% - 260px)',
+            height: isEditing ? 'calc(100% - 95px)' : 'calc(100% - 240px)',
         },
     })
 );
@@ -119,11 +119,11 @@ const DraftGrid = styled('div')(
         gridTemplateRows: '45px 45px',
         gridGap: '8px',
         [breakpoints.down(800)]: {
-            height: 150,
+            height: 130,
             gridGap: '10px',
             margin: '9px 12px',
             gridTemplateColumns: 'calc(50% - 30px) calc(50% - 30px) 40px',
-            gridTemplateRows: '40px 100px',
+            gridTemplateRows: '40px 80px',
         },
     })
 )
@@ -322,8 +322,7 @@ function ChatInterface({ setMenuOpen }: { setMenuOpen: React.Dispatch<React.SetS
                     <MessageInput
                         multiline
                         label='Your Message'
-                        minRows={3}
-                        maxRows={3}
+                        rows={screenWidth < 800 ? 2 : 3}
                         value={value}
                         onChange={onChange}
                         onKeyDown={onKeyDown}
