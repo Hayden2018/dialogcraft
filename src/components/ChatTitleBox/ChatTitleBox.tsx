@@ -2,22 +2,17 @@ import { styled } from '@mui/system';
 import useChatTitleWithEdit from './ChatTitleBox.hook';
 import { useDispatch } from 'react-redux';
 import { setCurrentChat } from 'redux/chatListSlice';
-import { useEffect, useRef } from 'react';
 import { ReactComponent as EditIcon } from './edit.svg';
 import { ReactComponent as DeleteIcon } from './bin.svg';
-import { ReactComponent as TickIcon } from './tick.svg';
-import { ReactComponent as CrossIcon } from './cross.svg';
 
 interface ContainerProps {
-    edit: boolean;
-    isCurrent?: boolean;
+    isCurrent: boolean;
 }
 
 const TitleContainer = styled('div')<ContainerProps>(
-    ({ theme: { palette }, edit, isCurrent }) => ({
-        display: edit ? 'none' : 'block',
+    ({ isCurrent, theme: { palette, breakpoints } }) => ({
         width: 'calc(100% - 20px)',
-        margin: '8px auto',
+        margin: '7px auto',
         padding: '9px 12px 1px',
         overflow: 'auto',
         borderRadius: 8,
@@ -31,24 +26,20 @@ const TitleContainer = styled('div')<ContainerProps>(
             'svg': {
                 display: 'inline-block',
             },
+        },
+        [breakpoints.down(800)]: {
+            'div': {
+                width: 'calc(100% - 60px)',
+            },
+            'svg': {
+                display: 'inline-block',
+            },
         }
     })
 );
 
-const TitleEditContainer = styled('div')<ContainerProps>(
-    ({ theme: { palette }, edit }) => ({
-        display: edit ? 'block' : 'none',
-        width: 'calc(100% - 20px)',
-        margin: '8px auto',
-        padding: '8px 12px 2px',
-        borderRadius: 8,
-        height: 47,
-        background: palette.grey[palette.mode === 'dark' ? 700 : 300],
-    })
-);
-
 const Title = styled('div')(
-    ({ theme: { palette } }) => ({
+    ({ theme }) => ({
         width: '100%',
         display: 'inline-block',
         verticalAlign: 'top',
@@ -57,20 +48,6 @@ const Title = styled('div')(
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-    })
-);
-
-const TitleInput = styled('input')(
-    ({ theme: { palette } }) => ({
-        verticalAlign: 'top',
-        marginTop: 5,
-        fontSize: 'inherit',
-        width: 'calc(100% - 60px)',
-        background: 'transparent',
-        color: palette.mode === 'dark' ? '#FFFFFF' : '#121212',
-        border: 'none',
-        outline: 'none',
-        borderBottom: `1px solid ${palette.grey[500]}`,
     })
 );
 
@@ -100,97 +77,30 @@ const DeleteButton = styled(DeleteIcon)(
     })
 );
 
-const CrossButton = styled(CrossIcon)(
-    ({ theme: { palette } }) => ({
-        display: 'inline-block',
-        width: 18,
-        height: 18,
-        margin: '4px 0px 0px 10px',
-        fill: palette.grey[palette.mode === 'dark' ? 400 : 500],
-        '&:hover': {
-            fill: palette.grey[palette.mode === 'dark' ? 300 : 700],
-        }
-    })
-);
 
-const TickButton = styled(TickIcon)(
-    ({ theme: { palette } }) => ({
-        display: 'inline-block',
-        width: 20,
-        height: 20,
-        margin: '3px 0px 0px 10px',
-        fill: palette.grey[palette.mode === 'dark' ? 400 : 500],
-        '&:hover': {
-            fill: palette.grey[palette.mode === 'dark' ? 300 : 700],
-        }
-    })
-);
-
-const hasParent = (child: Node | null, parent: Node | null): boolean => {
-    let element = child;
-    while (element) {
-        if (element === parent) return true;
-        if (element instanceof SVGElement) {
-            element = element.parentElement;
-        } else {
-            element = element.parentNode;
-        }
-    }
-    return false;
-}
-
-function ChatTitleBox({ chatId, isCurrent } : { chatId: string, isCurrent: boolean }) {
-
+function ChatTitleBox({
+    chatId,
+    isCurrent,
+    setMenuOpen,
+} : {
+    chatId: string,
+    isCurrent: boolean,
+    setMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>,
+}) {
     const dispatch = useDispatch();
-    const editBoxRef = useRef<HTMLInputElement | null>(null);
-    const inputRef = useRef<HTMLInputElement | null>(null);
+    const { title, renameTitle, deleteChat } = useChatTitleWithEdit(chatId);
 
-    const {         
-        title,
-        isEditing,
-        onEdit,
-        startEdit,
-        confirmEdit,
-        onKeyDown,
-        abortEdit,
-        deleteChat,
-    } = useChatTitleWithEdit(chatId);
+    const boxClicked = () => {
+        dispatch(setCurrentChat(chatId));
+        if (setMenuOpen) setMenuOpen(false);
+    }
 
-    useEffect(() => {
-        function unFocus(event: globalThis.MouseEvent) {
-            if (!hasParent(event.target as Node, editBoxRef.current)) {
-                abortEdit();
-            }
-        }
-        document.addEventListener('click', unFocus);
-        return () => document.removeEventListener('click', unFocus);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    useEffect(() => {
-        if (isEditing) inputRef.current!.focus();
-    }, [isEditing]);
-
-    const boxClicked = () => dispatch(setCurrentChat(chatId));
-
-    // Keep everything in DOM and hide using display none
-    // Required for hasParent function to work properly
     return (
-        <div ref={editBoxRef} onClick={boxClicked}>
-
-            <TitleEditContainer edit={isEditing}>
-                <TitleInput value={title} onChange={onEdit} onKeyDown={onKeyDown} ref={inputRef} />
-                <TickButton onClick={confirmEdit} />
-                <CrossButton onClick={abortEdit} />
-            </TitleEditContainer>
-
-            <TitleContainer edit={isEditing} isCurrent={isCurrent}>
-                <Title>{title}</Title>
-                <EditButton onClick={startEdit} />
-                <DeleteButton onClick={deleteChat} />
-            </TitleContainer>
-
-        </div>
+        <TitleContainer isCurrent={isCurrent} onClick={boxClicked}>
+            <Title>{title}</Title>
+            <EditButton onClick={renameTitle} />
+            <DeleteButton onClick={deleteChat} />
+        </TitleContainer>
     );
 }
 

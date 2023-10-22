@@ -9,12 +9,14 @@ import ModalSwitch from 'sections/ModalSwitch/ModalSwitch';
 import { useSelector } from "react-redux";
 import { AppState } from 'redux/type.d';
 import { darkTheme, lightTheme } from 'theme';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 function App() {
 
     const { baseURL, apiKey, darkMode } = useSelector((state: AppState) => state.setting.global);
     const theme = darkMode ? darkTheme : lightTheme;
+
+    const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
     useEffect(() => {
         if (darkMode) document.body.classList.add('dark');
@@ -24,9 +26,9 @@ function App() {
     if (baseURL && apiKey) return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <div style={{ minWidth: '800px' }}>
-                <ConversationList />
-                <ChatInterface />
+            <div id='app'>
+                <ConversationList setMenuOpen={setMenuOpen} menuOpen={menuOpen} />
+                <ChatInterface setMenuOpen={setMenuOpen} />
             </div>
             <ModalSwitch /> 
         </ThemeProvider>

@@ -1,17 +1,21 @@
+html, body, #root, #app {
+    height: 100%;
+}
+
 body {
     background-color: #FCFCFC !important;
 
     ::-webkit-scrollbar {
         width: 8px;
     }
-      
-    ::-webkit-scrollbar-track {
-        background: transparent;
-    }
-    
+
     ::-webkit-scrollbar-thumb {
         border-radius: 4px;
         background: #BCBCBC;
+    }
+      
+    ::-webkit-scrollbar-track {
+        background: transparent;
     }
     
     ::-webkit-scrollbar-thumb:hover {

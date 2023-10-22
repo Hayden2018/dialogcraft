@@ -13,7 +13,8 @@ import { SettingStatus } from 'redux/type.d';
 const Container = styled('div')(
     ({ theme }) => ({
         margin: '20px auto',
-        width: 590,
+        maxWidth: '600px',
+        padding: '0px 20px',
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'column',
@@ -42,13 +43,13 @@ const ButtonRow = styled('div')(
         margin: '20px 0px 30px',
         display: 'flex',
         justifyContent: 'center',
-        gap: 20,
+        gap: 15,
     })
 );
 
 const ImportButton = styled(Button)(
     ({ theme }) => ({
-        width: 210,
+        width: 200,
         height: 40,
         padding: 0,
     })
@@ -56,7 +57,7 @@ const ImportButton = styled(Button)(
 
 const CancelButton = styled(Button)(
     ({ theme }) => ({
-        width: 130,
+        width: 120,
         height: 40,
         padding: 0,
     })
@@ -102,7 +103,7 @@ function ImportChats() {
 
     return (
         <Container>
-            <h1>Select an import mode</h1>
+            <h1>Import Options</h1>
             {
                 importMode === 'replace' &&
                 <Alert severity='warning' style={{ margin: '-10px 6px 6px -6px' }}>

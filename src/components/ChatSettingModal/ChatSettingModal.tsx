@@ -6,18 +6,25 @@ import { TextField, Slider, Button, Select, MenuItem, Alert } from '@mui/materia
 import { styled } from '@mui/system';
 import { AppState, ModalPayload, SettingConfig } from 'redux/type';
 import { updateChatSetting } from 'redux/settingSlice';
+import { useScreenWidth } from 'utils';
 
 const Form = styled('form')(
-    ({ theme }) => ({
+    ({ theme: { breakpoints } }) => ({
         margin: 'auto',
         padding: '0px 20px',
         width: '95%',
-        verticalAlign: 'top'
+        verticalAlign: 'top',
+        [breakpoints.down(600)]: {
+            padding: '0px',
+        },
+        [breakpoints.down(500)]: {
+            width: '100%',
+        },
     })
 );
 
 const FormHeader = styled('div')(
-    ({ theme: { palette } }) => ({
+    ({ theme: { palette, breakpoints } }) => ({
         backgroundColor: palette.mode === 'dark' ? '#383838' : '#fdfdfd',
         zIndex: 100,
         textAlign: 'center',
@@ -27,7 +34,18 @@ const FormHeader = styled('div')(
         borderBottom: `1px solid ${palette.grey[500]}`,
         marginBottom: 20,
         position: 'sticky',
-        top: 0,
+        padding: '0px 15px',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        [breakpoints.down(600)]: {
+            fontSize: 21,
+            marginBottom: 18,
+        },
+        [breakpoints.down(500)]: {
+            fontSize: 19,
+            marginBottom: 16,
+        },
     })
 );
 
@@ -78,6 +96,8 @@ export default function ChatSettingModal({ settingId }: ModalPayload) {
     const currentSettings = useSelector((state: AppState) => state.setting[settingId!]);
     const chatTitle = useSelector((state: AppState) => state.chats[settingId!].title);
 
+    const screenWidth = useScreenWidth();
+
     const { register, handleSubmit, watch, setValue } = useForm<SettingConfig>({
         defaultValues: currentSettings,
     });
@@ -96,7 +116,7 @@ export default function ChatSettingModal({ settingId }: ModalPayload) {
     }
 
     return (
-        <Dialog open fullWidth maxWidth='md'>
+        <Dialog open fullWidth maxWidth='md' fullScreen={screenWidth < 680 ? true : false}>
             <Form onSubmit={handleSubmit(onSubmit)}>
                 <FormHeader>Chat Settings - {chatTitle}</FormHeader>
                 <FormRow>

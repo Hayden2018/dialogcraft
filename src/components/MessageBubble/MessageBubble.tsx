@@ -24,7 +24,7 @@ const LeftAligner = styled('div')(
 );
 
 const BotMessageContainer = styled('div')(
-    ({ theme: { palette } }) => ({
+    ({ theme: { palette, breakpoints } }) => ({
         width: 'fit-content',
         maxWidth: 'calc(100% - 100px)',
         borderRadius: 10,
@@ -32,11 +32,15 @@ const BotMessageContainer = styled('div')(
         padding: '9px 12px',
         margin: '0px 16px',
         color: palette.mode === 'dark' ? '#ffffff' : '#000000',
+        overflow: 'hidden',
+        [breakpoints.down(1080)]: {
+            maxWidth: 'calc(100% - 28px)',
+        }
     })
 );
 
 const UserMessageContainer = styled('div')(
-    ({ theme: { palette } }) => ({
+    ({ theme }) => ({
         textAlign: 'left',
         width: 'fit-content',
         maxWidth: 'calc(100% - 100px)',
@@ -45,6 +49,7 @@ const UserMessageContainer = styled('div')(
         margin: '0px 12px',
         color: '#121212',
         background: '#AADCFF',
+        overflow: 'hidden',
     })
 );
 
@@ -66,7 +71,7 @@ const MarginRemoveContainer = styled('div')(
         },  
         '& > :last-child': {
             marginBottom: 0,
-        }
+        },
     })
 );
 
@@ -108,20 +113,18 @@ function MessageBubble({ chatId, msgId, msgContent, role, editMode, forwardRef }
     if (role === 'user') return (
         <RightAligner ref={forwardRef}>
             <UserMessageContainer>
-
                 <MarginRemoveContainer>
-                {
-                    messageSegments.map(({ type, content } : { type: string, content: string }, index) => {
-                        if (type === 'text') return (
-                            <ReactMarkdown children={content} remarkPlugins={[remarkGfm]} key={index} />
-                        ) 
-                        return (
-                            <CustomCodeBlock language={type} code={content} key={index} />
-                        )
-                    })
-                }
+                    {
+                        messageSegments.map(({ type, content } : { type: string, content: string }, index) => {
+                            if (type === 'text') return (
+                                <ReactMarkdown children={content} remarkPlugins={[remarkGfm]} key={index} />
+                            ) 
+                            return (
+                                <CustomCodeBlock language={type} code={content} key={index} />
+                            )
+                        })
+                    }
                 </MarginRemoveContainer>
-
                 { editMode &&
                     <EditButtonContainer>
                         { restoreMessage &&
@@ -131,27 +134,24 @@ function MessageBubble({ chatId, msgId, msgContent, role, editMode, forwardRef }
                         <EditButton color='error' variant='contained' onClick={deleteMessage}>Delete</EditButton>
                     </EditButtonContainer>
                 }
-
             </UserMessageContainer>
         </RightAligner>
     );
     return (
         <LeftAligner ref={forwardRef}>
             <BotMessageContainer id={msgId}>
-
                 <MarginRemoveContainer>
-                {
-                    messageSegments.map(({ type, content } : { type: string, content: string }, index) => {
-                        if (type === 'text') return (
-                            <ReactMarkdown children={content} remarkPlugins={[remarkGfm]} key={index} />
-                        ) 
-                        return (
-                            <CustomCodeBlock language={type} code={content} key={index} />
-                        )
-                    })
-                }
+                    {
+                        messageSegments.map(({ type, content } : { type: string, content: string }, index) => {
+                            if (type === 'text') return (
+                                <ReactMarkdown children={content} remarkPlugins={[remarkGfm]} key={index} />
+                            ) 
+                            return (
+                                <CustomCodeBlock language={type} code={content} key={index} />
+                            )
+                        })
+                    }
                 </MarginRemoveContainer>
-
                 { editMode &&
                     <EditButtonContainer>
                         <EditButton variant='contained' color='success' onClick={regenerateMessage}>
@@ -164,7 +164,6 @@ function MessageBubble({ chatId, msgId, msgContent, role, editMode, forwardRef }
                         <EditButton variant='contained' color='error' onClick={deleteMessage}>Delete</EditButton>
                     </EditButtonContainer>
                 }
-                
             </BotMessageContainer>
         </LeftAligner>
     );

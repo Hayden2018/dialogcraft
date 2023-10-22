@@ -11,6 +11,7 @@ import ChatSettingModal from "components/ChatSettingModal/ChatSettingModal";
 import ConfirmationModal from "components/ConfirmationModal/ConfirmationModal";
 import EditMessageModal from "components/EditMessageModal/EditMessageModal";
 import InfoModal from "components/InfoModal/InfoModal";
+import ChatRenameModal from "components/ChatRenameModal/ChatRenameModal";
 
 function ModalSwitch() {
 
@@ -76,6 +77,8 @@ function ModalSwitch() {
                     color='error'
                 />
             )
+        case ModalType.RENAME_CHAT:
+            return  <ChatRenameModal {...payload} />;
         case ModalType.EDIT_MESSAGE:
             return <EditMessageModal {...payload} />;
         case ModalType.CHAT_SETTING:

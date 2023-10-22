@@ -11,13 +11,13 @@ import { useEffect } from 'react';
 
 const GreetingContainer = styled('div')(
     ({ theme }) => ({
-        height: '100vh',
-        width: '100vw',
+        height: '100%',
+        width: '100%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        minWidth: '800px',
-        gap: 14,
+        padding: '0px 15px',
+        gap: 12,
     })
 );
 
@@ -36,10 +36,11 @@ const AppTitle = styled('h1')(
 );
 
 const EndpointTypeChooser = styled(Tabs)(
-    ({ theme: { palette } }) => ({
+    ({ theme }) => ({
         minHeight: '32px',
         height: 32,
-        width: 580,
+        maxWidth: '580px',
+        width: '100%',
         margin: '0px auto',
         marginBottom: '5px',
         '& div': {
@@ -58,20 +59,23 @@ const EndpointTypeChooser = styled(Tabs)(
 
 const CredentialInput = styled(TextField)(
     ({ theme }) => ({
-        width: 580,
+        maxWidth: '580px',
+        width: '100%',
         margin: '0px auto',
     })
 );
 
 const InfoText = styled('p')(
-    ({ theme: { palette } }) => ({
-        width: 800,
+    ({ theme: { palette, breakpoints } }) => ({
         margin: '0px auto',
         textAlign: 'center',
         color: palette.grey[palette.mode === 'dark' ? 400 : 600],
         fontSize: 14,
         '& > a': {
             cursor: 'pointer',
+        },
+        [breakpoints.down(500)]: {
+            fontSize: 13,
         }
     })
 );
@@ -93,8 +97,9 @@ const ProgressContainer = styled('div')(
 
 const ErrorAlert = styled(Alert)(
     ({ theme }) => ({
-        width: 580,
         margin: '0px auto',
+        maxWidth: '580px',
+        width: '100%',
         '& > a': {
             color: theme.palette.error.main,
             '&:hover': {
@@ -160,7 +165,7 @@ export default function GreetingPage() {
     )
 
     if (urlType === 'openai') return (
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} id='app'>
             <GreetingContainer>
                 <AppTitle>
                     <AppIcon />
@@ -208,7 +213,7 @@ export default function GreetingPage() {
         </form>
     )
     else return (
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} id='app'>
             <GreetingContainer>
                 <AppTitle>
                     <AppIcon />

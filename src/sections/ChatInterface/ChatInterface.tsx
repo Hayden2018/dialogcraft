@@ -6,49 +6,67 @@ import { useChatEditActions, useCurrentChatSelector, useMessageActions } from '.
 import { ChatMessage, ModalType } from 'redux/type.d';
 import { useEffect, useRef } from 'react';
 import { ReactComponent as noChatIcon } from './noChat.svg';
+import { ReactComponent as menuIcon } from './menuIcon.svg';
 import { useDispatch } from 'react-redux';
 import { openModal } from 'redux/modalSlice';
+import { useScreenWidth } from 'utils';
+
 
 const ChatContainer = styled('div')(
-    ({ theme }) => ({
+    ({ theme: { breakpoints } }) => ({
         display: 'inline-block',
-        height: '100vh',
+        height: '100%',
         width: 'calc(100% - 360px)',
         minWidth: '65%',
         verticalAlign: 'top',
         position: 'relative',
+        [breakpoints.down(800)]: {
+            width: '100%',
+        },
     })
 );
 
 const HeaderBanner = styled('div')(
-    ({ theme: { palette } }) => ({
-        padding: '12px 16px 4px 25px',
+    ({ theme: { palette, breakpoints } }) => ({
+        padding: '10px 15px 10px 20px',
         background: palette.grey[palette.mode === 'dark' ? 900 : 100],
         borderBottom: `1px solid ${palette.grey[palette.mode === 'dark' ? 800 : 300]}`,
-        height: 'fit-content',
+        display: 'grid',
+        gridTemplateColumns: 'calc(100% - 340px) 160px 160px',
+        gridTemplateRows: '32px',
+        gridGap: '10px',
+        [breakpoints.down(600)]: {
+            padding: '8px 16px 10px',
+            gridTemplateColumns: 'calc(50% - 4px) calc(50% - 4px)',
+            gridTemplateRows: '32px 32px',
+            gridGap: '8px',
+        },
     })
 );
 
 const ChatTitle = styled('div')(
-    ({ theme: { palette } }) => ({
+    ({ theme: { breakpoints } }) => ({
         fontSize: 20,
-        display: 'inline-block',
-        width: 'calc(100% - 360px)',
+        width: 'calc(100% - 15px)',
         lineHeight: '32px',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-        marginRight: 18,
+        [breakpoints.down(600)]: {
+            width: '100%',
+            gridColumn: '1 / 3',
+            gridRow: '1',
+        },
     })
 );
 
 const HeaderButton = styled(Button)(
-    ({ theme }) => ({
-        verticalAlign: 'top',
-        padding: 0,
-        marginLeft: 9,
+    ({ theme: { breakpoints } }) => ({
         width: 160,
         height: 32,
+        [breakpoints.down(600)]: {
+            width: '100%',
+        },
     })
 );
 
@@ -58,52 +76,97 @@ interface AreaProps {
 
 const MessageArea = styled('div')<AreaProps>(
     ({ theme, isEditing }) => ({
-        height: isEditing ? 'calc(100vh - 60px)' : 'calc(100vh - 185px)',
         overflowY: 'scroll',
+        height: isEditing ? 'calc(100% - 55px)' : 'calc(100% - 175px)',
+        '& > :first-child': {
+            marginTop: '12px',
+        },  
+        '& > :last-child': {
+            marginBottom: '4px',
+        },
+        [theme.breakpoints.down(800)]: {
+            height: isEditing ? 'calc(100% - 55px)' : 'calc(100% - 225px)',
+        },
+        [theme.breakpoints.down(600)]: {
+            height: isEditing ? 'calc(100% - 95px)' : 'calc(100% - 260px)',
+        },
     })
 );
 
 const DraftGrid = styled('div')(
-    ({ theme }) => ({
-        height: 125,
+    ({ theme: { breakpoints } }) => ({
+        height: 102,
+        margin: '10px',
         display: 'grid',
-        gridTemplateColumns: 'calc(100% - 180px) 180px',
-        gridTemplateRows: '1fr 1fr',
+        gridTemplateColumns: 'calc(100% - 175px) 175px',
+        gridTemplateRows: '45px 45px',
+        gridGap: '8px',
+        [breakpoints.down(800)]: {
+            height: 150,
+            gridGap: '10px',
+            margin: '9px 12px',
+            gridTemplateColumns: 'calc(50% - 30px) calc(50% - 30px) 40px',
+            gridTemplateRows: '40px 100px',
+        },
     })
 )
 
 const MessageInput = styled(TextField)(
-    ({ theme }) => ({
-        margin: 12,
+    ({ theme: { breakpoints } }) => ({
         gridColumn: '1',
         gridRow: '1 / span 2',
+        [breakpoints.down(800)]: {
+            gridColumn: '1 / 4',
+            gridRow: '2',
+        },
     })
 );
 
 const SendButton = styled(Button)(
-    ({ theme }) => ({
+    ({ theme: { breakpoints } }) => ({
         width: 165,
         height: 45,
-        margin: '12px 10px 0px 0px',
         gridColumn: '2',
         gridRow: '1',
+        [breakpoints.down(800)]: {
+            gridColumn: '2',
+            gridRow: '1',
+            height: 38,
+            width: '100%',
+        },
     })
 );
 
 const RegenerateButton = styled(Button)(
-    ({ theme }) => ({
+    ({ theme: { breakpoints } }) => ({
         width: 165,
         height: 45,
-        margin: '2px 10px 0px 0px',
         gridColumn: '2',
         gridRow: '2',
+        [breakpoints.down(800)]: {
+            gridColumn: '1',
+            gridRow: '1',
+            height: 38,
+            width: '100%',
+
+        },
     })
 );
 
+const MenuIcon = styled(menuIcon)(
+    ({ theme }) => ({
+        width: 30,
+        height: 30,
+        margin: '5px 5px 5px 3px',
+        gridColumn: '3',
+        gridRow: '1',
+    })
+)
+
 const ProgressContainer = styled('div')(
-    ({ theme: { palette } }) => ({
-        height: 125,
-        padding: '10px 50px',
+    ({ theme }) => ({
+        height: 120,
+        padding: '8px 50px',
         textAlign: 'center',
         '& p': {
             fontSize: 20,
@@ -122,9 +185,9 @@ const NoChatIcon = styled(noChatIcon)(
         verticalAlign: 'top',
         width: 260,
         height: 260,
-        margin: 'calc(50vh - 190px) auto 40px',
+        margin: 'calc(50% - 190px) auto 40px',
     })
-)
+);
 
 const NoChatInfo = styled('p')(
     ({ theme: { palette } }) => ({
@@ -133,12 +196,12 @@ const NoChatInfo = styled('p')(
         fontSize: 20,
         margin: 15,
     })
-)
+);
 
-function ChatInterface() {
+function ChatInterface({ setMenuOpen }: { setMenuOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
 
     const dispatch = useDispatch();
-
+    const screenWidth = useScreenWidth();
     const currentChat = useCurrentChatSelector();
     const { onChange, sendMessage, regenerate, onKeyDown, stopGenerate, value } = useMessageActions(currentChat);
     const { editing, toggleEdit } = useChatEditActions(currentChat);
@@ -171,7 +234,11 @@ function ChatInterface() {
                         variant='contained'
                         color='error' 
                         onClick={stopGenerate}
-                        style={{ marginLeft: '178px' }}
+                        style={{
+                            gridColumn: '2 / 4',
+                            justifySelf: 'right',
+                            width: 200,
+                        }}
                     >
                         Stop Generation
                     </HeaderButton>       
@@ -237,6 +304,9 @@ function ChatInterface() {
                     <RegenerateButton variant='contained' color='success' onClick={regenerate}>
                         Regenerate
                     </RegenerateButton>
+                    {
+                        screenWidth < 800 && <MenuIcon onClick={() => setMenuOpen(true)} />
+                    }
                 </DraftGrid>
             }
             {

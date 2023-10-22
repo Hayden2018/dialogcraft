@@ -1,7 +1,7 @@
 import Dialog from '@mui/material/Dialog';
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from 'react-hook-form';
-import { TextField, FormControlLabel, Slider, Button, Select, Switch, MenuItem, Alert, LinearProgress } from '@mui/material';
+import { TextField, FormControlLabel, Slider, Button, Select, Switch, MenuItem, Alert } from '@mui/material';
 import { styled } from '@mui/system';
 
 import { toggleTheme, updateChatSetting } from 'redux/settingSlice';
@@ -10,15 +10,19 @@ import { closeModal } from 'redux/modalSlice';
 import { useDataActions } from './GlobalSettingModalHook';
 import ResetAppWarning from 'components/ResetAppWarning/ResetAppWarning';
 import ImportChats from 'components/ChatImport/ChatImport';
-import { onElectronEnv } from 'utils';
+import { onElectronEnv, useScreenWidth } from 'utils';
 
 const Form = styled('form')(
-    ({ theme }) => ({
+    ({ theme: { breakpoints } }) => ({
         margin: 'auto',
         padding: '0px 20px',
         width: '95%',
         maxWidth: 1000,
-        verticalAlign: 'top'
+        verticalAlign: 'top',
+        [breakpoints.down(600)]: {
+            width: '100%',
+            padding: '0px',
+        },
     })
 );
 
@@ -90,25 +94,11 @@ const ActionButton = styled(Button)(
     })
 );
 
-const ProgressContainer = styled('div')(
-    ({ theme: { palette } }) => ({
-        marginTop: 'calc(50vh - 120px)',
-        textAlign: 'center',
-        '& p': {
-            fontSize: 22,
-            margin: 36,
-        },
-        "& > :nth-child(2)": {
-            width: '75%',
-            maxWidth: 1600,
-            margin: 'auto',
-        },
-    })
-);
-
 export default function GlobalSettingModal() {
 
     const dispatch = useDispatch();
+    const screenWidth = useScreenWidth();
+    const onDesktop = screenWidth >= 800;
 
     const globalSettings: SettingConfig = useSelector((state: AppState) => state.setting.global);
     const { status, darkMode, urlType } = globalSettings;
@@ -185,13 +175,13 @@ export default function GlobalSettingModal() {
                             Disconnect
                         </ActionButton>
                         {
-                            onElectronEnv() &&
+                            (onElectronEnv() && onDesktop) &&
                             <ActionButton color='info' variant='contained' onClick={showImportPage}>
                                 Import Chats
                             </ActionButton>
                         }
                         {
-                            onElectronEnv() &&
+                            (onElectronEnv() && onDesktop) &&
                             <ActionButton color='success' variant='contained' onClick={exportChat}>
                                 Export Chats
                             </ActionButton>
@@ -320,13 +310,6 @@ export default function GlobalSettingModal() {
                         </SubmitButton>
                     </SubmitRow>
                 </Form> 
-            }
-            {
-                status === SettingStatus.VERIFYING && 
-                <ProgressContainer>
-                    <p>Verifying your API credentials...</p>
-                    <LinearProgress />
-                </ProgressContainer>
             }
             { 
                 (status === SettingStatus.IMPORT || status === SettingStatus.IMPORT_ERROR || status === SettingStatus.IMPORT_SUCCESS) && 
