@@ -1,5 +1,20 @@
 import { useState, useEffect } from 'react';
 
+export function useBackButton(action: () => any) {
+    useEffect(() => {
+        const onBackButtonPress = (event: PopStateEvent) => {
+            event.preventDefault();
+            action();
+        }
+
+        window.history.pushState('', '');
+        window.addEventListener('popstate', onBackButtonPress);
+        return () => {
+            window.removeEventListener('popstate', onBackButtonPress);
+        };
+    }, [action]);
+}
+
 export function useScreenWidth() {
     const [width, setWidth] = useState<number>(window.innerWidth);
     const handleResize = () => setWidth(window.innerWidth);

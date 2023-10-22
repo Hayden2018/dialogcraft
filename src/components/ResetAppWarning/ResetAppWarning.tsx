@@ -5,6 +5,7 @@ import { resetSettings, updateChatSetting } from 'redux/settingSlice';
 import { resetChatList } from 'redux/chatListSlice';
 import { resetChats } from 'redux/chatsSlice';
 import { SettingStatus } from "redux/type.d";
+import { useBackButton } from 'utils';
 
 const Container = styled('div')(
     ({ theme }) => ({
@@ -68,6 +69,8 @@ function ResetAppWarning() {
             })
         );
     }
+
+    useBackButton(backToSetting);
 
     return (
         <Container>

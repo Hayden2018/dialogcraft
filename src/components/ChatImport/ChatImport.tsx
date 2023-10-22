@@ -8,6 +8,7 @@ import { ReactComponent as TickIcon } from './tick.svg';
 import { useChatImport } from './ChatImportHook';
 import { closeModal } from 'redux/modalSlice';
 import { SettingStatus } from 'redux/type.d';
+import { useBackButton } from 'utils';
 
 
 const Container = styled('div')(
@@ -87,6 +88,8 @@ function ImportChats() {
             })
         );
     }
+
+    useBackButton(backToSetting);
 
     if (importStatus === SettingStatus.IMPORT_SUCCESS) return (
         <Container>

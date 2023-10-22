@@ -10,7 +10,7 @@ import { closeModal } from 'redux/modalSlice';
 import { useDataActions } from './GlobalSettingModalHook';
 import ResetAppWarning from 'components/ResetAppWarning/ResetAppWarning';
 import ImportChats from 'components/ChatImport/ChatImport';
-import { onElectronEnv, useScreenWidth } from 'utils';
+import { onElectronEnv, useBackButton, useScreenWidth } from 'utils';
 
 const Form = styled('form')(
     ({ theme: { breakpoints } }) => ({
@@ -133,6 +133,8 @@ export default function GlobalSettingModal() {
     }
 
     const { disconnectApp, showResetPage, showImportPage, exportChat } = useDataActions();
+
+    useBackButton(() => dispatch(closeModal()));
 
     return (
         <Dialog open fullScreen>

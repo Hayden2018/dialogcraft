@@ -9,7 +9,7 @@ import ChatTitleBox from 'components/ChatTitleBox/ChatTitleBox';
 import { addSetting } from 'redux/settingSlice';
 import { openModal } from 'redux/modalSlice';
 import { ModalType } from 'redux/type.d';
-import { useScreenWidth } from 'utils';
+import { useBackButton, useScreenWidth } from 'utils';
 
 interface ContainerProps {
     menuOpen: boolean;
@@ -105,6 +105,14 @@ function ConversationList({
         dispatch(addSetting({ settingId : newChatId }));
         onMobile && setMenuOpen(false);
     }
+
+    useBackButton(() => {
+        if (onMobile && menuOpen) {
+            setMenuOpen(false);
+        } else {
+            window.history.back();
+        }
+    });
 
     return (
         <Container menuOpen={menuOpen}>

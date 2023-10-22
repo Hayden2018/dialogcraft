@@ -6,7 +6,7 @@ import { TextField, Slider, Button, Select, MenuItem, Alert } from '@mui/materia
 import { styled } from '@mui/system';
 import { AppState, ModalPayload, SettingConfig } from 'redux/type';
 import { updateChatSetting } from 'redux/settingSlice';
-import { useScreenWidth } from 'utils';
+import { useBackButton, useScreenWidth } from 'utils';
 
 const Form = styled('form')(
     ({ theme: { breakpoints } }) => ({
@@ -114,6 +114,8 @@ export default function ChatSettingModal({ settingId }: ModalPayload) {
         }));
         dispatch(closeModal());
     }
+
+    useBackButton(() => dispatch(closeModal()));
 
     return (
         <Dialog open fullWidth maxWidth='md' fullScreen={screenWidth < 680 ? true : false}>
