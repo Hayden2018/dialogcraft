@@ -106,13 +106,7 @@ function ConversationList({
         onMobile && setMenuOpen(false);
     }
 
-    useBackButton(() => {
-        if (onMobile && menuOpen) {
-            setMenuOpen(false);
-        } else {
-            window.history.back();
-        }
-    });
+    useBackButton(() => onMobile && setMenuOpen(false));
 
     return (
         <Container menuOpen={menuOpen}>
