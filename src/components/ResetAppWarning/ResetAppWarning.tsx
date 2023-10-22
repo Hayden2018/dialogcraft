@@ -9,7 +9,8 @@ import { SettingStatus } from "redux/type.d";
 const Container = styled('div')(
     ({ theme }) => ({
         margin: '20px auto',
-        width: 750,
+        width: '600px',
+        maxWidth: 'calc(100% - 30px)',
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'column',
@@ -70,9 +71,7 @@ function ResetAppWarning() {
 
     return (
         <Container>
-
-            <h1>Reset the application?</h1>
-
+            <h1>Reset Application</h1>
             <Alert severity='error'>
                 <InfoList>
                     <p>By resetting the application you will:</p>

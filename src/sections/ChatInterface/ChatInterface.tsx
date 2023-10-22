@@ -10,6 +10,10 @@ import { ReactComponent as menuIcon } from './menuIcon.svg';
 import { useDispatch } from 'react-redux';
 import { openModal } from 'redux/modalSlice';
 import { useScreenWidth } from 'utils';
+import { createNewChat } from 'redux/chatsSlice';
+import { v4 as uuidv4 } from 'uuid';
+import { addChatToList } from 'redux/chatListSlice';
+import { addSetting } from 'redux/settingSlice';
 
 
 const ChatContainer = styled('div')(
@@ -65,6 +69,19 @@ const HeaderButton = styled(Button)(
         width: 160,
         height: 32,
         [breakpoints.down(600)]: {
+            width: '100%',
+        },
+    })
+);
+
+const StopGenerationButton = styled(Button)(
+    ({ theme: { breakpoints } }) => ({
+        gridColumn: '2 / 4',
+        justifySelf: 'right',
+        width: 200,
+        height: 32,
+        [breakpoints.down(800)]: {
+            gridColumn: '1 / 3',
             width: '100%',
         },
     })
@@ -148,7 +165,6 @@ const RegenerateButton = styled(Button)(
             gridRow: '1',
             height: 38,
             width: '100%',
-
         },
     })
 );
@@ -185,7 +201,16 @@ const NoChatIcon = styled(noChatIcon)(
         verticalAlign: 'top',
         width: 260,
         height: 260,
-        margin: 'calc(50% - 190px) auto 40px',
+        margin: 'calc(50vh - 220px) auto 30px',
+    })
+);
+
+const StartNewChatButton = styled(Button)(
+    ({ theme }) => ({
+        display: 'block',
+        width: 200,
+        height: 40,
+        margin: '20px auto',
     })
 );
 
@@ -225,23 +250,28 @@ function ChatInterface({ setMenuOpen }: { setMenuOpen: React.Dispatch<React.SetS
         }
     }, [currentChat?.id]);
 
+    const startNewChat = () => {
+        const newChatId = uuidv4();
+        dispatch(createNewChat({
+            title: 'New Conversation 1',
+            chatId: newChatId,
+        }));
+        dispatch(addChatToList(newChatId));
+        dispatch(addSetting({ settingId : newChatId }));
+    }
+
     if (currentChat) return (
         <ChatContainer>
             <HeaderBanner>
                 <ChatTitle>{currentChat.title}</ChatTitle>
                 { isStreaming ? 
-                    <HeaderButton 
-                        variant='contained'
+                    <StopGenerationButton
                         color='error' 
+                        variant='contained'
                         onClick={stopGenerate}
-                        style={{
-                            gridColumn: '2 / 4',
-                            justifySelf: 'right',
-                            width: 200,
-                        }}
                     >
                         Stop Generation
-                    </HeaderButton>       
+                    </StopGenerationButton>       
                     :
                     <>
                         <HeaderButton variant='contained' onClick={
@@ -321,8 +351,10 @@ function ChatInterface({ setMenuOpen }: { setMenuOpen: React.Dispatch<React.SetS
     else return (
         <ChatContainer>
             <NoChatIcon />
-            <NoChatInfo>You do not have any conversations yet...</NoChatInfo>
-            <NoChatInfo>Click on "New Chat" on the top left to create a new one</NoChatInfo>
+            <NoChatInfo>You do not have any conversations.</NoChatInfo>
+            <StartNewChatButton variant='contained' onClick={startNewChat}>
+                Start New Chat
+            </StartNewChatButton>
         </ChatContainer>
     )
 }

@@ -34,13 +34,13 @@ const BotMessageContainer = styled('div')(
         color: palette.mode === 'dark' ? '#ffffff' : '#000000',
         overflow: 'hidden',
         [breakpoints.down(1080)]: {
-            maxWidth: 'calc(100% - 28px)',
+            maxWidth: 'calc(100% - 30px)',
         }
     })
 );
 
 const UserMessageContainer = styled('div')(
-    ({ theme }) => ({
+    ({ theme: { breakpoints } }) => ({
         textAlign: 'left',
         width: 'fit-content',
         maxWidth: 'calc(100% - 100px)',
@@ -50,6 +50,9 @@ const UserMessageContainer = styled('div')(
         color: '#121212',
         background: '#AADCFF',
         overflow: 'hidden',
+        [breakpoints.down(500)]: {
+            maxWidth: 'calc(100% - 60px)',
+        }
     })
 );
 

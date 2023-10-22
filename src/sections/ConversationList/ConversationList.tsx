@@ -95,6 +95,17 @@ function ConversationList({
     const onMobile = screenWidth < 800;
     const { chatOrder, currentChatId, incrementer } = useConversationSelector();
 
+    const startNewChat = () => {
+        const newChatId = uuidv4();
+        dispatch(createNewChat({
+            title: `New Conversation ${incrementer}`,
+            chatId: newChatId,
+        }));
+        dispatch(addChatToList(newChatId));
+        dispatch(addSetting({ settingId : newChatId }));
+        onMobile && setMenuOpen(false);
+    }
+
     return (
         <Container menuOpen={menuOpen}>
             {
@@ -119,16 +130,7 @@ function ConversationList({
                 >
                     Setting
                 </ListButton>
-                <ListButton variant='contained' color='success' onClick={(event) => {
-                    const newChatId = uuidv4();
-                    dispatch(createNewChat({
-                        title: `New Conversation ${incrementer}`,
-                        chatId: newChatId,
-                    }));
-                    dispatch(addChatToList(newChatId));
-                    dispatch(addSetting({ settingId : newChatId }));
-                    if (onMobile) setMenuOpen(false);
-                }}>
+                <ListButton variant='contained' color='success' onClick={startNewChat}>
                     New Chat
                 </ListButton>
                 {
