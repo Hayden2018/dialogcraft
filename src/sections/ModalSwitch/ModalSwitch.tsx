@@ -6,7 +6,7 @@ import { triggerRegenerate } from "saga/actions";
 import { removeFromList } from "redux/chatListSlice";
 import { deleteSetting } from "redux/settingSlice";
 
-import GlobalSettingModal from "components/GlobalSettingModal/GlobalSettingModal";
+import GlobalSettingModal from "pages/GlobalSetting/GlobalSettingModal";
 import ChatSettingModal from "components/ChatSettingModal/ChatSettingModal";
 import ConfirmationModal from "components/ConfirmationModal/ConfirmationModal";
 import EditMessageModal from "components/EditMessageModal/EditMessageModal";

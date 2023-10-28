@@ -4,7 +4,7 @@ import 'App.scss';
 
 import ConversationList from 'sections/ConversationList/ConversationList';
 import ChatInterface from 'sections/ChatInterface/ChatInterface';
-import GreetingPage from 'sections/GreetingPage/GreetingPage';
+import GreetingPage from 'pages/Greeting/Greeting';
 import ModalSwitch from 'sections/ModalSwitch/ModalSwitch';
 import { useSelector } from "react-redux";
 import { AppState } from 'redux/type.d';

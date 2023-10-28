@@ -21,6 +21,17 @@ export type ChatList = {
     incrementer: number;
 }
 
+export enum PageType {
+    SETTING_GLOBAL = 'setting/global',
+    CHAT = 'chat',
+    LOGIN = 'login',
+}
+
+export type PageConfig = {
+    current: PageType,
+    history: Array<PageType>,
+}
+
 export enum ModalType {
     DELETE_CHAT = 'DELETE_CHAT',
     DELETE_MESSAGE = 'DELETE_MESSAGE',
