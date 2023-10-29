@@ -1,9 +1,9 @@
 import { useSelector } from "react-redux";
 import { AppState, PageType } from "redux/type.d";
 
-import GlobalSetting from "pages/GlobalSetting/GlobalSettingModal";
-import GreetingPage from "./Greeting/Greeting";
+import Login from "./Login/Login";
 import Chat from "./Chat/Chat";
+import GlobalSetting from "pages/GlobalSetting/GlobalSetting";
 import ResetAppWarning from "./ResetAppWarning/ResetAppWarning";
 import ImportChats from "components/ChatImport/ChatImport";
 
@@ -13,7 +13,7 @@ function PageSwitch() {
 
     switch (current) {
         case PageType.LOGIN:
-            return <GreetingPage />;
+            return <Login />;
         case PageType.CHAT:
             return <Chat />;
         case PageType.SETTING_GLOBAL:
@@ -23,7 +23,7 @@ function PageSwitch() {
         case PageType.SETTING_IMPORT:
             return <ImportChats />;
         default:
-            return <GreetingPage />;
+            return <Login />;
     }
 }
 
