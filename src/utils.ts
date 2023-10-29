@@ -1,10 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-export function useBackButton(action: () => any) {
+export function useBackButton(action: () => any, enable: boolean = true) {
+    const actionRef = useRef(action);
+    const enableRef = useRef(enable);
+
+    useEffect(
+        () => {
+            actionRef.current = action;
+            enableRef.current = enable;
+        }
+    , [action, enable]);
+
     useEffect(() => {
         const onBackButtonPress = (event: PopStateEvent) => {
-            event.preventDefault();
-            action();
+            if (enableRef.current) {
+                event.preventDefault();
+                actionRef.current();
+            }
         }
 
         window.history.pushState('', '');
@@ -12,7 +24,7 @@ export function useBackButton(action: () => any) {
         return () => {
             window.removeEventListener('popstate', onBackButtonPress);
         };
-    }, [action]);
+    }, []);
 }
 
 export function useScreenWidth() {

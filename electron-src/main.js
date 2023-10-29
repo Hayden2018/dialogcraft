@@ -33,10 +33,10 @@ function createWindow() {
     }) : 'http://localhost:3000';
 
     mainWindow = new BrowserWindow({
-        width: 1280,
-        height: 800,
-        minWidth: 900,
-        minHeight: 600,
+        width: 1440,
+        height: 900,
+        minWidth: 480,
+        minHeight: 720,
         icon: 'public/icon.ico',
         webPreferences: {
             nodeIntegration: true,

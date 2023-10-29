@@ -1,7 +1,7 @@
 import { call, put } from "redux-saga/effects";
-import { closeModal } from "redux/modalSlice";
+import { navigate } from "redux/pageSlice";
 import { updateChatSetting, updateModelList } from "redux/settingSlice";
-import { SettingConfig, SettingStatus } from "redux/type.d";
+import { PageType, SettingConfig, SettingStatus } from "redux/type.d";
 
 
 async function fetchModelList(url: string, apiKey: string, urlType: string) {
@@ -70,5 +70,5 @@ export function* handleGlobalSettingUpdate({ payload }:
     }));
 
     yield put(updateModelList(data));
-    yield put(closeModal());
+    yield put(navigate({ to: PageType.CHAT }));
 }

@@ -6,11 +6,11 @@ body {
     background-color: #FCFCFC !important;
 
     ::-webkit-scrollbar {
-        width: 8px;
+        width: 7px;
     }
 
     ::-webkit-scrollbar-thumb {
-        border-radius: 4px;
+        border-radius: 3px;
         background: #BCBCBC;
     }
       
@@ -27,7 +27,7 @@ body.dark {
     background-color: #121212 !important;
 
     ::-webkit-scrollbar {
-        width: 8px;
+        width: 7px;
     }
       
     ::-webkit-scrollbar-track {
@@ -35,7 +35,7 @@ body.dark {
     }
     
     ::-webkit-scrollbar-thumb {
-        border-radius: 4px;
+        border-radius: 3px;
         background: #686868;
     }
     

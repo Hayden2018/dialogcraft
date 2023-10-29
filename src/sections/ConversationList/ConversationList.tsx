@@ -7,9 +7,9 @@ import { addChatToList } from 'redux/chatListSlice';
 import { styled } from '@mui/system';
 import ChatTitleBox from 'components/ChatTitleBox/ChatTitleBox';
 import { addSetting } from 'redux/settingSlice';
-import { openModal } from 'redux/modalSlice';
-import { ModalType } from 'redux/type.d';
+import { PageType } from 'redux/type.d';
 import { useBackButton, useScreenWidth } from 'utils';
+import { navigate } from 'redux/pageSlice';
 
 interface ContainerProps {
     menuOpen: boolean;
@@ -106,7 +106,15 @@ function ConversationList({
         onMobile && setMenuOpen(false);
     }
 
-    useBackButton(() => onMobile && setMenuOpen(false));
+    const handleMobileBack = () => {
+        if (onMobile && menuOpen) {
+            setMenuOpen(false);
+        } else {
+            window.history.back();
+        }
+    }
+
+    useBackButton(handleMobileBack, onMobile);
 
     return (
         <Container menuOpen={menuOpen}>
@@ -128,7 +136,7 @@ function ConversationList({
             <ButtonContainer>
                 <ListButton
                     variant='contained'
-                    onClick={() => dispatch(openModal({ type: ModalType.GLOBAL_SETTING }))}
+                    onClick={() => dispatch(navigate({ to: PageType.SETTING_GLOBAL }))}
                 >
                     Setting
                 </ListButton>
