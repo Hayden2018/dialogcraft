@@ -5,7 +5,7 @@ import { styled } from '@mui/system';
 
 import { toggleTheme, updateChatSetting } from 'redux/settingSlice';
 import { AppState, SettingConfig, SettingStatus } from 'redux/type.d';
-import { useDataActions } from './GlobalSettingModalHook';
+import { useDataActions } from './GlobalSettingHook';
 import { onElectronEnv, useBackButton, useScreenWidth } from 'utils';
 import { back } from 'redux/pageSlice';
 

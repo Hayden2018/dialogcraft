@@ -121,7 +121,7 @@ const releaseUrl = 'https://github.com/Hayden2018/dialogcraft/releases';
 const videoUrl = 'https://www.youtube.com/watch?v=aVog4J6nIAU';
 const openTarget = onElectronEnv() ? '' : '_blank';
 
-export default function GreetingPage() {
+export default function Login() {
 
     const dispatch = useDispatch();
     const { status } = useSelector((state: AppState) => state.setting.global);
