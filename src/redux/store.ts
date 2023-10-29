@@ -4,6 +4,7 @@ import rootSaga from 'saga/rootSaga';
 import chatListReducer from './chatListSlice';
 import chatsReducer from './chatsSlice';
 import modalReducer from './modalSlice';
+import pageReducer from './pageSlice';
 import settingReducer from './settingSlice';
 import migrations from './migration';
 
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
     chatList: chatListReducer,
     chats: chatsReducer,
     modal: modalReducer,
+    page: pageReducer,
     setting: settingReducer,
 });
 

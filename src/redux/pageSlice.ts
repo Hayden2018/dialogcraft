@@ -24,8 +24,13 @@ const pageSlice = createSlice({
             }
             return page;
         },
+        resetPages(page) {
+            page.current = PageType.LOGIN;
+            page.history = [];
+            return page;
+        },
     }
 })
 
 export default pageSlice.reducer;
-export const { navigate, back } = pageSlice.actions;
+export const { navigate, back, resetPages } = pageSlice.actions;

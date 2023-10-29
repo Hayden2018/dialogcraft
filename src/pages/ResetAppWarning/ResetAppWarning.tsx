@@ -1,17 +1,20 @@
 import { useDispatch } from 'react-redux';
 import { Button, Alert } from '@mui/material';
 import { styled } from '@mui/system';
-import { resetSettings, updateChatSetting } from 'redux/settingSlice';
+import { resetSettings } from 'redux/settingSlice';
 import { resetChatList } from 'redux/chatListSlice';
 import { resetChats } from 'redux/chatsSlice';
-import { SettingStatus } from "redux/type.d";
+import { PageType } from "redux/type.d";
 import { useBackButton } from 'utils';
+import { back, navigate, resetPages } from 'redux/pageSlice';
 
 const Container = styled('div')(
     ({ theme }) => ({
-        margin: '20px auto',
-        width: '600px',
-        maxWidth: 'calc(100% - 30px)',
+        margin: '0px auto',
+        height: '100%',
+        width: '100%',
+        maxWidth: '600px',
+        padding: '0px 25px',
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'column',
@@ -56,20 +59,14 @@ function ResetAppWarning() {
     const dispatch = useDispatch();
 
     const resetApp = () => {
+        dispatch(navigate({ to: PageType.LOGIN }));
         dispatch(resetSettings());
         dispatch(resetChatList());
+        dispatch(resetPages());
         dispatch(resetChats());
     }
 
-    const backToSetting = () => {
-        dispatch(
-            updateChatSetting({
-                settingId: 'global',
-                setting: { status: SettingStatus.OK }
-            })
-        );
-    }
-
+    const backToSetting = () => dispatch(back());
     useBackButton(backToSetting);
 
     return (
@@ -83,7 +80,6 @@ function ResetAppWarning() {
                     <li>Remove your locally stored API credentials.</li>
                 </InfoList>
             </Alert>
-
             <ButtonRow>
                 <ActionButton color='success' variant='contained' onClick={backToSetting}>
                     Cancel
@@ -92,7 +88,6 @@ function ResetAppWarning() {
                     Reset
                 </ActionButton>
             </ButtonRow>
-
         </Container>
     )
 }

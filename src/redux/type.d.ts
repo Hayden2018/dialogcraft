@@ -23,6 +23,8 @@ export type ChatList = {
 
 export enum PageType {
     SETTING_GLOBAL = 'setting/global',
+    SETTING_IMPORT = 'setting/import',
+    SETTING_RESET = 'setting/reset',
     CHAT = 'chat',
     LOGIN = 'login',
 }
@@ -59,6 +61,7 @@ export type ModalConfig = {
 export type AppState = {
     chatList: ChatList;
     modal: ModalConfig;
+    page: PageConfig;
     chats: Record<string, Chat>;
     setting: Record<string, SettingConfig>,
 }
@@ -68,10 +71,6 @@ export enum SettingStatus {
     NO_KEY = 'NO_KEY',
     VERIFYING = 'VERIFYING',
     ERROR = 'ERROR',
-    RESET = 'RESET',
-    IMPORT = 'IMPORT',
-    IMPORT_ERROR = 'IMPORT_ERROR',
-    IMPORT_SUCCESS = 'IMPORT_SUCCESS',
 }
 
 export type SettingConfig = {
