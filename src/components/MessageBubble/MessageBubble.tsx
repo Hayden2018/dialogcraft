@@ -33,6 +33,9 @@ const BotMessageContainer = styled('div')(
         margin: '0px 16px',
         color: palette.mode === 'dark' ? '#ffffff' : '#000000',
         overflow: 'hidden',
+        '& a': {
+            color: palette.primary.main,
+        },
         [breakpoints.down(1080)]: {
             maxWidth: 'calc(100% - 30px)',
         }
@@ -48,8 +51,11 @@ const UserMessageContainer = styled('div')(
         padding: '8px 12px',
         margin: '0px 12px',
         color: '#121212',
-        background: '#AADCFF',
+        background: '#ACDDFF',
         overflow: 'hidden',
+        '& a': {
+            color: '#036092',
+        },
         [breakpoints.down(500)]: {
             maxWidth: 'calc(100% - 60px)',
         }
@@ -65,9 +71,6 @@ const MarginRemoveContainer = styled('div')(
         },
         '& th, td': {
             padding: '4px 6px',
-        },
-        '& a': {
-            color: palette.primary.main,
         },
         '& > :first-child': {
             marginTop: 0,

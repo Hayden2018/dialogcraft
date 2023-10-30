@@ -176,6 +176,7 @@ const MenuIcon = styled(menuIcon)(
         margin: '5px 5px 5px 3px',
         gridColumn: '3',
         gridRow: '1',
+        cursor: 'pointer',
     })
 )
 
