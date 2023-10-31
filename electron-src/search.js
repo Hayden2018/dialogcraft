@@ -1,6 +1,5 @@
 const { ipcMain, BrowserWindow } = require('electron');
 
-
 function handleSearchRequest(window) {
 
     let searchWindow = null;
@@ -10,13 +9,13 @@ function handleSearchRequest(window) {
         if (!searchWindow) return;
         const { x, y, width } = window.getBounds();
         const searchWidth = Math.min(width - 290, 380);
-        const searchY = Math.round(y + 7);
+        const searchY = Math.round(y + 6);
         const searchX = Math.round(x + (width - searchWidth) / 2) - 5;
         searchWindow.setBounds({
             x: searchX,
             y: searchY,
             width: searchWidth,
-            height: 38,
+            height: 40,
         });
     });
 
@@ -24,13 +23,13 @@ function handleSearchRequest(window) {
         if (!searchWindow) return;
         const { x, y, width } = window.getBounds();
         const searchWidth = Math.min(width - 290, 380);
-        const searchY = Math.round(y + 7);
+        const searchY = Math.round(y + 6);
         const searchX = Math.round(x + (width - searchWidth) / 2) - 5;
         searchWindow.setBounds({
             x: searchX,
             y: searchY,
             width: searchWidth,
-            height: 38,
+            height: 40,
         });
     });
 
@@ -39,13 +38,13 @@ function handleSearchRequest(window) {
         if (!searchWindow) return;
         const { x, y, width } = window.getBounds();
         const searchWidth = Math.min(width - 290, 380);
-        const searchY = Math.round(y + 10);
+        const searchY = Math.round(y + 9);
         const searchX = Math.round(x + (width - searchWidth) / 2) - 5;
         searchWindow.setBounds({
             x: searchX,
             y: searchY,
             width: searchWidth,
-            height: 38,
+            height: 40,
         });
     });
 
@@ -56,13 +55,13 @@ function handleSearchRequest(window) {
     ipcMain.on('START-SEARCH', (event, data) => {
         const { x, y, width } = window.getBounds();
         const searchWidth = Math.min(width - 290, 380);
-        const searchY = Math.round(y + (maximized ? 10 : 7));
+        const searchY = Math.round(y + (maximized ? 9 : 6));
         const searchX = Math.round(x + (width - searchWidth) / 2) - 5;
         searchWindow = new BrowserWindow({
             x: searchX,
             y: searchY,
             width: searchWidth,
-            height: 38,
+            height: 40,
             parent: window,
             show: true,
             frame: false,
@@ -74,7 +73,6 @@ function handleSearchRequest(window) {
         });
     
         searchWindow.loadFile('public/search.html');
-        searchWindow.focus();
         searchWindow.webContents.executeJavaScript('searchInput.focus()');
     });
 
