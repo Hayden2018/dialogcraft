@@ -39,7 +39,6 @@ function handleSearchRequest(window) {
     });
 
     window.on('resize', () => {
-        console.log(maximized)
         const { x, y, width } = window.getBounds();
         const searchWidth = Math.min(width - 290, 380);
         const searchY = Math.round(y + 7);
