@@ -3,33 +3,15 @@ const { ipcMain, BrowserWindow } = require('electron');
 
 function handleSearchRequest(window) {
 
-    const searchWindow = new BrowserWindow({
-        height: 38,
-        width: 400,
-        parent: window,
-        show: false,
-        frame: false,
-        resizable: false,
-        webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false,
-        }
-    }); 
-
-    searchWindow.on('close', (event) => {
-        event.preventDefault();
-        searchWindow.hide();
-    });
-
-    searchWindow.loadFile('public/search.html');
-
+    let searchWindow = null;
     let maximized = window.isMaximized();
 
     window.on('move', () => {
+        if (!searchWindow) return;
         const { x, y, width } = window.getBounds();
         const searchWidth = Math.min(width - 290, 380);
         const searchY = Math.round(y + 7);
-        const searchX = Math.round(x + (width - searchWidth) / 2) - 10;
+        const searchX = Math.round(x + (width - searchWidth) / 2) - 5;
         searchWindow.setBounds({
             x: searchX,
             y: searchY,
@@ -39,10 +21,11 @@ function handleSearchRequest(window) {
     });
 
     window.on('resize', () => {
+        if (!searchWindow) return;
         const { x, y, width } = window.getBounds();
         const searchWidth = Math.min(width - 290, 380);
         const searchY = Math.round(y + 7);
-        const searchX = Math.round(x + (width - searchWidth) / 2) - 10;
+        const searchX = Math.round(x + (width - searchWidth) / 2) - 5;
         searchWindow.setBounds({
             x: searchX,
             y: searchY,
@@ -53,10 +36,11 @@ function handleSearchRequest(window) {
 
     window.on('maximize', () => {
         maximized = true;
+        if (!searchWindow) return;
         const { x, y, width } = window.getBounds();
         const searchWidth = Math.min(width - 290, 380);
         const searchY = Math.round(y + 10);
-        const searchX = Math.round(x + (width - searchWidth) / 2) - 10;
+        const searchX = Math.round(x + (width - searchWidth) / 2) - 5;
         searchWindow.setBounds({
             x: searchX,
             y: searchY,
@@ -73,14 +57,23 @@ function handleSearchRequest(window) {
         const { x, y, width } = window.getBounds();
         const searchWidth = Math.min(width - 290, 380);
         const searchY = Math.round(y + (maximized ? 10 : 7));
-        const searchX = Math.round(x + (width - searchWidth) / 2) - 10;
-        searchWindow.setBounds({
+        const searchX = Math.round(x + (width - searchWidth) / 2) - 5;
+        searchWindow = new BrowserWindow({
             x: searchX,
             y: searchY,
             width: searchWidth,
             height: 38,
+            parent: window,
+            show: true,
+            frame: false,
+            resizable: false,
+            webPreferences: {
+                nodeIntegration: true,
+                contextIsolation: false,
+            }
         });
-        searchWindow.show();
+    
+        searchWindow.loadFile('public/search.html');
         searchWindow.focus();
         searchWindow.webContents.executeJavaScript('searchInput.focus()');
     });
@@ -105,9 +98,9 @@ function handleSearchRequest(window) {
     });
 
     ipcMain.on('CLOSE-SEARCH', (event, data) => {
-        searchWindow.webContents.executeJavaScript('searchInput.value = ""');
+        searchWindow.destroy();
+        searchWindow = null;
         window.webContents.stopFindInPage('clearSelection');
-        searchWindow.hide();
         window.focus();
     });
 }
