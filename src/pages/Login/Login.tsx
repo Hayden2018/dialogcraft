@@ -74,7 +74,7 @@ const InfoText = styled('p')(
         '& > a': {
             cursor: 'pointer',
         },
-        [breakpoints.down(500)]: {
+        [breakpoints.down(520)]: {
             fontSize: 13,
         }
     })

@@ -56,7 +56,7 @@ const UserMessageContainer = styled('div')(
         '& a': {
             color: '#036092',
         },
-        [breakpoints.down(500)]: {
+        [breakpoints.down(520)]: {
             maxWidth: 'calc(100% - 60px)',
         }
     })
