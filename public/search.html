@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search</title>
+</head>
+<body>
+    <style>
+        #search-input {
+            background-color: transparent;
+            border: none;
+            outline: none;
+        }
+    </style>
+    <input id="search-input" type="text" />
+    <button id="back-button">Back</button>
+    <button id="next-button">Next</button>
+    <button id="close-button">Close</button>
+    <script>
+        const { ipcRenderer } = window.require('electron');
+        const searchInput = document.getElementById('search-input');
+        const backButton = document.getElementById('back-button');
+        const nextButton = document.getElementById('next-button');
+        const closeButton = document.getElementById('close-button');
+        searchInput.oninput = () => {
+            ipcRenderer.send('SEARCH', searchInput.value);
+        };
+        nextButton.onclick = () => {
+            ipcRenderer.send('SEARCH-NEXT', searchInput.value);
+        };
+        backButton.onclick = () => {
+            ipcRenderer.send('SEARCH-BACK', searchInput.value);
+        };
+        closeButton.onclick = () => {
+            ipcRenderer.send('CLOSE-SEARCH', '');
+        };
+    </script>
+</body>
+</html>

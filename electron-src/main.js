@@ -22,6 +22,7 @@ const url = require('url');
 const { initialize, enable } = require('@electron/remote/main');
 const { startListenForMessage } = require('./service');
 const { template } = require('./menu');
+const { handleSearchRequest } = require('./search');
 
 initialize();
 
@@ -56,6 +57,8 @@ function createWindow() {
     });
 
     startListenForMessage(mainWindow);
+    handleSearchRequest(mainWindow);
+    
 }
 
 app.on('ready', () => {
