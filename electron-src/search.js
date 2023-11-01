@@ -3,14 +3,13 @@ const { ipcMain, BrowserWindow } = require('electron');
 function handleSearchRequest(window) {
 
     let searchWindow = null;
-    let maximized = window.isMaximized();
 
     window.on('move', () => {
         if (!searchWindow) return;
         const { x, y, width } = window.getBounds();
-        const searchWidth = Math.min(width - 290, 380);
-        const searchY = Math.round(y + 6);
-        const searchX = Math.round(x + (width - searchWidth) / 2) - 5;
+        const searchWidth = Math.min(width - 300, 400);
+        const searchY = Math.round(y + 20);
+        const searchX = Math.round(x + (width - searchWidth) / 2);
         searchWindow.setBounds({
             x: searchX,
             y: searchY,
@@ -22,41 +21,22 @@ function handleSearchRequest(window) {
     window.on('resize', () => {
         if (!searchWindow) return;
         const { x, y, width } = window.getBounds();
-        const searchWidth = Math.min(width - 290, 380);
-        const searchY = Math.round(y + 6);
-        const searchX = Math.round(x + (width - searchWidth) / 2) - 5;
+        const searchWidth = Math.min(width - 300, 400);
+        const searchY = Math.round(y + 20);
+        const searchX = Math.round(x + (width - searchWidth) / 2);
         searchWindow.setBounds({
             x: searchX,
             y: searchY,
             width: searchWidth,
             height: 40,
         });
-    });
-
-    window.on('maximize', () => {
-        maximized = true;
-        if (!searchWindow) return;
-        const { x, y, width } = window.getBounds();
-        const searchWidth = Math.min(width - 290, 380);
-        const searchY = Math.round(y + 9);
-        const searchX = Math.round(x + (width - searchWidth) / 2) - 5;
-        searchWindow.setBounds({
-            x: searchX,
-            y: searchY,
-            width: searchWidth,
-            height: 40,
-        });
-    });
-
-    window.on('unmaximize', () => {
-        maximized = false;
     });
 
     ipcMain.on('START-SEARCH', (event, data) => {
         const { x, y, width } = window.getBounds();
-        const searchWidth = Math.min(width - 290, 380);
-        const searchY = Math.round(y + (maximized ? 9 : 6));
-        const searchX = Math.round(x + (width - searchWidth) / 2) - 5;
+        const searchWidth = Math.min(width - 300, 400);
+        const searchY = Math.round(y + 20);
+        const searchX = Math.round(x + (width - searchWidth) / 2);
         searchWindow = new BrowserWindow({
             x: searchX,
             y: searchY,
