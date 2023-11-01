@@ -32,7 +32,7 @@ function handleSearchRequest(window) {
         });
     });
 
-    ipcMain.on('START-SEARCH', (event, data) => {
+    ipcMain.on('START-SEARCH', () => {
         const { x, y, width } = window.getBounds();
         const searchWidth = Math.min(width - 300, 400);
         const searchY = Math.round(y + 20);
@@ -52,7 +52,7 @@ function handleSearchRequest(window) {
             }
         });
     
-        searchWindow.loadFile('public/search.html');
+        searchWindow.loadFile('electron-src/search.html');
         searchWindow.webContents.executeJavaScript('searchInput.focus()');
     });
 
@@ -75,7 +75,7 @@ function handleSearchRequest(window) {
         });
     });
 
-    ipcMain.on('CLOSE-SEARCH', (event, data) => {
+    ipcMain.on('CLOSE-SEARCH', () => {
         searchWindow.destroy();
         searchWindow = null;
         window.webContents.stopFindInPage('clearSelection');
