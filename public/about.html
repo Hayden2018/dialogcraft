@@ -38,8 +38,14 @@
         }
     </style>
     <script>
-        const { shell } = window.require('electron');
-        const openLicense = () => shell.openExternal('https://github.com/Hayden2018/dialogcraft/blob/master/LICENSE');
+        const openLicense = () => {
+            if (window.require) {
+                const { shell } = window.require('electron');
+                shell.openExternal('https://github.com/Hayden2018/dialogcraft/blob/master/LICENSE');
+            } else {
+                window.open('https://github.com/Hayden2018/dialogcraft/blob/master/LICENSE');
+            }
+        }
     </script>
 </head>
 <body>
