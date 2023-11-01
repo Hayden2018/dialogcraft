@@ -17,7 +17,7 @@ const Form = styled('form')(
         [breakpoints.down(600)]: {
             padding: '0px',
         },
-        [breakpoints.down(500)]: {
+        [breakpoints.down(520)]: {
             width: '100%',
         },
     })
@@ -42,7 +42,7 @@ const FormHeader = styled('div')(
             fontSize: 21,
             marginBottom: 18,
         },
-        [breakpoints.down(500)]: {
+        [breakpoints.down(520)]: {
             fontSize: 19,
             marginBottom: 16,
         },

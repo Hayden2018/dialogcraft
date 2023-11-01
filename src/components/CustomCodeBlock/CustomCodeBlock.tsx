@@ -43,7 +43,7 @@ function CustomCodeBlock({ language, code, style = {} } : { language: string , c
     }
 
     return (
-        <div style={style}>
+        <div style={{ minWidth: 200, marginBottom: 8, ...style }}>
             <CodeBlockHeader>
                 {language || ' '}
                 <CopyButton

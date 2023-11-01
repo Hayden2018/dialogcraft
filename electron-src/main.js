@@ -22,6 +22,7 @@ const url = require('url');
 const { initialize, enable } = require('@electron/remote/main');
 const { startListenForMessage } = require('./service');
 const { template } = require('./menu');
+const { handleSearchRequest } = require('./search');
 
 initialize();
 
@@ -35,8 +36,8 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1440,
         height: 900,
-        minWidth: 480,
-        minHeight: 720,
+        minWidth: 560,
+        minHeight: 800,
         icon: 'public/icon.ico',
         webPreferences: {
             nodeIntegration: true,
@@ -56,6 +57,8 @@ function createWindow() {
     });
 
     startListenForMessage(mainWindow);
+    handleSearchRequest(mainWindow);
+    
 }
 
 app.on('ready', () => {
