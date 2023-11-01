@@ -1,14 +1,19 @@
 const { ipcMain, BrowserWindow } = require('electron');
+const os = require('os');
 
 function handleSearchRequest(window) {
 
     let searchWindow = null;
+    let topMargin = 20;
+    if (os.platform() === 'linux') {
+        topMargin = 8;
+    }
 
     window.on('move', () => {
         if (!searchWindow) return;
         const { x, y, width } = window.getBounds();
         const searchWidth = Math.min(width - 300, 400);
-        const searchY = Math.round(y + 20);
+        const searchY = Math.round(y + topMargin);
         const searchX = Math.round(x + (width - searchWidth) / 2);
         searchWindow.setBounds({
             x: searchX,
@@ -22,7 +27,7 @@ function handleSearchRequest(window) {
         if (!searchWindow) return;
         const { x, y, width } = window.getBounds();
         const searchWidth = Math.min(width - 300, 400);
-        const searchY = Math.round(y + 20);
+        const searchY = Math.round(y + topMargin);
         const searchX = Math.round(x + (width - searchWidth) / 2);
         searchWindow.setBounds({
             x: searchX,
@@ -35,7 +40,7 @@ function handleSearchRequest(window) {
     ipcMain.on('START-SEARCH', () => {
         const { x, y, width } = window.getBounds();
         const searchWidth = Math.min(width - 300, 400);
-        const searchY = Math.round(y + 20);
+        const searchY = Math.round(y + topMargin);
         const searchX = Math.round(x + (width - searchWidth) / 2);
         searchWindow = new BrowserWindow({
             x: searchX,
