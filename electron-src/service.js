@@ -57,6 +57,7 @@ async function sendResponseStream(window, {
                 messages,
                 top_p: topP,
                 temperature,
+                max_tokens: 800,
                 stream: true,
             },
         }
@@ -70,6 +71,7 @@ async function sendResponseStream(window, {
                 messages,
                 top_p: topP,
                 temperature,
+                max_tokens: 800,
                 stream: true,
             },
         };
@@ -92,7 +94,9 @@ async function sendResponseStream(window, {
             for (const { choices } of jsonChunks) {
                 if (choices && choices.length) {
                     window.webContents.send(requestId, choices[0]);
-                    if (choices[0].finish_reason === 'stop') clearInterval(checkTimeout);
+                    if (choices[0].finish_reason === 'stop' || choices[0].finish_details) {
+                        clearInterval(checkTimeout);
+                    }
                 }
             }
         });

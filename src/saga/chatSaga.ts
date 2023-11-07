@@ -6,6 +6,14 @@ import { AppState, ChatMessage, ModalType, SettingConfig } from 'redux/type.d';
 import { requestResponse, getChatTitle } from './service';
 import { EventChannel } from 'redux-saga';
 
+type MessageChunk = {
+    finish_reason?: string | null;
+    finish_details?: object | null;
+    delta: {
+        role: string;
+        content: string;
+    }
+}
 
 function* handleResponseStream(responseStream: EventChannel<any>, chatId: string) {
 
@@ -17,15 +25,9 @@ function* handleResponseStream(responseStream: EventChannel<any>, chatId: string
     }));
 
     while (true) {
-        const msgChunk: {
-            finish_reason: string | null;
-            delta: {
-                role?: string;
-                content?: string;
-            }
-        } = yield take(responseStream);
+        const msgChunk: MessageChunk = yield take(responseStream);
 
-        if (msgChunk.finish_reason) responseStream.close();
+        if (msgChunk.finish_reason || msgChunk.finish_details) responseStream.close();
 
         if (msgChunk.finish_reason === 'error') {
             yield put(openModal({ type: ModalType.CHAT_ERROR }));
@@ -60,7 +62,7 @@ function* handleResponseStream(responseStream: EventChannel<any>, chatId: string
         }
 
         yield put(addStreamedChunk({
-            stop: !!msgChunk.finish_reason,
+            stop: !!(msgChunk.finish_reason || msgChunk.finish_details),
             delta: msgChunk.delta.content || '',
             chatId,
         }));
@@ -82,15 +84,9 @@ function* handleRegenerationStream(
     }));
 
     while (true) {
-        const msgChunk: {
-            finish_reason: string | null;
-            delta: {
-                role: string,
-                content: string,
-            }
-        } = yield take(responseStream);
+        const msgChunk: MessageChunk = yield take(responseStream);
 
-        if (msgChunk.finish_reason) responseStream.close();
+        if (msgChunk.finish_reason || msgChunk.finish_details) responseStream.close();
 
         if (msgChunk.finish_reason === 'error') {
             yield put(openModal({ type: ModalType.CHAT_ERROR }));
@@ -128,7 +124,7 @@ function* handleRegenerationStream(
         }
 
         yield put(addRegenerationChunk({
-            stop: !!msgChunk.finish_reason,
+            stop: !!(msgChunk.finish_reason || msgChunk.finish_details),
             delta: msgChunk.delta.content || '',
             chatId,
             msgId,
