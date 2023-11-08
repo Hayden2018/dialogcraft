@@ -17,7 +17,7 @@ export const useChatRenameActions = (chatId: string) => {
     const cancelRename = () => dispatch(closeModal());
 
     const onEdit = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const inputElement = event.target as HTMLInputElement; 
+        const inputElement = event.target as HTMLInputElement;
         setDraft(inputElement.value);
     }
 
@@ -26,10 +26,18 @@ export const useChatRenameActions = (chatId: string) => {
         dispatch(closeModal());
     }
 
+    const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            confirmRename();
+        }
+    }
+
     return {
         draft,
         cancelRename,
         confirmRename,
+        onKeyDown,
         onEdit,
     }
 }

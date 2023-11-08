@@ -16,7 +16,7 @@ const EditBox = styled(TextField)(
 
 function ChatRenameModal({ chatId } : ModalPayload) {
 
-    const { draft, confirmRename, cancelRename, onEdit } = useChatRenameActions(chatId);
+    const { draft, confirmRename, cancelRename, onKeyDown, onEdit } = useChatRenameActions(chatId);
 
     return (
         <Dialog open fullWidth maxWidth='sm'>
@@ -26,6 +26,7 @@ function ChatRenameModal({ chatId } : ModalPayload) {
                     label='New Title'
                     value={draft}
                     onChange={onEdit}
+                    onKeyDown={onKeyDown}
                 />
             </div>
             <DialogActions>
