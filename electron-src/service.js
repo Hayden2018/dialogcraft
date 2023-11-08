@@ -6,6 +6,7 @@ function parseNoisyJSON(noisyString) {
     let bracketCount = 0;
     let jsonString = '';
     let insideString = false;
+    let lastClosingIndex = 0;
 
     for (let i = 0; i < noisyString.length; i++) {
         let char = noisyString[i];
@@ -26,13 +27,17 @@ function parseNoisyJSON(noisyString) {
         if (jsonString.length > 0 && bracketCount === 0 && !insideString) {
             try {
                 parsedObjects.push(JSON.parse(jsonString));
+                lastClosingIndex = i;
             } catch {
                 // The string was not a valid JSON object, so we ignore it
             }
             jsonString = '';
         }
     }
-    return parsedObjects;
+    return {
+        jsons: parsedObjects,
+        residue: noisyString.slice(lastClosingIndex + 1),
+    };
 }
 
 async function sendResponseStream(window, {
@@ -87,11 +92,14 @@ async function sendResponseStream(window, {
                 });
             }
         }, 900);
-    
+
+
+        let residue = '';
         response.data.on('data', (chunk) => {
             lastChunkTime = new Date().getTime();
-            const jsonChunks = parseNoisyJSON(chunk.toString());
-            for (const { choices } of jsonChunks) {
+            const result = parseNoisyJSON(residue + chunk.toString());
+            residue = result.residue;
+            for (const { choices } of result.jsons) {
                 if (choices && choices.length) {
                     window.webContents.send(requestId, choices[0]);
                     if (choices[0].finish_reason === 'stop' || choices[0].finish_details) {
