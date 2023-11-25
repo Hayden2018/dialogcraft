@@ -1,6 +1,6 @@
 {
   "name": "DialogCraft",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "author": "Hayden Chiu",
   "description": "Chat client for GPT API",
   "main": "electron-src/main.js",
