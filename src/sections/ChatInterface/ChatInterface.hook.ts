@@ -1,5 +1,6 @@
 import { useEffect, useState, KeyboardEvent, ChangeEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { stopStreaming } from "redux/chatsSlice";
 import { AppState, Chat } from "redux/type";
 import { triggerRegenerate, userMessageSent } from "saga/actions";
 
@@ -19,7 +20,7 @@ export const useMessageActions = (currentChat: Chat | null) => {
     
     const [draft, setDraft] = useState<string>('');
 
-    useEffect(() => setDraft(''), [currentChat]);
+    useEffect(() => { setDraft('') }, [currentChat]);
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         const inputElement = event.target as HTMLInputElement; 
@@ -37,11 +38,11 @@ export const useMessageActions = (currentChat: Chat | null) => {
     }
 
     const regenerate = () => {
-        if (currentChat!.messages.at(-1)) {
+        if (currentChat.messages.at(-1)) {
             dispatch(
                 triggerRegenerate({
-                    chatId: currentChat!.id,
-                    msgId: currentChat!.messages.at(-1)!.id,
+                    chatId: currentChat.id,
+                    msgId: currentChat.messages.at(-1).id,
                 })
             );
         }
@@ -58,6 +59,7 @@ export const useMessageActions = (currentChat: Chat | null) => {
     }
 
     const stopGenerate = () => {
+        dispatch(stopStreaming({ chatId: currentChat.id }));
         document.dispatchEvent(
             new CustomEvent('interrupt', {
                 detail: { chatId: currentChat.id }

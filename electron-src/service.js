@@ -9,10 +9,12 @@ function parseNoisyJSON(noisyString) {
     let lastClosingIndex = 0;
 
     for (let i = 0; i < noisyString.length; i++) {
-        let char = noisyString[i];
-        let prevChar = i > 0 ? noisyString[i - 1] : null;
+        const char = noisyString[i];
+        const prevChar = i > 0 ? noisyString[i - 1] : '';
+        const prevPrevChar = i > 1 ? noisyString[i - 2] : '';
+        const prevCharNotEscape = prevChar !== '\\' || (prevChar === prevPrevChar);
 
-        if (char === '"' && prevChar !== '\\') {
+        if (char === '"' && prevCharNotEscape) {
             insideString = !insideString;
         }
         if (!insideString && char === '{') {
@@ -92,7 +94,6 @@ async function sendResponseStream(window, {
                 });
             }
         }, 900);
-
 
         let residue = '';
         response.data.on('data', (chunk) => {

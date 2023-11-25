@@ -4,7 +4,6 @@ export type ChatMessage = {
     role: 'assistant' | 'system' | 'user';
     content: string;
     editedContent: string;
-    author?: string;
 }
 
 export type Chat = {

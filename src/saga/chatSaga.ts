@@ -52,12 +52,6 @@ function* handleResponseStream(responseStream: EventChannel<any>, chatId: string
         }
 
         if (msgChunk.finish_reason === 'interrupt') {
-            yield put(addStreamedChunk({
-                stop: true,
-                error: false,
-                delta: '',
-                chatId,
-            }));
             break;
         }
 
@@ -113,13 +107,6 @@ function* handleRegenerationStream(
         }
 
         if (msgChunk.finish_reason === 'interrupt') {
-            yield put(addRegenerationChunk({
-                stop: true,
-                error: false,
-                delta: '',
-                chatId,
-                msgId,
-            }));
             break;
         }
 

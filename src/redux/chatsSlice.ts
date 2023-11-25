@@ -82,6 +82,11 @@ const chatsSlice = createSlice({
             chats[chatId] = targetChat;
             return chats;
         },
+        stopStreaming(chats, { payload }) {
+            const { chatId } = payload;
+            chats[chatId].streamingMsgId = null;
+            return chats;
+        },
         editMessage(chats, { payload }) {
             const { chatId, msgId, newContent } = payload;
             const targetChat = chats[chatId];
@@ -134,6 +139,7 @@ export const {
     addUserMessage,
     addStreamedChunk,
     addRegenerationChunk,
+    stopStreaming,
     editChatTitle,
     editMessage,
     restoreMessage,
