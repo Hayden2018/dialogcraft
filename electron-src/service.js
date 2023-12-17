@@ -87,13 +87,13 @@ async function sendResponseStream(window, {
 
         let lastChunkTime = new Date().getTime();
         let checkTimeout = setInterval(() => {
-            if (new Date().getTime() - lastChunkTime > 9000) {
+            if (new Date().getTime() - lastChunkTime > 30000) {
                 clearInterval(checkTimeout);
                 window.webContents.send(requestId, { 
                     finish_reason: 'timeout',
                 });
             }
-        }, 900);
+        }, 1000);
 
         let residue = '';
         response.data.on('data', (chunk) => {

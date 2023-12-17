@@ -229,7 +229,7 @@ function ChatInterface({ setMenuOpen }: { setMenuOpen: React.Dispatch<React.SetS
     const dispatch = useDispatch();
     const screenWidth = useScreenWidth();
     const currentChat = useCurrentChatSelector();
-    const { onChange, sendMessage, regenerate, onKeyDown, stopGenerate, value } = useMessageActions(currentChat);
+    const { onChange, sendMessage, regenerate, onKeyDown, stopGenerate, draft } = useMessageActions(currentChat);
     const { editing, toggleEdit } = useChatEditActions(currentChat);
 
     const streamingMsgId = currentChat?.streamingMsgId;
@@ -324,7 +324,7 @@ function ChatInterface({ setMenuOpen }: { setMenuOpen: React.Dispatch<React.SetS
                         multiline
                         label='Your Message'
                         rows={screenWidth < 800 ? 2 : 3}
-                        value={value}
+                        value={draft}
                         onChange={onChange}
                         onKeyDown={onKeyDown}
                     />

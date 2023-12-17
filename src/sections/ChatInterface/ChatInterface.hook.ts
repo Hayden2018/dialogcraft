@@ -73,7 +73,7 @@ export const useMessageActions = (currentChat: Chat | null) => {
         regenerate,
         onKeyDown,
         stopGenerate,
-        value: draft,
+        draft,
     };
 }
 
