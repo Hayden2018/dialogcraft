@@ -1,4 +1,5 @@
 import { styled } from '@mui/system';
+import React from 'react';
 import useChatTitleWithEdit from './ChatTitleBox.hook';
 import { useDispatch } from 'react-redux';
 import { setCurrentChat } from 'redux/chatListSlice';
@@ -78,7 +79,7 @@ const DeleteButton = styled(DeleteIcon)(
 );
 
 
-function ChatTitleBox({
+const ChatTitleBox = React.memo(({
     chatId,
     isCurrent,
     setMenuOpen,
@@ -86,7 +87,7 @@ function ChatTitleBox({
     chatId: string,
     isCurrent: boolean,
     setMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>,
-}) {
+}) => {
     const dispatch = useDispatch();
     const { title, renameTitle, deleteChat } = useChatTitleWithEdit(chatId);
 
@@ -102,6 +103,6 @@ function ChatTitleBox({
             <DeleteButton onClick={deleteChat} />
         </TitleContainer>
     );
-}
+});
 
 export default ChatTitleBox;

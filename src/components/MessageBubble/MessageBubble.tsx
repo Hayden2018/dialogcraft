@@ -4,7 +4,7 @@ import CustomCodeBlock from 'components/CustomCodeBlock/CustomCodeBlock';
 import { useMessageEditActions, useMessageSegmentMemo } from './MessageBubble.hook';
 import { styled } from '@mui/system';
 import { Button } from '@mui/material';
-import { RefObject } from 'react';
+import React, { RefObject } from 'react';
 
 const RightAligner = styled('div')(
     ({ theme }) => ({
@@ -100,8 +100,8 @@ const EditButton = styled(Button)(
     })
 );
 
-function MessageBubble({ chatId, msgId, msgContent, role, editMode, forwardRef } : 
-    { 
+const MessageBubble = React.memo(({ chatId, msgId, msgContent, role, editMode, forwardRef } : 
+    {
         chatId: string,
         msgId: string,
         msgContent: string,
@@ -110,8 +110,7 @@ function MessageBubble({ chatId, msgId, msgContent, role, editMode, forwardRef }
         generating: boolean,
         forwardRef: RefObject<HTMLDivElement> | null 
     }
-) {
-
+) => {
     // restoreMessage is null if message is unedited
     const { deleteMessage, regenerateMessage, editMessage, restoreMessage } = useMessageEditActions(chatId, msgId);
     const messageSegments = useMessageSegmentMemo(msgContent || '...');
@@ -173,6 +172,6 @@ function MessageBubble({ chatId, msgId, msgContent, role, editMode, forwardRef }
             </BotMessageContainer>
         </LeftAligner>
     );
-}
+});
 
 export default MessageBubble;
