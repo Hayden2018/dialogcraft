@@ -14,7 +14,7 @@ if (app.requestSingleInstanceLock()) {
         }
     });
 } else {
-    app.quit();
+    process.exit();
 }
 
 const path = require('path');
@@ -58,7 +58,6 @@ function createWindow() {
 
     startListenForMessage(mainWindow);
     handleSearchRequest(mainWindow);
-    
 }
 
 app.on('ready', () => {
