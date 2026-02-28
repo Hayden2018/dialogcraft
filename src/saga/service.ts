@@ -255,15 +255,7 @@ export function* requestResponse(messageHistory: Array<ChatMessage>, chatId: str
                         lastChunkTime = new Date().getTime();
 
                         const decodedChunk = decoder.decode(value, { stream: true });
-                        const responseText = residue + decodedChunk;
-
-                        if (responseText.includes('[DONE]')) {
-                            residue = responseText.replace(/\[DONE\]/g, '');
-                        } else {
-                            residue = responseText;
-                        }
-
-                        const parseResult = parseNoisyJSON(residue);
+                        const parseResult = parseNoisyJSON(residue + decodedChunk);
                         residue = parseResult.residue;
 
                         parseResult.jsons.forEach((jsonChunk) => {
@@ -272,11 +264,6 @@ export function* requestResponse(messageHistory: Array<ChatMessage>, chatId: str
                                 safeEmit(normalizedChunk);
                             }
                         });
-
-                        if (decodedChunk.includes('[DONE]') && !timeoutEmitted && !interruptEmitted) {
-                            safeEmit({ finish_reason: 'stop' });
-                            break;
-                        }
                     }
                 })
                 .catch((error: any) => {
