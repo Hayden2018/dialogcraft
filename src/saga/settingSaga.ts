@@ -28,8 +28,10 @@ async function fetchModelList(url: string, apiKey: string, urlType: string) {
                 headers: { 'API-Key': apiKey },
                 body: '',
             });
-    
-            if (response.status !== 400) throw Error('Unauthorized');
+
+            const unAuthorized = response.status === 401 || response.status === 403;    
+            if (unAuthorized) throw Error('Unauthorized');
+
             return { error: false, data: [] };
         }
     } catch (error) {

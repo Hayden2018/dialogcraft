@@ -64,7 +64,6 @@ async function sendResponseStream(window, {
                 messages,
                 top_p: topP,
                 temperature,
-                max_tokens: 800,
                 stream: true,
             },
         }
@@ -78,7 +77,6 @@ async function sendResponseStream(window, {
                 messages,
                 top_p: topP,
                 temperature,
-                max_tokens: 800,
                 stream: true,
             },
         };

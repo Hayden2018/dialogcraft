@@ -246,7 +246,7 @@ export default function Login() {
                     Connect
                 </SubmitButton>
                 <InfoText>
-                    Please provide the full URL to your Azure OpenAI service deployment.
+                    Enter the full URL to your Azure OpenAI deployment via curl. (Only GPT-4o or GPT-3.5-Turbo supported)
                 </InfoText>
                 {
                     onElectronEnv() ||

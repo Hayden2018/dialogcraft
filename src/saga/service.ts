@@ -116,7 +116,6 @@ export async function getChatTitle(
 
 
 export function* requestResponse(messageHistory: Array<ChatMessage>, chatId: string) {
-
     const {
         topP,
         temperature,
@@ -229,7 +228,6 @@ export function* requestResponse(messageHistory: Array<ChatMessage>, chatId: str
                     messages: messagesPayload,
                     top_p: topP,
                     temperature,
-                    max_tokens: 800,
                     stream: true,
                 }),
             })
