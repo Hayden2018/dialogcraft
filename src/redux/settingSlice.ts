@@ -6,8 +6,8 @@ export const OPENROUTER_DEFAULT_BASE_URL = 'https://openrouter.ai/api';
 const initialGlobalSetting: SettingConfig = {
   availableModels: [],
   currentModel: '',
-  temperature: 0.7,
-  topP: 1,
+  temperature: 1.0,
+  topP: 0.95,
   systemPrompt: '',
   maxContext: 50,
   reasoningEffort: 'none',
@@ -34,7 +34,6 @@ const settingSlice = createSlice({
         ...settings[settingId],
         ...setting,
       };
-      return settings;
     },
     addSetting(settings, { payload }) {
       const { settingId } = payload;
@@ -49,7 +48,6 @@ const settingSlice = createSlice({
         reasoningEffort: settingDraft.reasoningEffort,
         excludeReasoning: settingDraft.excludeReasoning,
       };
-      return settings;
     },
     bulkAddSetting(settings, { payload }) {
       const { settingIds } = payload;
@@ -67,12 +65,10 @@ const settingSlice = createSlice({
           excludeReasoning: settingDraft.excludeReasoning,
         };
       }
-      return settings;
     },
     deleteSetting(settings, { payload }) {
       const { settingId } = payload;
       delete settings[settingId];
-      return settings;
     },
     updateModelList(settings, { payload }) {
       for (const key in settings) {
@@ -82,17 +78,14 @@ const settingSlice = createSlice({
           settings[key].currentModel = payload[0];
         }
       }
-      return settings;
     },
     toggleTheme(settings) {
       settings.global.darkMode = !settings.global.darkMode;
-      return settings;
     },
     removeAPICredentials(settings) {
       settings.global.baseURL = OPENROUTER_DEFAULT_BASE_URL;
       settings.global.apiKey = '';
       settings.global.status = SettingStatus.NO_KEY;
-      return settings;
     },
     resetSettings() {
       return {

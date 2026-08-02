@@ -27,10 +27,12 @@ export function useBackButton(action: () => any, enable: boolean = true) {
 
 export function useScreenWidth() {
   const [width, setWidth] = useState<number>(window.innerWidth);
-  const handleResize = () => setWidth(window.innerWidth);
 
-  window.addEventListener('resize', handleResize);
-  useEffect(() => () => window.removeEventListener('resize', handleResize), []);
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return width;
 }

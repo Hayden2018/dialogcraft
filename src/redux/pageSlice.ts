@@ -14,20 +14,17 @@ const pageSlice = createSlice({
       const { to } = payload;
       page.history.push(to);
       page.current = to;
-      return page;
     },
     back(page) {
       if (page.history.length > 1) {
         const previousPage = page.history.at(-2);
-        page.current = previousPage;
+        page.current = previousPage!;
         page.history.pop();
       }
-      return page;
     },
     resetPages(page) {
       page.current = PageType.LOGIN;
       page.history = [];
-      return page;
     },
   },
 });

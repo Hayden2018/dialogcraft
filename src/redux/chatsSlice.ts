@@ -17,7 +17,6 @@ const chatsSlice = createSlice({
         streamingMsgId: null,
         rollbackMessage: null,
       };
-      return chats;
     },
     addUserMessage(chats, { payload }) {
       const { chatId, messageContent } = payload;
@@ -29,7 +28,6 @@ const chatsSlice = createSlice({
         editedContent: '',
         reasoning: '',
       });
-      return chats;
     },
     addStreamedChunk(chats, { payload }) {
       const { chatId, delta = '', reasoningDelta = '', stop, error } = payload;
@@ -56,7 +54,6 @@ const chatsSlice = createSlice({
         });
       }
       chats[chatId] = targetChat;
-      return chats;
     },
     addRegenerationChunk(chats, { payload }) {
       const { chatId, msgId, delta = '', reasoningDelta = '', stop, error } = payload;
@@ -87,12 +84,10 @@ const chatsSlice = createSlice({
         };
       }
       chats[chatId] = targetChat;
-      return chats;
     },
     stopStreaming(chats, { payload }) {
       const { chatId } = payload;
       chats[chatId].streamingMsgId = null;
-      return chats;
     },
     editMessage(chats, { payload }) {
       const { chatId, msgId, newContent } = payload;
@@ -102,7 +97,6 @@ const chatsSlice = createSlice({
       targetMessage.editedContent = newContent.trim();
       targetChat.messages[targetMsgIndex] = targetMessage;
       chats[chatId] = targetChat;
-      return chats;
     },
     restoreMessage(chats, { payload }) {
       const { chatId, msgId } = payload;
@@ -112,7 +106,6 @@ const chatsSlice = createSlice({
       targetMessage.editedContent = '';
       targetChat.messages[targetMsgIndex] = targetMessage;
       chats[chatId] = targetChat;
-      return chats;
     },
     deleteMessage(chats, { payload }) {
       const { chatId, msgId } = payload;
@@ -120,16 +113,13 @@ const chatsSlice = createSlice({
       const indexToDelete = messages.findIndex(({ id }) => id === msgId);
       messages.splice(indexToDelete, 1);
       chats[chatId].messages = messages;
-      return chats;
     },
     editChatTitle(chats, { payload }) {
       const { chatId, newTitle } = payload;
       chats[chatId].title = newTitle;
-      return chats;
     },
     deleteChat(chats, { payload: chatId }) {
       delete chats[chatId];
-      return chats;
     },
     setChats(_, { payload }) {
       return payload;
