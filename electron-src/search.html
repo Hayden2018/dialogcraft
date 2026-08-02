@@ -65,6 +65,12 @@
         searchInput.oninput = () => {
             ipcRenderer.send('SEARCH', searchInput.value);
         };
+        searchInput.onkeydown = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                ipcRenderer.send('SEARCH-NEXT', searchInput.value);
+            }
+        };
         nextButton.onclick = () => {
             ipcRenderer.send('SEARCH-NEXT', searchInput.value);
         };
