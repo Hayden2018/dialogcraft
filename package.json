@@ -1,8 +1,8 @@
 {
   "name": "DialogCraft",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "author": "Hayden Chiu",
-  "description": "Chat client for GPT API",
+  "description": "Chat client for OpenRouter API",
   "main": "electron-src/main.js",
   "homepage": ".",
   "license": "MIT",
@@ -40,8 +40,7 @@
     "start": "react-scripts start",
     "eject": "react-scripts eject",
     "build": "react-scripts build",
-    "electron": "electron .",
-    "electron-dev": "nodemon --watch ./electron-src --exec \"electron .\"",
+    "electron-dev": "concurrently -k -n web,electron \"npm start\" \"wait-on http://localhost:3000 && nodemon --watch ./electron-src --exec \\\"electron .\\\"\"",
     "package": "electron-forge package",
     "make": "react-scripts build && electron-forge make"
   },
@@ -71,7 +70,9 @@
     "@electron-forge/maker-zip": "^6.2.1",
     "@electron-forge/plugin-auto-unpack-natives": "^6.2.1",
     "@types/uuid": "^9.0.2",
+    "concurrently": "^10.0.4",
     "electron": "^25.3.1",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "wait-on": "^9.1.0"
   }
 }

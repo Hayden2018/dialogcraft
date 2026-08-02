@@ -4,10 +4,20 @@ import { TextField, FormControlLabel, Slider, Button, Select, Switch, MenuItem, 
 import { styled } from '@mui/system';
 
 import { toggleTheme, updateChatSetting } from 'redux/settingSlice';
-import { AppState, SettingConfig, SettingStatus } from 'redux/type.d';
+import { AppState, ReasoningEffort, SettingConfig, SettingStatus } from 'redux/type.d';
 import { useDataActions } from './GlobalSettingHook';
 import { onElectronEnv, useBackButton, useScreenWidth } from 'utils';
 import { back } from 'redux/pageSlice';
+
+const REASONING_EFFORT_OPTIONS: Array<{ value: ReasoningEffort; label: string }> = [
+    { value: 'none', label: 'None' },
+    { value: 'minimal', label: 'Minimal' },
+    { value: 'low', label: 'Low' },
+    { value: 'medium', label: 'Medium' },
+    { value: 'high', label: 'High' },
+    { value: 'xhigh', label: 'Extra High' },
+    { value: 'max', label: 'Max' },
+];
 
 const Container = styled('div')(
     ({ theme: { palette } }) => ({
@@ -106,7 +116,7 @@ export default function GlobalSetting() {
     const onDesktop = screenWidth >= 800;
 
     const globalSettings: SettingConfig = useSelector((state: AppState) => state.setting.global);
-    const { status, darkMode, urlType } = globalSettings;
+    const { status, darkMode } = globalSettings;
 
     const { register, handleSubmit, watch, setValue } = useForm<SettingConfig>({
         defaultValues: globalSettings,
@@ -117,6 +127,8 @@ export default function GlobalSetting() {
     const maxContext = watch('maxContext');
     const temperature = watch('temperature');
     const topP = watch('topP');
+    const excludeReasoning = watch('excludeReasoning');
+    const reasoningEffort = watch('reasoningEffort');
 
     const { disconnectApp, showResetPage, showImportPage, exportChat } = useDataActions();
 
@@ -151,7 +163,7 @@ export default function GlobalSetting() {
                     <TextField
                         disabled
                         fullWidth
-                        label={urlType === 'openai' ? 'API Base URL' : 'Azure OpenAI Endpoint'}
+                        label='API Base URL'
                         {...register('baseURL')}
                     />
                 </FormRow>
@@ -160,7 +172,7 @@ export default function GlobalSetting() {
                         disabled
                         fullWidth
                         type='password'
-                        label={urlType === 'openai' ? 'API Key (Bearer token)' : 'API Key'}
+                        label='OpenRouter API Key'
                         {...register('apiKey')}
                     />
                 </FormRow>
@@ -187,29 +199,53 @@ export default function GlobalSetting() {
                 <FormRow>
                     <Alert severity='info'>
                         <InfoList>
-                            <li>GPT Model - default model for generating responses when starting a new conversation.</li> 
+                            <li>Model - default OpenRouter model for new conversations.</li> 
                             <li>Temperature - higher values will make the output more random, while lower values more deterministic.</li> 
                             <li>Top P - the model only considers tokens within top P probability mass.</li>
+                            <li>Reasoning effort - controls how much thinking budget reasoning models use. Set to None for non-reasoning models.</li>
+                            <li>Exclude reasoning - model may still reason internally, but the thinking trace is not returned.</li>
                         </InfoList>
                     </Alert>
                 </FormRow>
-                {
-                    urlType === 'openai' &&
-                    <FormRow>
-                        <p style={{ margin: '0px 0px 5px 5px' }}>Default GPT Model</p>
-                        <Select 
-                            fullWidth
-                            defaultValue={globalSettings.currentModel}
-                            onChange={(event) => setValue('currentModel', event.target.value)}
-                        >
-                            {
-                                globalSettings.availableModels.map(
-                                    (modelId, index) => <MenuItem value={modelId} key={index}>{modelId}</MenuItem>
-                                )
-                            }
-                        </Select>
-                    </FormRow>
-                }
+                <FormRow>
+                    <p style={{ margin: '0px 0px 5px 5px' }}>Default Model</p>
+                    <Select 
+                        fullWidth
+                        defaultValue={globalSettings.currentModel}
+                        onChange={(event) => setValue('currentModel', event.target.value)}
+                    >
+                        {
+                            globalSettings.availableModels.map(
+                                (modelId, index) => <MenuItem value={modelId} key={index}>{modelId}</MenuItem>
+                            )
+                        }
+                    </Select>
+                </FormRow>
+                <FormRow>
+                    <p style={{ margin: '0px 0px 5px 5px' }}>Reasoning Effort</p>
+                    <Select
+                        fullWidth
+                        value={reasoningEffort || 'none'}
+                        onChange={(event) => setValue('reasoningEffort', event.target.value as ReasoningEffort)}
+                    >
+                        {
+                            REASONING_EFFORT_OPTIONS.map(({ value, label }) => (
+                                <MenuItem value={value} key={value}>{label}</MenuItem>
+                            ))
+                        }
+                    </Select>
+                </FormRow>
+                <FormRow narrow>
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                onClick={() => setValue('excludeReasoning', !excludeReasoning)}
+                                checked={!!excludeReasoning}
+                            />
+                        }
+                        label='Exclude reasoning from response'
+                    />
+                </FormRow>
                 <FormRow narrow tall>
                     <SliderTop>
                         <span>Temperature</span>

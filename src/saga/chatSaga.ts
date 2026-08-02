@@ -3,15 +3,18 @@ import { moveChatToTop } from 'redux/chatListSlice';
 import { addRegenerationChunk, addStreamedChunk, addUserMessage, editChatTitle } from 'redux/chatsSlice';
 import { openModal } from 'redux/modalSlice';
 import { AppState, ChatMessage, ModalType, SettingConfig } from 'redux/type.d';
-import { requestResponse, getChatTitle } from './service';
+import { requestResponse, getChatTitle, extractReasoningDelta } from './service';
 import { EventChannel } from 'redux-saga';
 
 type MessageChunk = {
     finish_reason?: string | null;
     finish_details?: object | null;
-    delta: {
-        role: string;
-        content: string;
+    delta?: {
+        role?: string;
+        content?: string | null;
+        reasoning?: string | null;
+        reasoning_content?: string | null;
+        reasoning_details?: Array<any>;
     }
 }
 
@@ -22,7 +25,10 @@ function* handleResponseStream(responseStream: EventChannel<any>, chatId: string
         chatId,
         stop: false,
         delta: '',
+        reasoningDelta: '',
     }));
+
+    let accumulatedReasoning = '';
 
     while (true) {
         const msgChunk: MessageChunk = yield take(responseStream);
@@ -35,6 +41,7 @@ function* handleResponseStream(responseStream: EventChannel<any>, chatId: string
                 stop: true,
                 error: true,
                 delta: '',
+                reasoningDelta: '',
                 chatId,
             }));
             break;
@@ -46,6 +53,7 @@ function* handleResponseStream(responseStream: EventChannel<any>, chatId: string
                 stop: true,
                 error: true,
                 delta: '',
+                reasoningDelta: '',
                 chatId,
             }));
             break;
@@ -55,9 +63,13 @@ function* handleResponseStream(responseStream: EventChannel<any>, chatId: string
             break;
         }
 
+        const reasoningDelta = extractReasoningDelta(msgChunk.delta, accumulatedReasoning);
+        accumulatedReasoning += reasoningDelta;
+
         yield put(addStreamedChunk({
             stop: !!(msgChunk.finish_reason || msgChunk.finish_details),
-            delta: msgChunk.delta.content || '',
+            delta: msgChunk.delta?.content || '',
+            reasoningDelta,
             chatId,
         }));
     }
@@ -73,9 +85,12 @@ function* handleRegenerationStream(
     yield put(addRegenerationChunk({
         stop: false,
         delta: '',
+        reasoningDelta: '',
         chatId,
         msgId,
     }));
+
+    let accumulatedReasoning = '';
 
     while (true) {
         const msgChunk: MessageChunk = yield take(responseStream);
@@ -88,6 +103,7 @@ function* handleRegenerationStream(
                 stop: true,
                 error: true,
                 delta: '',
+                reasoningDelta: '',
                 chatId,
                 msgId,
             }));
@@ -100,6 +116,7 @@ function* handleRegenerationStream(
                 stop: true,
                 error: true,
                 delta: '',
+                reasoningDelta: '',
                 chatId,
                 msgId,
             }));
@@ -110,9 +127,13 @@ function* handleRegenerationStream(
             break;
         }
 
+        const reasoningDelta = extractReasoningDelta(msgChunk.delta, accumulatedReasoning);
+        accumulatedReasoning += reasoningDelta;
+
         yield put(addRegenerationChunk({
             stop: !!(msgChunk.finish_reason || msgChunk.finish_details),
-            delta: msgChunk.delta.content || '',
+            delta: msgChunk.delta?.content || '',
+            reasoningDelta,
             chatId,
             msgId,
         }));
@@ -143,8 +164,11 @@ export function* handleUserMessage({ payload } :
     );
 
     const defaultTitleRegex = /^New Conversation \d+$/;
-    const { baseURL, apiKey, autoTitle, urlType }: SettingConfig = yield select(
+    const { baseURL, apiKey, autoTitle }: SettingConfig = yield select(
         (state: AppState) => state.setting.global
+    );
+    const { currentModel }: SettingConfig = yield select(
+        (state: AppState) => state.setting[chatId]
     );
 
     if (autoTitle && messageHistory.length === 1 && defaultTitleRegex.test(chatTitle)) {
@@ -157,7 +181,7 @@ export function* handleUserMessage({ payload } :
             updatedMessageHistory, 
             baseURL!, 
             apiKey!, 
-            urlType!,
+            currentModel,
         );
         
         if (newTitle) yield put(

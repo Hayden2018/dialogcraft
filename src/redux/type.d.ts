@@ -4,7 +4,17 @@ export type ChatMessage = {
     role: 'assistant' | 'system' | 'user';
     content: string;
     editedContent: string;
+    reasoning: string;
 }
+
+export type ReasoningEffort =
+    | 'none'
+    | 'minimal'
+    | 'low'
+    | 'medium'
+    | 'high'
+    | 'xhigh'
+    | 'max';
 
 export type Chat = {
     id: string;
@@ -78,7 +88,8 @@ export type SettingConfig = {
     systemPrompt: string;
     maxContext: number;
     availableModels: Array<string>;
-    urlType?: 'openai' | 'azure';
+    reasoningEffort: ReasoningEffort;
+    excludeReasoning: boolean;
     darkMode?: boolean;
     autoTitle?: boolean;
     status?: SettingStatus;

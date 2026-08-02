@@ -2,11 +2,21 @@ import Dialog from '@mui/material/Dialog';
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal } from "redux/modalSlice";
 import { useForm } from 'react-hook-form';
-import { TextField, Slider, Button, Select, MenuItem, Alert } from '@mui/material';
+import { TextField, Slider, Button, Select, MenuItem, Alert, FormControlLabel, Switch } from '@mui/material';
 import { styled } from '@mui/system';
-import { AppState, ModalPayload, SettingConfig } from 'redux/type';
+import { AppState, ModalPayload, ReasoningEffort, SettingConfig } from 'redux/type';
 import { updateChatSetting } from 'redux/settingSlice';
 import { useBackButton, useScreenWidth } from 'utils';
+
+const REASONING_EFFORT_OPTIONS: Array<{ value: ReasoningEffort; label: string }> = [
+    { value: 'none', label: 'None' },
+    { value: 'minimal', label: 'Minimal' },
+    { value: 'low', label: 'Low' },
+    { value: 'medium', label: 'Medium' },
+    { value: 'high', label: 'High' },
+    { value: 'xhigh', label: 'Extra High' },
+    { value: 'max', label: 'Max' },
+];
 
 const Form = styled('form')(
     ({ theme: { breakpoints } }) => ({
@@ -92,7 +102,6 @@ export default function ChatSettingModal({ settingId }: ModalPayload) {
 
     const dispatch = useDispatch();
 
-    const { urlType } = useSelector((state: AppState) => state.setting.global);
     const currentSettings = useSelector((state: AppState) => state.setting[settingId!]);
     const chatTitle = useSelector((state: AppState) => state.chats[settingId!].title);
 
@@ -105,6 +114,8 @@ export default function ChatSettingModal({ settingId }: ModalPayload) {
     const maxContext = watch('maxContext');
     const temperature = watch('temperature');
     const topP = watch('topP');
+    const excludeReasoning = watch('excludeReasoning');
+    const reasoningEffort = watch('reasoningEffort');
 
     const onSubmit = (data: SettingConfig) => {
         data.systemPrompt = data.systemPrompt.trim();
@@ -126,26 +137,50 @@ export default function ChatSettingModal({ settingId }: ModalPayload) {
                         <InfoList>
                             <li>Temperature - higher values will make the output more random, and lower values more deterministic.</li> 
                             <li>Top P - the model only considers tokens within top P probability mass.</li>
+                            <li>Reasoning effort - controls thinking budget for reasoning models.</li>
+                            <li>Exclude reasoning - hide the thinking trace from the response.</li>
                         </InfoList>
                     </Alert>
                 </FormRow>
-                {
-                    urlType === 'openai' &&
-                    <FormRow>
-                        <p style={{ margin: '0px 0px 5px 5px' }}>GPT Model</p>
-                        <Select 
-                            fullWidth
-                            defaultValue={currentSettings.currentModel}
-                            onChange={(event) => setValue('currentModel', event.target.value)}
-                        >
-                            {
-                                currentSettings.availableModels.map(
-                                    (modelId, index) => <MenuItem key={index} value={modelId}>{modelId}</MenuItem>
-                                )
-                            }
-                        </Select>
-                    </FormRow>
-                }
+                <FormRow>
+                    <p style={{ margin: '0px 0px 5px 5px' }}>Model</p>
+                    <Select 
+                        fullWidth
+                        defaultValue={currentSettings.currentModel}
+                        onChange={(event) => setValue('currentModel', event.target.value)}
+                    >
+                        {
+                            currentSettings.availableModels.map(
+                                (modelId, index) => <MenuItem key={index} value={modelId}>{modelId}</MenuItem>
+                            )
+                        }
+                    </Select>
+                </FormRow>
+                <FormRow>
+                    <p style={{ margin: '0px 0px 5px 5px' }}>Reasoning Effort</p>
+                    <Select
+                        fullWidth
+                        value={reasoningEffort || 'none'}
+                        onChange={(event) => setValue('reasoningEffort', event.target.value as ReasoningEffort)}
+                    >
+                        {
+                            REASONING_EFFORT_OPTIONS.map(({ value, label }) => (
+                                <MenuItem value={value} key={value}>{label}</MenuItem>
+                            ))
+                        }
+                    </Select>
+                </FormRow>
+                <FormRow narrow>
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                onClick={() => setValue('excludeReasoning', !excludeReasoning)}
+                                checked={!!excludeReasoning}
+                            />
+                        }
+                        label='Exclude reasoning from response'
+                    />
+                </FormRow>
                 <FormRow narrow>
                     <SliderTop>
                         <span>Temperature</span>

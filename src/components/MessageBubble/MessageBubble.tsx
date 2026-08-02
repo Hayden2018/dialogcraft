@@ -4,7 +4,7 @@ import CustomCodeBlock from 'components/CustomCodeBlock/CustomCodeBlock';
 import { useMessageEditActions, useMessageSegmentMemo } from './MessageBubble.hook';
 import { styled } from '@mui/system';
 import { Button } from '@mui/material';
-import React, { RefObject } from 'react';
+import React, { RefObject, useEffect, useState } from 'react';
 
 const RightAligner = styled('div')(
     ({ theme }) => ({
@@ -81,6 +81,49 @@ const MarginRemoveContainer = styled('div')(
     })
 );
 
+const ReasoningContainer = styled('div')(
+    ({ theme: { palette } }) => ({
+        marginBottom: 10,
+        minWidth: 260,
+        borderRadius: 8,
+        border: `1px solid ${palette.mode === 'dark' ? palette.grey[700] : palette.grey[400]}`,
+        background: palette.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
+        overflow: 'hidden',
+    })
+);
+
+const ReasoningToggle = styled('button')(
+    ({ theme: { palette } }) => ({
+        width: '100%',
+        border: 'none',
+        background: 'transparent',
+        color: palette.mode === 'dark' ? palette.grey[300] : palette.grey[800],
+        cursor: 'pointer',
+        textAlign: 'left',
+        padding: '8px 10px',
+        fontSize: 13,
+        fontWeight: 600,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    })
+);
+
+const ReasoningBody = styled('pre')(
+    ({ theme: { palette } }) => ({
+        margin: 0,
+        padding: '0 10px 10px',
+        whiteSpace: 'pre-wrap',
+        wordBreak: 'break-word',
+        fontFamily: 'inherit',
+        fontSize: 13,
+        lineHeight: 1.45,
+        color: palette.mode === 'dark' ? palette.grey[400] : palette.grey[700],
+        maxHeight: 280,
+        overflowY: 'auto',
+    })
+);
+
 const EditButtonContainer = styled('div')(
     ({ theme }) => ({
         display: 'flex',
@@ -100,11 +143,43 @@ const EditButton = styled(Button)(
     })
 );
 
-const MessageBubble = React.memo(({ chatId, msgId, msgContent, role, editMode, forwardRef } : 
+function ReasoningTrace({
+    reasoning,
+    generating,
+}: {
+    reasoning: string;
+    generating: boolean;
+}) {
+    const [expanded, setExpanded] = useState(false);
+
+    useEffect(() => {
+        // Expand while streaming reasoning before the final answer arrives.
+        if (generating) {
+            setExpanded(true);
+        } else {
+            setExpanded(false);
+        }
+    }, [generating]);
+
+    if (!reasoning) return null;
+
+    return (
+        <ReasoningContainer>
+            <ReasoningToggle type='button' onClick={() => setExpanded((value) => !value)}>
+                <span>{generating ? 'Thinking...' : 'Reasoning'}</span>
+                <span>{expanded ? 'Hide' : 'Show'}</span>
+            </ReasoningToggle>
+            {expanded && <ReasoningBody>{reasoning}</ReasoningBody>}
+        </ReasoningContainer>
+    );
+}
+
+const MessageBubble = React.memo(({ chatId, msgId, msgContent, reasoning, role, editMode, generating, forwardRef } : 
     {
         chatId: string,
         msgId: string,
         msgContent: string,
+        reasoning?: string,
         role: string,
         editMode: boolean,
         generating: boolean,
@@ -113,7 +188,8 @@ const MessageBubble = React.memo(({ chatId, msgId, msgContent, role, editMode, f
 ) => {
     // restoreMessage is null if message is unedited
     const { deleteMessage, regenerateMessage, editMessage, restoreMessage } = useMessageEditActions(chatId, msgId);
-    const messageSegments = useMessageSegmentMemo(msgContent || '...');
+    const displayContent = msgContent || (reasoning ? '' : '...');
+    const messageSegments = useMessageSegmentMemo(displayContent || '...');
 
     if (role === 'user') return (
         <RightAligner ref={forwardRef}>
@@ -145,18 +221,22 @@ const MessageBubble = React.memo(({ chatId, msgId, msgContent, role, editMode, f
     return (
         <LeftAligner ref={forwardRef}>
             <BotMessageContainer id={msgId}>
-                <MarginRemoveContainer>
-                    {
-                        messageSegments.map(({ type, content } : { type: string, content: string }, index) => {
-                            if (type === 'text') return (
-                                <ReactMarkdown children={content} remarkPlugins={[remarkGfm]} key={index} />
-                            ) 
-                            return (
-                                <CustomCodeBlock language={type} code={content} key={index} />
-                            )
-                        })
-                    }
-                </MarginRemoveContainer>
+                <ReasoningTrace reasoning={reasoning || ''} generating={generating} />
+                {
+                    (!!displayContent || !reasoning) &&
+                    <MarginRemoveContainer>
+                        {
+                            messageSegments.map(({ type, content } : { type: string, content: string }, index) => {
+                                if (type === 'text') return (
+                                    <ReactMarkdown children={content} remarkPlugins={[remarkGfm]} key={index} />
+                                ) 
+                                return (
+                                    <CustomCodeBlock language={type} code={content} key={index} />
+                                )
+                            })
+                        }
+                    </MarginRemoveContainer>
+                }
                 { editMode &&
                     <EditButtonContainer>
                         <EditButton variant='contained' color='success' onClick={regenerateMessage}>

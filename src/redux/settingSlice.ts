@@ -1,6 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { SettingConfig, SettingStatus } from 'redux/type.d';
 
+export const OPENROUTER_DEFAULT_BASE_URL = 'https://openrouter.ai/api';
+
 const initialGlobalSetting: SettingConfig = {
     availableModels: [],
     currentModel: '',
@@ -8,12 +10,13 @@ const initialGlobalSetting: SettingConfig = {
     topP: 1,
     systemPrompt: '',
     maxContext: 50,
+    reasoningEffort: 'none',
+    excludeReasoning: false,
     status: SettingStatus.NO_KEY,
     autoTitle: true,
     darkMode: true,
     enterSend: true,
-    urlType: 'openai',
-    baseURL: 'https://api.openai.com',
+    baseURL: OPENROUTER_DEFAULT_BASE_URL,
     apiKey: '',
 }
 
@@ -43,6 +46,8 @@ const settingSlice = createSlice({
                 maxContext: settingDraft.maxContext,
                 temperature: settingDraft.temperature,
                 topP: settingDraft.topP,
+                reasoningEffort: settingDraft.reasoningEffort,
+                excludeReasoning: settingDraft.excludeReasoning,
             };
             return settings;
         },
@@ -58,6 +63,8 @@ const settingSlice = createSlice({
                     maxContext: settingDraft.maxContext,
                     temperature: settingDraft.temperature,
                     topP: settingDraft.topP,
+                    reasoningEffort: settingDraft.reasoningEffort,
+                    excludeReasoning: settingDraft.excludeReasoning,
                 };
             }
             return settings;
@@ -82,7 +89,7 @@ const settingSlice = createSlice({
             return settings;
         },
         removeAPICredentials(settings) {
-            settings.global.baseURL = 'https://api.openai.com';
+            settings.global.baseURL = OPENROUTER_DEFAULT_BASE_URL;
             settings.global.apiKey = '';
             settings.global.status = SettingStatus.NO_KEY;
             return settings;

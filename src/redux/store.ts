@@ -21,7 +21,7 @@ const rootReducer = combineReducers({
 
 const persistConfig = {
     key: 'root',
-    version: 0,
+    version: 1,
     storage: localForage,
     throttle: 3000,
     serialize: false,

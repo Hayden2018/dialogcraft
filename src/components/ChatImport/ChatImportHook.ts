@@ -31,6 +31,11 @@ function validateImportData(
             ) {
                 throw Error ('Invalid format')
             }
+            if (msg.reasoning === undefined) {
+                msg.reasoning = '';
+            } else if (typeof msg.reasoning !== 'string') {
+                throw Error('Invalid format');
+            }
         }
     }
 }

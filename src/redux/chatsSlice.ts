@@ -27,18 +27,27 @@ const chatsSlice = createSlice({
                 role: 'user',
                 content: messageContent,
                 editedContent: '',
+                reasoning: '',
             });
             return chats
         },
         addStreamedChunk(chats, { payload }) {
-            const { chatId, delta, stop, error } = payload;
+            const {
+                chatId,
+                delta = '',
+                reasoningDelta = '',
+                stop,
+                error,
+            } = payload;
             const targetChat = chats[chatId];
             if (targetChat.streamingMsgId) {
                 if (stop) {
                     targetChat.streamingMsgId = null;
                     if (error) targetChat.messages.pop();
                 } else {
-                    targetChat.messages.at(-1)!.content += delta;
+                    const lastMessage = targetChat.messages.at(-1)!;
+                    lastMessage.content += delta;
+                    lastMessage.reasoning = (lastMessage.reasoning || '') + reasoningDelta;
                 }
             } else {
                 const messageId = uuidv4();
@@ -49,13 +58,21 @@ const chatsSlice = createSlice({
                     role: 'assistant',
                     content: delta,
                     editedContent: '',
+                    reasoning: reasoningDelta,
                 });
             }
             chats[chatId] = targetChat;
             return chats;
         },
         addRegenerationChunk(chats, { payload }) {
-            const { chatId, msgId, delta, stop, error } = payload;
+            const {
+                chatId,
+                msgId,
+                delta = '',
+                reasoningDelta = '',
+                stop,
+                error,
+            } = payload;
             const targetChat = chats[chatId];
             const targetMsgIndex = targetChat.messages.findIndex((msg) => msg.id === msgId);
             if (targetChat.streamingMsgId) {
@@ -66,7 +83,9 @@ const chatsSlice = createSlice({
                         targetChat.rollbackMessage = null;
                     }
                 } else {
-                    targetChat.messages[targetMsgIndex]!.content += delta;
+                    const targetMessage = targetChat.messages[targetMsgIndex]!;
+                    targetMessage.content += delta;
+                    targetMessage.reasoning = (targetMessage.reasoning || '') + reasoningDelta;
                 }
             } else {
                 targetChat.streamingMsgId = msgId;
@@ -77,6 +96,7 @@ const chatsSlice = createSlice({
                     role: 'assistant',
                     content: delta,
                     editedContent: '',
+                    reasoning: reasoningDelta,
                 };
             }
             chats[chatId] = targetChat;

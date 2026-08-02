@@ -4,7 +4,7 @@
   <img src="public/icon.ico" alt="DialogCraft Icon" width="80" height="80">
 </p>
 
-DialogCraft is an application built to interact seamlessly with OpenAI's Chat APIs. It provides a user-friendly interface to manage and control your conversations with AI, all from the comfort of your PC, without involving any third-party services.
+DialogCraft is an application built to interact seamlessly with the OpenRouter API. It provides a user-friendly interface to manage and control your conversations with AI models, all from the comfort of your PC.
 
 <div align="center">
     <img src="screenshots/01.png" width="262" height="165" style="margin-right: 12px; margin-bottom: 12px;">
@@ -24,9 +24,10 @@ To download the desktop version of DialogCraft, visit the [release page](https:/
 
 DialogCraft offers a range of features:
 
-- **Local Storage**: Your API credentials are stored securely on your local machine, and the app communicates directly with OpenAI's endpoints.
+- **Local Storage**: Your OpenRouter API credentials are stored securely on your local machine, and the app communicates directly with OpenRouter (or a compatible base URL you configure).
 - **Conversation Control**: You have full control over your conversation history. You can edit or delete messages from both user and bots. You can also regenerate responses with a single click.
-- **Customizability**: Switch between all available models in your OpenAI account, with full control over parameters such as temperature and top P. You can also set the maximum context messages for cost efficiency. Choose between dark and light modes based on your preference.
+- **Customizability**: Switch between models available on your OpenRouter account, with control over parameters such as temperature, top P, and reasoning effort. You can also set the maximum context messages for cost efficiency. Choose between dark and light modes based on your preference.
+- **Reasoning Traces**: For models that return thinking tokens, DialogCraft can show a collapsible reasoning section separately from the final answer.
 - **Import/Export**: You can import and export your chat history in JSON format if you are using the desktop app.
 
 ## Technology

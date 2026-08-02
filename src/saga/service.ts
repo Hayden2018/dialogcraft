@@ -1,12 +1,17 @@
 import { select } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
-import { AppState, ChatMessage, SettingConfig } from 'redux/type.d';
+import { AppState, ChatMessage, ReasoningEffort, SettingConfig } from 'redux/type.d';
 import { onElectronEnv, chatTitlePrompt } from 'utils';
 import { v4 as uuidv4 } from 'uuid';
 
 const messageAgent = onElectronEnv() ?
     window.require('electron').ipcRenderer :
     null;
+
+const OPENROUTER_HEADERS = {
+    'HTTP-Referer': 'https://github.com/Hayden2018/dialogcraft',
+    'X-Title': 'DialogCraft',
+};
 
 function parseNoisyJSON(noisyString: string) {
     const parsedObjects: Array<any> = [];
@@ -66,30 +71,101 @@ function normalizeChunk(data: any) {
     return null;
 }
 
+function extractReasoningDetailsText(delta: any): string | null {
+    if (!Array.isArray(delta.reasoning_details)) return null;
+
+    let text = '';
+    let hasContent = false;
+    for (const detail of delta.reasoning_details) {
+        if (!detail || typeof detail !== 'object') continue;
+        if (typeof detail.text === 'string') {
+            text += detail.text;
+            hasContent = true;
+        } else if (typeof detail.summary === 'string') {
+            text += detail.summary;
+            hasContent = true;
+        }
+    }
+    return hasContent ? text : null;
+}
+
+// Extract the reasoning delta for one streamed chunk.
+// OpenRouter can deliver the same reasoning in several fields on a single
+// chunk (the `reasoning`/`reasoning_content` string AND the structured
+// `reasoning_details` array), and some providers send the full accumulated
+// reasoning on every chunk. To avoid duplicated text we always use a single
+// source of truth and drop any part that was already accumulated.
+export function extractReasoningDelta(delta: any, accumulated: string = ''): string {
+    if (!delta) return '';
+
+    let raw: string;
+    const detailsText = extractReasoningDetailsText(delta);
+    if (detailsText !== null) {
+        raw = detailsText;
+    } else if (typeof delta.reasoning === 'string') {
+        raw = delta.reasoning;
+    } else if (typeof delta.reasoning_content === 'string') {
+        raw = delta.reasoning_content;
+    } else {
+        return '';
+    }
+
+    if (!raw) return '';
+
+    // Some providers send the full reasoning text so far in every chunk
+    // (cumulative deltas) instead of only the new portion.
+    if (accumulated && raw.startsWith(accumulated)) {
+        return raw.slice(accumulated.length);
+    }
+
+    return raw;
+}
+
+export function buildReasoningPayload(
+    reasoningEffort?: ReasoningEffort,
+    excludeReasoning?: boolean,
+) {
+    if (excludeReasoning) {
+        if (reasoningEffort && reasoningEffort !== 'none') {
+            return {
+                effort: reasoningEffort,
+                exclude: true,
+            };
+        }
+        return { exclude: true };
+    }
+
+    if (!reasoningEffort || reasoningEffort === 'none') {
+        return undefined;
+    }
+
+    return { effort: reasoningEffort };
+}
+
+function buildOpenRouterHeaders(apiKey: string) {
+    return {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        ...OPENROUTER_HEADERS,
+    };
+}
+
+function normalizeBaseURL(baseURL?: string) {
+    return (baseURL || '').replace(/\/+$/, '');
+}
+
 export async function getChatTitle(
     messageHistory: Array<ChatMessage>,
     baseURL: string,
     apiKey: string,
-    urlType: string,
+    model: string,
 ) {
     try {
-        const URL = urlType === 'openai' ? `${baseURL}/v1/chat/completions` : baseURL;
-        const headers = urlType === 'openai' ? 
-        { 
-            Authorization: `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-        } 
-            :
-        { 
-            'API-Key': apiKey,
-            'Content-Type': 'application/json',
-        };
-
-        const response = await fetch(URL, {
+        const response = await fetch(`${normalizeBaseURL(baseURL)}/v1/chat/completions`, {
             method: 'POST',
-            headers: headers,
+            headers: buildOpenRouterHeaders(apiKey),
             body: JSON.stringify({
-                model: 'gpt-3.5-turbo',
+                model,
                 temperature: 0.5,
                 messages: [
                     ...messageHistory.map(
@@ -105,7 +181,7 @@ export async function getChatTitle(
                 ]
             }),
         });
-    
+
         const data = await response.json();
         return data.choices[0].message.content;
 
@@ -122,11 +198,13 @@ export function* requestResponse(messageHistory: Array<ChatMessage>, chatId: str
         systemPrompt,
         currentModel,
         maxContext,
+        reasoningEffort,
+        excludeReasoning,
     }: SettingConfig = yield select(
         (state: AppState) => state.setting[chatId]
     );
 
-    const { baseURL, apiKey, urlType }: SettingConfig = yield select(
+    const { baseURL, apiKey }: SettingConfig = yield select(
         (state: AppState) => state.setting.global
     );
 
@@ -146,18 +224,31 @@ export function* requestResponse(messageHistory: Array<ChatMessage>, chatId: str
         });
     }
 
+    const reasoning = buildReasoningPayload(reasoningEffort, excludeReasoning);
+    const requestBody: Record<string, unknown> = {
+        model: currentModel,
+        messages: messagesPayload,
+        top_p: topP,
+        temperature,
+        stream: true,
+    };
+    if (reasoning) {
+        requestBody.reasoning = reasoning;
+    }
+
     const requestId = uuidv4();
+    const normalizedBaseURL = normalizeBaseURL(baseURL);
 
     // On Electron use Ipc to communicate with Node backend
     if (onElectronEnv()) {
         messageAgent.send('MESSAGE', {
-            urlType,
-            baseURL,
+            baseURL: normalizedBaseURL,
             apiKey,
             topP,
             temperature,
             model: currentModel,
             messages: messagesPayload,
+            reasoning,
             requestId,
         });
         return eventChannel((emit) => {
@@ -189,17 +280,8 @@ export function* requestResponse(messageHistory: Array<ChatMessage>, chatId: str
                 if (!isClosed) emit(data);
             }
 
-            const requestURL = urlType === 'openai' ? `${baseURL}/v1/chat/completions` : baseURL;
-            const headers = urlType === 'openai' ?
-            {
-                Authorization: `Bearer ${apiKey}`,
-                'Content-Type': 'application/json',
-            }
-                :
-            {
-                'API-Key': apiKey,
-                'Content-Type': 'application/json',
-            };
+            const requestURL = `${normalizedBaseURL}/v1/chat/completions`;
+            const headers = buildOpenRouterHeaders(apiKey!);
 
             const timeoutCheck = setInterval(() => {
                 if (new Date().getTime() - lastChunkTime > 30000 && !timeoutEmitted && !interruptEmitted) {
@@ -223,13 +305,7 @@ export function* requestResponse(messageHistory: Array<ChatMessage>, chatId: str
                 method: 'POST',
                 signal: controller.signal,
                 headers,
-                body: JSON.stringify({
-                    model: currentModel,
-                    messages: messagesPayload,
-                    top_p: topP,
-                    temperature,
-                    stream: true,
-                }),
+                body: JSON.stringify(requestBody),
             })
                 .then(async (response) => {
                     if (!response.ok || !response.body) {

@@ -306,6 +306,7 @@ function ChatInterface({ setMenuOpen }: { setMenuOpen: React.Dispatch<React.SetS
                             msgId={msg.id}
                             chatId={currentChat.id}
                             msgContent={msg.editedContent || msg.content}
+                            reasoning={msg.reasoning || ''}
                             role={msg.role}
                             editMode={editing && !isStreaming}
                             generating={msg.id === streamingMsgId}

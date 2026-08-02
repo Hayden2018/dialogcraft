@@ -1,13 +1,13 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm, Controller } from 'react-hook-form';
-import { TextField, Button, Alert, LinearProgress, Link, Tabs, Tab } from '@mui/material';
+import { TextField, Button, Alert, LinearProgress, Link } from '@mui/material';
 import { styled } from '@mui/system';
 
 import { AppState, SettingConfig, SettingStatus } from 'redux/type.d';
 import { updateGlobalSetting } from "saga/actions";
 import { ReactComponent as AppIcon } from "./logo.svg";
 import { onElectronEnv } from 'utils';
-import { useEffect } from 'react';
+import { OPENROUTER_DEFAULT_BASE_URL } from 'redux/settingSlice';
 
 const GreetingContainer = styled('div')(
     ({ theme }) => ({
@@ -32,28 +32,6 @@ const AppTitle = styled('h1')(
             marginRight: 12,
             verticalAlign: 'top',
         }
-    })
-);
-
-const EndpointTypeChooser = styled(Tabs)(
-    ({ theme }) => ({
-        minHeight: '32px',
-        height: 32,
-        maxWidth: '580px',
-        width: '100%',
-        margin: '0px auto',
-        marginBottom: '5px',
-        '& div': {
-            height: 32,
-            minHeight: '32px',
-        },
-        '& button': {
-            width: 75,
-            minWidth: '75px',
-            height: 32,
-            minHeight: '32px',
-            fontSize: '12px',
-        },
     })
 );
 
@@ -118,7 +96,7 @@ const SubmitButton = styled(Button)(
 );
 
 const releaseUrl = 'https://github.com/Hayden2018/dialogcraft/releases';
-const videoUrl = 'https://www.youtube.com/watch?v=aVog4J6nIAU';
+const openRouterKeysUrl = 'https://openrouter.ai/keys';
 const openTarget = onElectronEnv() ? '' : '_blank';
 
 export default function Login() {
@@ -126,30 +104,15 @@ export default function Login() {
     const dispatch = useDispatch();
     const { status } = useSelector((state: AppState) => state.setting.global);
 
-    const { handleSubmit, watch, setValue, reset, control, formState: { isDirty } } = useForm({
+    const { handleSubmit, reset, control, formState: { isDirty } } = useForm({
         defaultValues: {
-            baseURL: 'https://api.openai.com',
+            baseURL: OPENROUTER_DEFAULT_BASE_URL,
             apiKey: '',
-            urlType: 'openai',
         },
     });
 
-    const urlType = watch('urlType');
-    const baseURL = watch('baseURL');
-    const apiKey = watch('apiKey');
-
-    useEffect(() => {
-        if (urlType === 'openai') {
-            setValue('baseURL', 'https://api.openai.com');
-            setValue('apiKey', '');
-        } else {
-            setValue('baseURL', '');
-            setValue('apiKey', '');
-        }
-    }, [setValue, urlType]);
-
-    const onSubmit = (data: { apiKey: string, baseURL:string }) => {
-        if (baseURL && apiKey) {
+    const onSubmit = (data: { apiKey: string, baseURL: string }) => {
+        if (data.baseURL && data.apiKey) {
             dispatch(updateGlobalSetting(data as SettingConfig));
             reset(data);
         }
@@ -164,20 +127,13 @@ export default function Login() {
         </GreetingContainer>
     )
 
-    if (urlType === 'openai') return (
+    return (
         <form onSubmit={handleSubmit(onSubmit)} id='app'>
             <GreetingContainer>
                 <AppTitle>
                     <AppIcon />
                     DialogCraft
                 </AppTitle>
-                <EndpointTypeChooser
-                    value={urlType}
-                    onChange={(_, value) => setValue('urlType', value)}
-                >
-                    <Tab value='openai' label='OpenAI' />
-                    <Tab value='azure' label='Azure' />
-                </EndpointTypeChooser>
                 <Controller
                     name='baseURL'
                     control={control}
@@ -186,19 +142,20 @@ export default function Login() {
                 <Controller
                     name='apiKey'
                     control={control}
-                    render={({ field }) => <CredentialInput {...field} type='password' label='API Key (Bearer token)' />}
+                    render={({ field }) => <CredentialInput {...field} type='password' label='OpenRouter API Key' />}
                 />
                 {
                     (status === SettingStatus.ERROR && !isDirty) &&
                     <ErrorAlert severity='error'>
-                        Verification failed. Please check your API credentails and internet connection.
+                        Verification failed. Please check your API credentials and internet connection.
                     </ErrorAlert>
                 }
                 <SubmitButton variant='contained' type='submit'>
                     Connect
                 </SubmitButton>
                 <InfoText>
-                    If you do not have an OpenAI API key refer to <Link target={openTarget} href={videoUrl}>this</Link> video on how to get one. 
+                    Get an OpenRouter API key from <Link target={openTarget} href={openRouterKeysUrl}>openrouter.ai/keys</Link>.
+                    The base URL defaults to OpenRouter and can be overridden for compatible proxies.
                 </InfoText>
                 {
                     onElectronEnv() ||
@@ -207,55 +164,7 @@ export default function Login() {
                     </InfoText>
                 }
                 <InfoText>
-                    Your API key will be stored on this device. This application does not interact with system other than the provided URL.
-                </InfoText>
-            </GreetingContainer>
-        </form>
-    )
-    else return (
-        <form onSubmit={handleSubmit(onSubmit)} id='app'>
-            <GreetingContainer>
-                <AppTitle>
-                    <AppIcon />
-                    DialogCraft
-                </AppTitle>
-                <EndpointTypeChooser
-                    value={urlType}
-                    onChange={(_, value) => setValue('urlType', value)}
-                >
-                    <Tab value='openai' label='OpenAI' />
-                    <Tab value='azure' label='Azure' />
-                </EndpointTypeChooser>
-                <Controller
-                    name='baseURL'
-                    control={control}
-                    render={({ field }) => <CredentialInput {...field} label='Azure OpenAI Endpoint'/>}
-                />
-                <Controller
-                    name='apiKey'
-                    control={control}
-                    render={({ field }) => <CredentialInput {...field} type='password' label='API Key'/>}
-                />
-                {
-                    (status === SettingStatus.ERROR && !isDirty) &&
-                    <ErrorAlert severity='error'>
-                        Verification failed. Please check your API credentails and internet connection.
-                    </ErrorAlert>
-                }
-                <SubmitButton variant='contained' type='submit'>
-                    Connect
-                </SubmitButton>
-                <InfoText>
-                    Enter the full URL to your Azure OpenAI deployment via curl. (Only GPT-4o or GPT-3.5-Turbo supported)
-                </InfoText>
-                {
-                    onElectronEnv() ||
-                    <InfoText>
-                        You are using the web version of DialogCraft. More features available on <Link target={openTarget} href={releaseUrl}>desktop app</Link>.
-                    </InfoText>
-                }
-                <InfoText>
-                    Your API key will be stored on this device. This application does not interact with system other than the provided URL.
+                    Your API key will be stored on this device. This application does not interact with systems other than the provided URL.
                 </InfoText>
             </GreetingContainer>
         </form>

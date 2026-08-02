@@ -1,6 +1,11 @@
 const { ipcMain } = require('electron');
 const axios = require('axios');
 
+const OPENROUTER_HEADERS = {
+    'HTTP-Referer': 'https://github.com/Hayden2018/dialogcraft',
+    'X-Title': 'DialogCraft',
+};
+
 function parseNoisyJSON(noisyString) {
     let parsedObjects = [];
     let bracketCount = 0;
@@ -42,8 +47,11 @@ function parseNoisyJSON(noisyString) {
     };
 }
 
+function normalizeBaseURL(baseURL) {
+    return (baseURL || '').replace(/\/+$/, '');
+}
+
 async function sendResponseStream(window, {
-    urlType,
     apiKey,
     baseURL,
     model,
@@ -51,34 +59,29 @@ async function sendResponseStream(window, {
     temperature,
     requestId,
     topP,
+    reasoning,
 }) {
     try {
-        const requestConfig = urlType === 'openai' ?
-        {
-            method: 'post',
-            responseType: 'stream',
-            url: `${baseURL}/v1/chat/completions`,
-            headers: { Authorization: `Bearer ${apiKey}` },
-            data: {
-                model,
-                messages,
-                top_p: topP,
-                temperature,
-                stream: true,
-            },
+        const data = {
+            model,
+            messages,
+            top_p: topP,
+            temperature,
+            stream: true,
+        };
+        if (reasoning) {
+            data.reasoning = reasoning;
         }
-            :
-        {
+
+        const requestConfig = {
             method: 'post',
             responseType: 'stream',
-            url: baseURL,
-            headers: { 'API-Key': apiKey },
-            data: {
-                messages,
-                top_p: topP,
-                temperature,
-                stream: true,
+            url: `${normalizeBaseURL(baseURL)}/v1/chat/completions`,
+            headers: {
+                Authorization: `Bearer ${apiKey}`,
+                ...OPENROUTER_HEADERS,
             },
+            data,
         };
 
         const response = await axios(requestConfig);
