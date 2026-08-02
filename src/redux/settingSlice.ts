@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { SettingConfig, SettingStatus } from 'redux/type.d';
 
 export const OPENROUTER_DEFAULT_BASE_URL = 'https://openrouter.ai/api';
+export const DEFAULT_MODEL = 'google/gemma-4-31b-it';
 
 const initialGlobalSetting: SettingConfig = {
   availableModels: [],
@@ -75,7 +76,7 @@ const settingSlice = createSlice({
         const currentModel = settings[key].currentModel;
         settings[key].availableModels = payload;
         if (!payload.includes(currentModel)) {
-          settings[key].currentModel = payload[0];
+          settings[key].currentModel = payload.includes(DEFAULT_MODEL) ? DEFAULT_MODEL : payload[0];
         }
       }
     },

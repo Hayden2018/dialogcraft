@@ -240,8 +240,8 @@ export function* requestResponse(messageHistory: Array<ChatMessage>, chatId: str
     });
     return eventChannel((emit) => {
       const msgListener = (_: unknown, data: any) => emit(data);
-      const interruptListener = (event: CustomEvent<{ chatId: string }>) => {
-        if (event.detail.chatId === chatId) {
+      const interruptListener = (event: Event) => {
+        if ((event as CustomEvent<{ chatId: string }>).detail.chatId === chatId) {
           emit({ finish_reason: 'interrupt' });
         }
       };
@@ -278,8 +278,8 @@ export function* requestResponse(messageHistory: Array<ChatMessage>, chatId: str
         }
       }, 1000);
 
-      const interruptListener = (event: CustomEvent<{ chatId: string }>) => {
-        if (event.detail.chatId === chatId) {
+      const interruptListener = (event: Event) => {
+        if ((event as CustomEvent<{ chatId: string }>).detail.chatId === chatId) {
           interruptEmitted = true;
           safeEmit({ finish_reason: 'interrupt' });
           controller.abort();
