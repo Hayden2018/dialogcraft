@@ -53,4 +53,5 @@ npm run make # Electron forge will build for your platform
 ```
 
 ## Contribution
+
 Contributions or feature requests are welcomed. Feel free to create a Merge Request or [contact](mailto:yikhei123@gmail.com) the author.

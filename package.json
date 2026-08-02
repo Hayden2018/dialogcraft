@@ -42,7 +42,9 @@
     "build": "react-scripts build",
     "electron-dev": "concurrently -k -n web,electron \"npm start\" \"wait-on http://localhost:3000 && nodemon --watch ./electron-src --exec \\\"electron .\\\"\"",
     "package": "electron-forge package",
-    "make": "react-scripts build && electron-forge make"
+    "make": "react-scripts build && electron-forge make",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "eslintConfig": {
     "extends": [
@@ -73,6 +75,7 @@
     "concurrently": "^10.0.4",
     "electron": "^25.3.1",
     "nodemon": "^3.0.1",
+    "prettier": "^3.9.6",
     "wait-on": "^9.1.0"
   }
 }

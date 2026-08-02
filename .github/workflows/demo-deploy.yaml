@@ -12,31 +12,31 @@ jobs:
       AWS_REGION: us-east-1
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Build React App
-      env:
-        GENERATE_SOURCEMAP: false
-      run: npm run build
+      - name: Build React App
+        env:
+          GENERATE_SOURCEMAP: false
+        run: npm run build
 
-    - name: Configure AWS CLI
-      run: |
-        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws configure set default.region $AWS_REGION
+      - name: Configure AWS CLI
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region $AWS_REGION
 
-    - name: Deploy to S3
-      run: |
-        aws s3 sync build/ s3://dialogcraft --delete --acl public-read
+      - name: Deploy to S3
+        run: |
+          aws s3 sync build/ s3://dialogcraft --delete --acl public-read
 
-    - name: Invalidate CloudFront cache
-      run: aws cloudfront create-invalidation --distribution-id E131KHFX460NXK --paths "/*"
+      - name: Invalidate CloudFront cache
+        run: aws cloudfront create-invalidation --distribution-id E131KHFX460NXK --paths "/*"

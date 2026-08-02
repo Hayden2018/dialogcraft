@@ -1,80 +1,83 @@
-html, body, #root, #app {
-    height: 100%;
+html,
+body,
+#root,
+#app {
+  height: 100%;
 }
 
 body {
-    background-color: #FCFCFC !important;
+  background-color: #fcfcfc !important;
 
-    ::-webkit-scrollbar {
-        width: 7px;
-    }
+  ::-webkit-scrollbar {
+    width: 7px;
+  }
 
-    ::-webkit-scrollbar-thumb {
-        border-radius: 3px;
-        background: #BCBCBC;
-    }
-      
-    ::-webkit-scrollbar-track {
-        background: transparent;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-        background: #AAAAAA;
-    }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: #bcbcbc;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #aaaaaa;
+  }
 }
 
 body.dark {
-    background-color: #121212 !important;
+  background-color: #121212 !important;
 
-    ::-webkit-scrollbar {
-        width: 7px;
-    }
-      
-    ::-webkit-scrollbar-track {
-        background: transparent;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-        border-radius: 3px;
-        background: #686868;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-        background: #777777;
-    }
+  ::-webkit-scrollbar {
+    width: 7px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: #686868;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #777777;
+  }
 }
 
 @font-face {
-    font-family: 'Roboto';
-    src: url('../public/font/Roboto-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+  font-family: 'Roboto';
+  src: url('../public/font/Roboto-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'Roboto';
-    src: url('../public/font/Roboto-Bold.ttf') format('truetype');
-    font-weight: bold;
-    font-style: normal;
+  font-family: 'Roboto';
+  src: url('../public/font/Roboto-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'Roboto';
-    src: url('../public/font/Roboto-Italic.ttf') format('truetype');
-    font-weight: normal;
-    font-style: italic;
+  font-family: 'Roboto';
+  src: url('../public/font/Roboto-Italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
 }
 
 @font-face {
-    font-family: 'Roboto';
-    src: url('../public/font/Roboto-BoldItalic.ttf') format('truetype');
-    font-weight: bold;
-    font-style: italic;
+  font-family: 'Roboto';
+  src: url('../public/font/Roboto-BoldItalic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
 }
 
 @font-face {
-    font-family: 'Consolas';
-    src: url('../public/font/Consolas.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+  font-family: 'Consolas';
+  src: url('../public/font/Consolas.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }

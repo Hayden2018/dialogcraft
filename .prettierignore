@@ -1,0 +1,8 @@
+node_modules
+build
+out
+coverage
+dist
+screenshots
+*.pfx
+package-lock.json

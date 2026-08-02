@@ -12,22 +12,22 @@ import { persistStore, persistReducer, createMigrate } from 'redux-persist';
 import localForage from 'localforage';
 
 const rootReducer = combineReducers({
-    chatList: chatListReducer,
-    chats: chatsReducer,
-    modal: modalReducer,
-    page: pageReducer,
-    setting: settingReducer,
+  chatList: chatListReducer,
+  chats: chatsReducer,
+  modal: modalReducer,
+  page: pageReducer,
+  setting: settingReducer,
 });
 
 const persistConfig = {
-    key: 'root',
-    version: 1,
-    storage: localForage,
-    throttle: 3000,
-    serialize: false,
-    deserialize: false,
-    blacklist: ['modal'],
-    migrate: createMigrate(migrations as any),
+  key: 'root',
+  version: 1,
+  storage: localForage,
+  throttle: 3000,
+  serialize: false,
+  deserialize: false,
+  blacklist: ['modal'],
+  migrate: createMigrate(migrations as any),
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -35,8 +35,8 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 const sagaMiddleware = createSagaMiddleware();
 
 export const store = configureStore({
-    reducer: persistedReducer,
-    middleware: [sagaMiddleware],
+  reducer: persistedReducer,
+  middleware: [sagaMiddleware],
 });
 
 sagaMiddleware.run(rootSaga);
