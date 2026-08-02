@@ -12,6 +12,9 @@ DialogCraft is an application built to interact seamlessly with the OpenRouter A
     <img src="screenshots/03.png" width="262" height="165" style="margin-bottom: 12px;">
 </div>
 
+<br/>
+
+> [!NOTE]
 > Starting from **v1.1.0**, the default API endpoint support has switched from **OpenAI** to **OpenRouter**. If you are upgrading from an earlier version, you may need to update your API endpoint and credentials.
 
 ## Start Using
