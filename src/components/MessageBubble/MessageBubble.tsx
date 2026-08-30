@@ -1,4 +1,4 @@
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import CustomCodeBlock from 'components/CustomCodeBlock/CustomCodeBlock';
 import { useMessageEditActions, useMessageSegmentMemo } from './MessageBubble.hook';

@@ -4,7 +4,7 @@ import { LinearProgress, TextField } from '@mui/material';
 import MessageBubble from 'components/MessageBubble/MessageBubble';
 import { useChatEditActions, useCurrentChatSelector, useMessageActions } from './ChatInterface.hook';
 import { ChatMessage, ModalType } from 'redux/type.d';
-import { useEffect, useRef } from 'react';
+import React, { RefObject, useEffect, useRef } from 'react';
 import { ReactComponent as noChatIcon } from './noChat.svg';
 import { ReactComponent as menuIcon } from './menuIcon.svg';
 import { useDispatch } from 'react-redux';
@@ -193,6 +193,40 @@ const NoChatInfo = styled('p')(({ theme: { palette } }) => ({
   margin: 15,
 }));
 
+const MessageList = React.memo(
+  ({
+    chatId,
+    messages,
+    streamingMsgId,
+    editing,
+    isRegenerating,
+    scrollRef,
+  }: {
+    chatId: string;
+    messages: ChatMessage[];
+    streamingMsgId: string | null;
+    editing: boolean;
+    isRegenerating: boolean;
+    scrollRef: RefObject<HTMLDivElement>;
+  }) => (
+    <MessageArea isEditing={editing && !streamingMsgId} ref={isRegenerating ? null : scrollRef}>
+      {messages.map((msg) => (
+        <MessageBubble
+          key={msg.id}
+          msgId={msg.id}
+          chatId={chatId}
+          msgContent={msg.editedContent || msg.content}
+          reasoning={msg.reasoning || ''}
+          role={msg.role}
+          editMode={editing && !streamingMsgId}
+          generating={msg.id === streamingMsgId}
+          forwardRef={msg.id === streamingMsgId && isRegenerating ? scrollRef : null}
+        />
+      ))}
+    </MessageArea>
+  )
+);
+
 function ChatInterface({ setMenuOpen }: { setMenuOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
   const dispatch = useDispatch();
   const screenWidth = useScreenWidth();
@@ -262,21 +296,14 @@ function ChatInterface({ setMenuOpen }: { setMenuOpen: React.Dispatch<React.SetS
             </>
           )}
         </HeaderBanner>
-        <MessageArea isEditing={editing && !isStreaming} ref={isRegenerating ? null : scrollRef}>
-          {currentChat.messages.map((msg: ChatMessage) => (
-            <MessageBubble
-              key={msg.id}
-              msgId={msg.id}
-              chatId={currentChat.id}
-              msgContent={msg.editedContent || msg.content}
-              reasoning={msg.reasoning || ''}
-              role={msg.role}
-              editMode={editing && !isStreaming}
-              generating={msg.id === streamingMsgId}
-              forwardRef={msg.id === streamingMsgId && isRegenerating ? scrollRef : null}
-            />
-          ))}
-        </MessageArea>
+        <MessageList
+          chatId={currentChat.id}
+          messages={currentChat.messages}
+          streamingMsgId={streamingMsgId || null}
+          editing={editing}
+          isRegenerating={isRegenerating}
+          scrollRef={scrollRef}
+        />
         {editing || isStreaming || (
           <DraftGrid>
             <MessageInput
