@@ -1,6 +1,6 @@
 {
   "name": "DialogCraft",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "Hayden Chiu",
   "description": "Chat client for OpenRouter API",
   "main": "electron-src/main.js",
